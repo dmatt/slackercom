@@ -1,0 +1,23 @@
+{
+  "name": "tickets",
+  "version": "1.0.0",
+  "description": "Slash command handler for Disqus slack.",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.14.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmatt/tickets.git"
+  },
+  "author": "dmatt@disqus.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dmatt/tickets/issues"
+  },
+  "homepage": "https://github.com/dmatt/tickets#readme"
+}
