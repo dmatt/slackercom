@@ -2,9 +2,9 @@ var express = require('express')
 var app = express()
 var desk = require('desk-api').createClient({
   subdomain: 'help',
-  consumer_key: 'b2OgaOeoQBELQNUe81NC',
-  consumer_secret: '2rMQACnuWx1hDhxw6JdcENwaiaRI0BkbKlAOEpWU',
-  token: 'ThaVoopcwCbGiS5YqxhG',
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  token: process.env.CONSUMER_SECRET,
   token_secret: 'tkMD7r6eykjv6tY0M3pfoOfKJUZmuwlXbaXC2jPf'
 });
 
