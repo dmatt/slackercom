@@ -1,6 +1,6 @@
 var express = require('express')
 var app = express()
-var desk = require('desk').createClient({
+var desk = require('desk-api').createClient({
   subdomain: 'help.disqus',
   consumer_key: 'b2OgaOeoQBELQNUe81NC',
   consumer_secret: '2rMQACnuWx1hDhxw6JdcENwaiaRI0BkbKlAOEpWU',
@@ -17,7 +17,10 @@ app.get('/', function (req, res) {
   // func() case body and link
   // if regex = email address
   // func() recent cases matching email
-  console.log(req);
+  desk.cases({status: 'new,open'}, function(error, data) {
+    console.log(error);
+    console.log(data);
+  }); 
 })
 
 app.listen(3000, function () {
