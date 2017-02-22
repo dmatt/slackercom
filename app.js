@@ -20,7 +20,7 @@ app.get('/', function (req, res) {
   desk.cases({status: 'new,open'}, function(error, data) {
     console.log(error);
     console.log(data);
-  }); 
+  });
 })
 
 app.listen(3000, function () {
