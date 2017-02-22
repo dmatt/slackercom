@@ -1,7 +1,7 @@
 var express = require('express')
 var app = express()
 var desk = require('desk-api').createClient({
-  subdomain: 'help',
+  subdomain: 'help', //TODO: FIX THE desk-api
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   token: process.env.TOKEN,
