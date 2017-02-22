@@ -1,11 +1,11 @@
 var express = require('express')
 var app = express()
 var desk = require('desk').createClient({
-  subdomain: 'disqus',
-  consumer_key: 'key',
-  consumer_secret: 'secret',
-  token: 'token',
-  secret: 'token_secret'
+  subdomain: 'help.disqus',
+  consumer_key: 'b2OgaOeoQBELQNUe81NC',
+  consumer_secret: '2rMQACnuWx1hDhxw6JdcENwaiaRI0BkbKlAOEpWU',
+  token: 'tkMD7r6eykjv6tY0M3pfoOfKJUZmuwlXbaXC2jPf',
+  secret: 'ThaVoopcwCbGiS5YqxhG'
 });
 
 app.get('/', function (req, res) {
