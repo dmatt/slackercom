@@ -1,8 +1,15 @@
 var express = require('express')
 var app = express()
+var desk = require('desk').createClient({
+  subdomain: 'disqus',
+  consumer_key: 'key',
+  consumer_secret: 'secret',
+  token: 'token',
+  secret: 'token_secret'
+});
 
 app.get('/', function (req, res) {
-  res.send('Hello World!')
+  res.send('YOU ARE A BUTT!')
   // if query.token = '2365Mb38QS6zo2E8azlirAwT'
   // if no additional text
   // func() CASE STATUS (all filters and #s)  
