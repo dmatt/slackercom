@@ -4,8 +4,8 @@ var desk = require('desk-api').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
-  token: process.env.CONSUMER_SECRET,
-  token_secret: 'tkMD7r6eykjv6tY0M3pfoOfKJUZmuwlXbaXC2jPf'
+  token: process.env.TOKEN,
+  token_secret: process.env.TOKEN_SECRET
 });
 
 app.get('/', function (req, res) {
