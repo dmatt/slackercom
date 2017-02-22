@@ -1,7 +1,7 @@
 var express = require('express')
 var app = express()
 var desk = require('desk-api').createClient({
-  subdomain: 'help', //TODO: FIX THE desk-api
+  subdomain: 'help', //TODO: FIX THE desk-api oauth call bc our domain is not *.desk.com
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   token: process.env.TOKEN,
@@ -22,6 +22,8 @@ app.get('/', function (req, res) {
     console.log(data);
   });
 })
+
+// How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
