@@ -30,14 +30,14 @@ app.get('/', function (req, res) {
 function buildMessage (text, attachementText) {
   var message = {
       "response_type": "in_channel",
-      "text": "It's 80 degrees right now.",
+      "text": text,
       "attachments": [
           {
-              "text":"Partly cloudy today and tomorrow"
+              "text": attachementText
           }
       ]
   }
-  
+  res.send(message);
 }
 //function caseStatus () {}
 //function caseIdSearch () {}
