@@ -9,8 +9,7 @@ var desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-app.post('/', function (req, res) {
-  console.log(req);
+app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
     desk.cases({status: 'new,open', priority:'9'}, function(error, data) {
           console.log(req.query.token);
@@ -24,14 +23,16 @@ app.post('/', function (req, res) {
         });
   }
   else {
-    res.send('Not authorized');
-    console.log(req.query.token);
+    res.send('dashboard wow');
   }
 })
 
-app.get('/', function (req, res) {
-      res.send('dashboard wow');
-})
+function 
+
+//function caseStatus () {}
+//function caseStatus () {}
+//function caseIdSearch () {}
+//function emailSearch () {}
 
 // How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
 
