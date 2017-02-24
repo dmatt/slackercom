@@ -10,8 +10,7 @@ var desk = require('./my-desk').createClient({
 
 app.get('/', function (req, res) {
   if (req.query.token = '2365Mb38QS6zo2E8azlirAwT') {
-  // if (req.method === 'GET' && request.url === '/echo')
-    console.log(req);
+    console.log(req.query.token);
     res.send('hi slack');
   }
   else {
@@ -24,7 +23,7 @@ app.get('/', function (req, res) {
     desk.cases({status: 'new,open', priority:'9'}, function(error, data) { 
       console.log(error);
       console.log(data);
-      res.send(data);
+      res.send('hi web user'+data);
     });   
   }
 })
