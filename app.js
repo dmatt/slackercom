@@ -18,6 +18,19 @@ app.get('/', function (req, res) {
   }
 })
 
+function slackMessage(text, attachements) {
+    this.response_type = text;  
+    this.text = text;
+    this.attachements = attachements;
+}
+
+function slackAttachement(fallback, color, title, text) {
+    this.fallback = fallback;
+    this.color = color;
+    this.title = title;
+    this.text = text;  
+}
+
 function statusMessage (text, attachementText, deskStats) {
   return {
       "response_type": "in_channel",
@@ -38,17 +51,14 @@ function caseStatus () {
           });
 }
 
-
 // if no additional text
 // func() CASE STATUS (all filters and #s)  
 // if regex = case ID
 // func() case body and link
 // if regex = email address
 // func() recent cases matching email   
-
 //function caseIdSearch () {}
 //function emailSearch () {}
-
 // How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
 
 app.listen(3000, function () {
