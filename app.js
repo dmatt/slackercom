@@ -54,3 +54,39 @@ function caseStatus () {
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
+
+
+/*
+
+complex
+
+{
+    "text": "✅ Looking pretty good",
+    "attachments": [
+        {
+            "fallback": "Required plain-text summary of the attachment.",
+            "color": "#36a64f",
+            "title": "Priority",
+            "text": "23 New, 15 open"
+        },{
+            "fallback": "Required plain-text summary of the attachment.",
+            "color": "#ff0000",
+            "title": "Direct",
+            "text": "23 New, 15 open"
+        },{
+            "fallback": "Required plain-text summary of the attachment.",
+            "color": "#36a64f",
+            "title": "Direct",
+            "text": "0 New, 3 open"
+        }
+    ]
+}
+
+simple
+
+{
+    "text": "✅ *Priority* 12 New, 10 open\n 🔥 *Direct* 33 New, 89 open"
+}
+
+
+*/
