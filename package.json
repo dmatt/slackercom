@@ -4,7 +4,8 @@
 	"description": "Slash command handler for Disqus slack.",
 	"main": "app.js",
 	"dependencies": {
-		"express": "^4.14.1"
+		"express": "^4.14.1",
+		"oauth": "^0.9.15"
 	},
 	"devDependencies": {},
 	"scripts": {

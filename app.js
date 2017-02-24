@@ -1,6 +1,6 @@
 var express = require('express')
 var app = express()
-var desk = require('my-desk.js').createClient({
+var desk = require('./my-desk').createClient({
   subdomain: 'help', //TODO: FIX THE desk-api oauth call bc our domain is not *.desk.com
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
@@ -9,7 +9,6 @@ var desk = require('my-desk.js').createClient({
 });
 
 app.get('/', function (req, res) {
-  res.send('YOU ARE A BUTT!')
   // if query.token = '2365Mb38QS6zo2E8azlirAwT'
   // if no additional text
   // func() CASE STATUS (all filters and #s)  
@@ -17,9 +16,10 @@ app.get('/', function (req, res) {
   // func() case body and link
   // if regex = email address
   // func() recent cases matching email
-  desk.cases({status: 'new,open'}, function(error, data) {
+  desk.cases({status: 'new,open', priority:'9'}, function(error, data) {   
     console.log(error);
     console.log(data);
+    res.send(data);
   });
 })
 
