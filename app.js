@@ -1,6 +1,6 @@
 var express = require('express')
 var app = express()
-var desk = require('desk-api').createClient({
+var desk = require('my-desk.js').createClient({
   subdomain: 'help', //TODO: FIX THE desk-api oauth call bc our domain is not *.desk.com
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
