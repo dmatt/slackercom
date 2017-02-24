@@ -11,16 +11,7 @@ var desk = require('./my-desk').createClient({
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
-    desk.cases({status: 'new,open', priority:'9'}, function(error, data) {
-          console.log(req.query.token);
-          res.send('hi slack'+data);
-        // if no additional text
-        // func() CASE STATUS (all filters and #s)  
-        // if regex = case ID
-        // func() case body and link
-        // if regex = email address
-        // func() recent cases matching email      
-        });
+    res.send('hi slack');
   }
   else {
     res.send('dashboard wow');
@@ -38,7 +29,22 @@ function buildMessage (text, attachementText) {
       ]
   }
 }
-//function caseStatus () {}
+
+// returns the # of new and open cases in each Desk filter: Priority, Ads, 
+
+function caseStatus () {
+  desk.cases({status: 'new,open', priority:'9'}, function(error, data) {  
+          });
+}
+
+
+// if no additional text
+// func() CASE STATUS (all filters and #s)  
+// if regex = case ID
+// func() case body and link
+// if regex = email address
+// func() recent cases matching email   
+
 //function caseIdSearch () {}
 //function emailSearch () {}
 
