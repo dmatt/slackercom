@@ -30,7 +30,8 @@ function buildMessage (text, attachementText) {
   }
 }
 
-// returns the # of new and open cases in each Desk filter: Priority, Ads, 
+// Desk API returns # of new and open cases in each Desk filter: Priority, Saas, Direct, 
+// Returns # of cases resolved > 1 message within past 24 hours
 
 function caseStatus () {
   desk.cases({status: 'new,open', priority:'9'}, function(error, data) {  
