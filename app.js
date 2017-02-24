@@ -1,7 +1,8 @@
 var express = require('express')
 var app = express()
+// local desk api wrapper because node module doesn't handle custom domains
 var desk = require('./my-desk').createClient({
-  subdomain: 'help', //TODO: FIX THE desk-api oauth call bc our domain is not *.desk.com
+  subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
   token: process.env.TOKEN,
@@ -9,8 +10,8 @@ var desk = require('./my-desk').createClient({
 });
 
 app.post('/', function (req, res) {
-  console.log(req);  
-  if (req.query.token == '2365Mb38QS6zo2E8azlirAwT') {
+  console.log(req);
+  if (req.query.token == process.env.SLACK_TOKEN) {
     desk.cases({status: 'new,open', priority:'9'}, function(error, data) {
           console.log(req.query.token);
           res.send('hi slack'+data);
@@ -24,7 +25,7 @@ app.post('/', function (req, res) {
   }
   else {
     res.send('Not authorized');
-    console.log(req.query.token);    
+    console.log(req.query.token);
   }
 })
 
