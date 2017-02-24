@@ -28,7 +28,7 @@ app.get('/', function (req, res) {
 })
 
 function buildMessage (text, attachementText) {
-  var message = {
+  return {
       "response_type": "in_channel",
       "text": text,
       "attachments": [
@@ -37,7 +37,6 @@ function buildMessage (text, attachementText) {
           }
       ]
   }
-  res.send(message);
 }
 //function caseStatus () {}
 //function caseIdSearch () {}
