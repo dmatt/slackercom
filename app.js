@@ -9,25 +9,27 @@ var desk = require('./my-desk').createClient({
 });
 
 app.post('/', function (req, res) {
+  console.log(req);  
   if (req.query.token == '2365Mb38QS6zo2E8azlirAwT') {
     desk.cases({status: 'new,open', priority:'9'}, function(error, data) {
           console.log(req.query.token);
-          res.send('hi slack'+data);      
+          res.send('hi slack'+data);
+        // if no additional text
+        // func() CASE STATUS (all filters and #s)  
+        // if regex = case ID
+        // func() case body and link
+        // if regex = email address
+        // func() recent cases matching email      
         });
   }
   else {
-    res.send('hi non-disqus POST');    
-    // if no additional text
-    // func() CASE STATUS (all filters and #s)  
-    // if regex = case ID
-    // func() case body and link
-    // if regex = email address
-    // func() recent cases matching email
+    res.send('Not authorized');
+    console.log(req.query.token);    
   }
 })
 
 app.get('/', function (req, res) {
-      res.send('hi web user');
+      res.send('dashboard wow');
 })
 
 // How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
