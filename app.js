@@ -22,7 +22,7 @@ function message(text, attachements) {
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
-    var attachements = 
+    var attachements = [{},{},{}]
     res.send(new message('hi slack','array of objects'));
              }
   else {
