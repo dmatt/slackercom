@@ -15,26 +15,16 @@ var disqusGreen = '#7fbd5a'
 function message(text, attachements) {
     this.response_type = 'in_channel';
     this.text = text;
-    this.attachements = [{
-      
-      
-    }];
+    this.attachements = attachements;
 }
 
-function attachements(fallback, color, title, text) {
-    this.fallback = fallback;
-    this.color = color;
-    this.title = title;
-    this.text = text;
-}
+//function attachements(fallback, color, title, text)
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
-    var filter = new attachements('this is a fallback',disqusRed,'🔥 Priority', '2'+'New')
-    var topline = new message('hi slack',filter);
-    console.log(topline);
-    res.send(topline);
-  }
+    var attachements = 
+    res.send(new message('hi slack','array of objects'));
+             }
   else {
     res.send('dashboard wow');
   }
