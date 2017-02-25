@@ -22,41 +22,18 @@ function message(text, attachements) {
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
-    {
-      "text": "Looking good!\n _12 recently resolved_",
-      "attachments": [{
-                "fallback": "Required plain-text summary of the attachment.",
-                "color": "#36a64f",
-                "title": " ✅ Priority",
-                "text": "23 New, 15 Open\n"
-            },{
-                "fallback": "Required plain-text summary of the attachment.",
-                "color": "#ff0000",
-                "title": "⚠️ SaaS",
-                "text": "23 New, 15 Open"
-            },{
-                "fallback": "Required plain-text summary of the attachment.",
-                "color": "#36a64f",
-                "title": " ✅ Direct",
-                "text": "0 New, 23 Open"
-            },{
-                "fallback": "Required plain-text summary of the attachment.",
-                "color": "#36a64f",
-                "title": " ✅ Community",
-                "text": "0 New, 23 Open"
-            },{
-                "fallback": "Required plain-text summary of the attachment.",
-                "color": "#36a64f",
-                "title": " ✅ Channel",
-                "text": "0 New, 23 Open"
-            },{
-                "fallback": "Required plain-text summary of the attachment.",
-                "color": "#36a64f",
-                "title": " ✅ Commenters",
-                "text": "0 New, 23 Open"
-            }
-        ]
-    }   
+    
+    message = {
+      text: "",
+    }
+    
+    message.attachments = [{
+      "fallback": "Required plain-text summary of the attachment.",
+      "color": "#36a64f",
+      "title": " ✅ Priority",
+      "text": "23 New, 15 Open\n"
+    }]
+    
     res.send(new message('hi slack','array of objects'));
              }
   else {
@@ -67,10 +44,6 @@ app.get('/', function (req, res) {
 // Desk API returns # of new and open cases in each Desk filter: Priority, Saas, Direct, 
 // Returns # of cases resolved > 1 message within past 24 hours
 
-function caseStatus () {
-  desk.cases({status: 'new,open', priority:'9'}, function(error, data) {  
-          });
-}
 
 // if no additional text
 // func() CASE STATUS (all filters and #s)  
