@@ -22,7 +22,7 @@ function message(text, attachements) {
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
-    desk.cases({status: 'new', label: 'Priority publisher'}, function(error, data) { 
+    desk.cases({label:'"Priority publisher"', status:'new'}, function(error, data) { 
       if (data){
         console.log(data)
         message = {
