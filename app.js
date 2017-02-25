@@ -24,7 +24,6 @@ app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
     desk.cases({label:'"Priority publisher"', status:'new'}, function(error, data) { 
       if (data){
-        console.log(data)
         message = {
           text: "hi slack",
           attachments: [{
@@ -35,6 +34,7 @@ app.get('/', function (req, res) {
         }]
         }
         res.send(message)
+        console.log(data)        
       }
       else {
         console.log(error)
