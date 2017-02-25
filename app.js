@@ -12,13 +12,16 @@ var desk = require('./my-desk').createClient({
 var disqusRed = '#e76c35'
 var disqusGreen = '#7fbd5a'
 
-function slackMessage(text, attachements) {
+function message(text, attachements) {
     this.response_type = 'in_channel';
     this.text = text;
-    this.attachements = [attachements];
+    this.attachements = [{
+      
+      
+    }];
 }
 
-function slackAttachement(fallback, color, title, text) {
+function attachements(fallback, color, title, text) {
     this.fallback = fallback;
     this.color = color;
     this.title = title;
@@ -27,10 +30,10 @@ function slackAttachement(fallback, color, title, text) {
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
-    var attachements = new slackAttachement('this is a fallback',disqusRed,'🔥 Priority', '2'+'New')
-    var message = new slackMessage('hi slack',attachements);
-    console.log(message);
-    res.send(message);
+    var filter = new attachements('this is a fallback',disqusRed,'🔥 Priority', '2'+'New')
+    var topline = new message('hi slack',filter);
+    console.log(topline);
+    res.send(topline);
   }
   else {
     res.send('dashboard wow');
