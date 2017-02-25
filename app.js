@@ -9,39 +9,33 @@ var desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-app.get('/', function (req, res) {
-  if (req.query.token == process.env.SLACK_TOKEN) {
-    res.send('hi slack');
-  }
-  else {
-    res.send('dashboard wow');
-  }
-})
+var disqusRed = '#e76c35'
+var disqusGreen = '#7fbd5a'
 
 function slackMessage(text, attachements) {
-    this.response_type = text;  
+    this.response_type = 'in_channel';
     this.text = text;
-    this.attachements = attachements;
+    this.attachements = [attachements];
 }
 
 function slackAttachement(fallback, color, title, text) {
     this.fallback = fallback;
     this.color = color;
     this.title = title;
-    this.text = text;  
+    this.text = text;
 }
 
-function statusMessage (text, attachementText, deskStats) {
-  return {
-      "response_type": "in_channel",
-      "text": text,
-      "attachments": [
-          {
-              "text": attachementText
-          }
-      ]
+app.get('/', function (req, res) {
+  if (req.query.token == process.env.SLACK_TOKEN) {
+    var attachements = new slackAttachement('this is a fallback',disqusRed,'🔥 Priority', '2'+'New')
+    var message = new slackMessage('hi slack',attachements);
+    console.log(message);
+    res.send(message);
   }
-}
+  else {
+    res.send('dashboard wow');
+  }
+})
 
 // Desk API returns # of new and open cases in each Desk filter: Priority, Saas, Direct, 
 // Returns # of cases resolved > 1 message within past 24 hours
@@ -67,9 +61,6 @@ app.listen(3000, function () {
 
 
 /*
-
-var disqusRed = #e76c35
-var disqusGreen = #7fbd5a
 
 complex
 
