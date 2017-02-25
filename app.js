@@ -22,20 +22,25 @@ function message(text, attachements) {
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
-    
-    message = {
-      text: "",
-    }
-    
-    message.attachments = [{
-      "fallback": "Required plain-text summary of the attachment.",
-      "color": "#36a64f",
-      "title": " ✅ Priority",
-      "text": "23 New, 15 Open\n"
-    }]
-    
-    res.send(new message('hi slack','array of objects'));
-             }
+    desk.cases({status: 'new', label: 'Priority publisher'}, function(error, data) { 
+      if (data){
+        console.log(data)
+        message = {
+          text: "hi slack",
+          attachments: [{
+            "fallback": "Required plain-text summary of the attachment.",
+            "color": "#36a64f",
+            "title": "✅ Priority",
+            "text": data.total_entries+" New, 15 Open\n"
+        }]
+        }
+        res.send(message)
+      }
+      else {
+        console.log(error)
+      }
+    });
+  }
   else {
     res.send('dashboard wow');
   }
