@@ -23,7 +23,7 @@ app.post('/', function (req, res) {
         console.log(data)
       });
   } else {
-    console.log(req.query);
+    console.log(req);
     res.send('unauthorized wow');
   }
 })
