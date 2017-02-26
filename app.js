@@ -18,11 +18,19 @@ function message(text, attachements) {
     this.attachements = attachements;
 }
 
-//function attachements(fallback, color, title, text)
+//each filer criterea to pass into Desk cases API call for status
+
+var priorityCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
+var saasCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
+var directCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
+var communityCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
+var channelCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
+var commentersCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
-    desk.cases({labels:['Priority publisher','!SaaS Ads'], status:'new,open'}, function(error, data) { 
+    var statusData = {};
+    desk.cases(priorityCase, function(error, data) { 
       if (data){
         message = {
           text: "hi slack",
@@ -37,6 +45,7 @@ app.get('/', function (req, res) {
         console.log(data)
       }
       else {
+        console.log('hi')
         console.log(error)
       }
     });
