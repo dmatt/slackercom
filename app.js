@@ -9,41 +9,28 @@ var desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-var disqusRed = '#e76c35'
-var disqusGreen = '#7fbd5a'
+const disqusRed = '#e76c35'
+const disqusGreen = '#7fbd5a'
 
-function message(text, attachements) {
-    this.response_type = 'in_channel';
-    this.text = text;
-    this.attachements = attachements;
-}
+// Returns # of cases resolved > 1 message within past 24 hours
+// How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
 
-//each filer criterea to pass into Desk cases API call for status
-
-app.get('/', function (req, res) {
-  if (req.query.token == process.env.SLACK_TOKEN) {
+app.post('/', function (req, res) {
+  if (req.query.token === process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
       desk.cases({labels:['Priority publisher','SaaS Ads','Direct publisher','Community publisher','Home','Community commenter'], status:['new','open']}, function(error, data) { 
+        res.send('hi slack wow');
         console.log(data)
       });
   } else {
-    res.send('dashboard wow');
+    console.log(req.query);
+    res.send('unauthorized wow');
   }
 })
 
-// Desk API returns # of new and open cases in each Desk filter: Priority, Saas, Direct, 
-// Returns # of cases resolved > 1 message within past 24 hours
-
-
-// if no additional text
-// func() CASE STATUS (all filters and #s)  
-// if regex = case ID
-// func() case body and link
-// if regex = email address
-// func() recent cases matching email   
-//function caseIdSearch () {}
-//function emailSearch () {}
-// How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
+app.get('/', function (req, res) {
+  res.send('dashboard wow');
+})
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
@@ -51,7 +38,7 @@ app.listen(3000, function () {
 
 /*
 
-complex
+//complex//
 
 {
     "text": "Looking good!\n _12 recently resolved_",
@@ -90,11 +77,20 @@ complex
     ]
 }
 
-simple
+//simple//
 
 {
     "text": "✅ *Priority* 12 New, 10 open\n 🔥 *Direct* 33 New, 89 open"
 }
 
+*/
+
+/* Currently unused
+
+function message(text, attachements) {
+    this.response_type = 'in_channel';
+    this.text = text;
+    this.attachements = attachements;
+}
 
 */
