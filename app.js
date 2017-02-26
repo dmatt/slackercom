@@ -26,8 +26,8 @@ app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
       desk.cases(statusCriteria, function(error, data) { 
+        console.log(this)
         console.log(data)
-        console.log(error)
       });
   } else {
     res.send('dashboard wow');
