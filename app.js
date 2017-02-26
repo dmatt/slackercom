@@ -21,30 +21,35 @@ function message(text, attachements) {
 //each filer criterea to pass into Desk cases API call for status
 
 var statusCriteria = {
-priorityCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-saasCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-directCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-communityCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-channelCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-commentersCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+priority: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+saas: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+direct: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+community: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+channel: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+commenters: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+}
+
+var statusData = {
+  priority: null,
+  saas: null,
+  direct: null,
+  community: null,
+  channel: null,
+  commenters: null,
 }
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
-    var statusData = {};
-    for (i = 0; i < statusCriteria.length; i++) {
-      
-    }
-    desk.cases(priorityCriteria, function(error, data) { 
+    for (var i = 0; i < Object.keys(statusCriteria).length; i++) {
+      desk.cases(statusCriteria[i], function(error, data) { 
       if (data){
-        statusData.priorityData = data;
-      }
-      else {
+        statusData.statusCriteria[i] = data;
+      } else {
         console.log(error)
       }
     });
   }
-  else {
+  } else {
     res.send('dashboard wow');
   }
 })
