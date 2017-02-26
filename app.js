@@ -20,14 +20,7 @@ function message(text, attachements) {
 
 //each filer criterea to pass into Desk cases API call for status
 
-var statusCriteria = {
-priority: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-saas: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-direct: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-community: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-channel: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-commenters: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
-}
+var statusCriteria = {labels:['Priority publisher','SaaS Ads','Direct publisher','Community publisher','Home','Community commenter'], status:'new,open'}
 
 var statusData = {
   priority: null,
@@ -40,16 +33,13 @@ var statusData = {
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
-    for (var i = 0; i < Object.keys(statusCriteria).length; i++) {
-      desk.cases(statusCriteria[i], function(error, data) { 
+      desk.cases(statusCriteria, function(error, data) { 
       if (data){
-        statusData[statusCriteria[i]] = data;
-        console.log(statusData)
+        console.log(data)
       } else {
         console.log(error)
       }
     });
-  }
   } else {
     res.send('dashboard wow');
   }
