@@ -20,13 +20,10 @@ function message(text, attachements) {
 
 //each filer criterea to pass into Desk cases API call for status
 
-var statusCriteria = {labels:['Priority publisher','SaaS Ads','Direct publisher','Community publisher','Home','Community commenter'], status:'new,open'}
-
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
-      desk.cases(statusCriteria, function(error, data) { 
-        console.log(this)
+      desk.cases({labels:['Priority publisher','SaaS Ads','Direct publisher','Community publisher','Home','Community commenter'], status:['new','open']}, function(error, data) { 
         console.log(data)
       });
   } else {
