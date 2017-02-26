@@ -20,32 +20,26 @@ function message(text, attachements) {
 
 //each filer criterea to pass into Desk cases API call for status
 
-var priorityCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
-var saasCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
-var directCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
-var communityCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
-var channelCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
-var commentersCase = {labels:['Priority publisher','!SaaS Ads'], status:'new,open'}
+var statusCriteria = {
+priorityCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+saasCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+directCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+communityCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+channelCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+commentersCriteria: {labels:['Priority publisher','!SaaS Ads'], status:'new,open'},
+}
 
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
     var statusData = {};
-    desk.cases(priorityCase, function(error, data) { 
+    for (i = 0; i < statusCriteria.length; i++) {
+      
+    }
+    desk.cases(priorityCriteria, function(error, data) { 
       if (data){
-        message = {
-          text: "hi slack",
-          attachments: [{
-            "fallback": "Required plain-text summary of the attachment.",
-            "color": "#36a64f",
-            "title": "✅ Priority",
-            "text": data.total_entries+" New, 15 Open\n"
-        }]
-        }
-        res.send(message)
-        console.log(data)
+        statusData.priorityData = data;
       }
       else {
-        console.log('hi')
         console.log(error)
       }
     });
