@@ -43,7 +43,8 @@ app.get('/', function (req, res) {
     for (var i = 0; i < Object.keys(statusCriteria).length; i++) {
       desk.cases(statusCriteria[i], function(error, data) { 
       if (data){
-        statusData.statusCriteria[i] = data;
+        statusData[statusCriteria[i]] = data;
+        console.log(statusData)
       } else {
         console.log(error)
       }
