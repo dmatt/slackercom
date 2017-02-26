@@ -22,24 +22,13 @@ function message(text, attachements) {
 
 var statusCriteria = {labels:['Priority publisher','SaaS Ads','Direct publisher','Community publisher','Home','Community commenter'], status:'new,open'}
 
-var statusData = {
-  priority: null,
-  saas: null,
-  direct: null,
-  community: null,
-  channel: null,
-  commenters: null,
-}
-
 app.get('/', function (req, res) {
   if (req.query.token == process.env.SLACK_TOKEN) {
+      console.log('try a desk cases call')
       desk.cases(statusCriteria, function(error, data) { 
-      if (data){
         console.log(data)
-      } else {
         console.log(error)
-      }
-    });
+      });
   } else {
     res.send('dashboard wow');
   }
@@ -62,7 +51,6 @@ app.get('/', function (req, res) {
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
-
 
 /*
 
