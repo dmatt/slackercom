@@ -23,18 +23,15 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.post('/', function (req, res) {
   if (req.body.token === process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
-      desk.cases({labels:['Priority publisher','SaaS Ads','Direct publisher','Community publisher','Home','Community commenter'], status:['new','open']}, function(error, data) { 
-        res.send('hi slack wow');
+      desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open']}, function(error, data) { 
+        res.send('hi slack wow'+'There are'+data.total_entries+'new and open cases! holy guacamole 🥑'+);
         console.log(data)
+        console.log(data._embedded.entries[0:3])
       });
   } else {
     console.log(req);
     res.send('unauthorized wow');
   }
-})
-
-app.get('/', function (req, res) {
-  res.send('dashboard wow');
 })
 
 app.listen(3000, function () {
