@@ -1,5 +1,6 @@
-var express = require('express')
-var app = express()
+const express = require('express')
+const bodyParser = require('body-parser');
+const app = express()
 // local desk api wrapper because node module doesn't handle custom domains
 var desk = require('./my-desk').createClient({
   subdomain: 'help',
@@ -8,6 +9,9 @@ var desk = require('./my-desk').createClient({
   token: process.env.TOKEN,
   token_secret: process.env.TOKEN_SECRET
 });
+
+
+app.use(bodyParser.urlencoded({extended: false}));
 
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
