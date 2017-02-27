@@ -1,6 +1,6 @@
 const express = require('express')
-const bodyParser = require('body-parser');
 const app = express()
+const bodyParser = require('body-parser')
 // local desk api wrapper because node module doesn't handle custom domains
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
