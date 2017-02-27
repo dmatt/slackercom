@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser');
 const app = express()
 // local desk api wrapper because node module doesn't handle custom domains
-var desk = require('./my-desk').createClient({
+const desk = require('./my-desk').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
@@ -10,17 +10,18 @@ var desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-
-app.use(bodyParser.urlencoded({extended: false}));
-
+// Disqus colors for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
+
+// Express middleware for parsing request/resonse bodies
+app.use(bodyParser.urlencoded({extended: false}));
 
 // Returns # of cases resolved > 1 message within past 24 hours
 // How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
 
 app.post('/', function (req, res) {
-  if (req.query.token === process.env.SLACK_TOKEN) {
+  if (req.body.token === process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
       desk.cases({labels:['Priority publisher','SaaS Ads','Direct publisher','Community publisher','Home','Community commenter'], status:['new','open']}, function(error, data) { 
         res.send('hi slack wow');
