@@ -24,9 +24,10 @@ app.post('/', function (req, res) {
   if (req.body.token === process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
       desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open']}, function(error, data) { 
-        res.send('hi slack wow'+'There are'+data.total_entries+'new and open cases! holy guacamole 🥑'+);
+        // TODO: time to map or filter {data} into different stats
+        res.send('hi slack wow, '+'there are '+data.total_entries+' new and open cases! holy guacamole 🥑');
         console.log(data)
-        console.log(data._embedded.entries[0:3])
+        console.log(data._embedded.entries[1])
       });
   } else {
     console.log(req);
