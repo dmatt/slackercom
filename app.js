@@ -25,7 +25,11 @@ app.post('/', function (req, res) {
       console.log('try a desk cases call')
       desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open']}, function(error, data) { 
         // TODO: time to map or filter {data} into different stats
-        res.send('hi slack wow, '+'there are '+data.total_entries+' new and open cases! holy guacamole 🥑');
+        res.send(
+          {
+            "response_type": 'in_channel',
+            "text": 'hi slack wow, '+'there are '+data.total_entries+' new and open cases! holy guacamole 🥑'
+          });
         console.log(data)
         console.log(data._embedded.entries[1])
       });
