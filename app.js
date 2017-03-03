@@ -23,18 +23,20 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.post('/', function (req, res) {
   if (req.body.token === process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
-      desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open']}, function(error, data) {
+      desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], per_page:1000}, function(error, data) {
         var priorityFilter = data._embedded.entries.filter(function(caseObj){
-          return caseObj.labels 
+          return caseObj.labels.includes('Priority publisher')
         })
         // TODO: time to map or filter {data} into different stats
         res.send(
           {
             "response_type": 'in_channel',
-            "text": 'hi slack wow, '+'there are '+data.total_entries+' new and open cases! holy guacamole 🥑'
+            "text": 'hi slack wow, '+'there are '+data.total_entries+' new and open cases! '+priorityFilter.length+' of them are Priority cases.'+' holy guacamole 🥑'
           });
         console.log(data)
         console.log(data._embedded.entries[1])
+        console.log(priorityFilter)
+        console.log(priorityFilter.length)     
       });
   } else {
     console.log(req);
