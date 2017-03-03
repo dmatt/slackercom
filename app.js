@@ -23,7 +23,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.post('/', function (req, res) {
   if (req.body.token === process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
-      desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open']}, function(error, data) { 
+      desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open']}, function(error, data) {
+        data.filter()
         // TODO: time to map or filter {data} into different stats
         res.send(
           {
