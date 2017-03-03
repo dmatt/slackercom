@@ -24,7 +24,9 @@ app.post('/', function (req, res) {
   if (req.body.token === process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
       desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open']}, function(error, data) {
-        data.filter()
+        var priorityFilter = data._embedded.entries.filter(function(caseObj){
+          return caseObj.labels 
+        })
         // TODO: time to map or filter {data} into different stats
         res.send(
           {
