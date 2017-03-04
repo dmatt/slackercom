@@ -25,6 +25,7 @@ app.post('/', function (req, res) {
   if (req.body.token === process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
       // One API call to Desk cases endpoint
+      console.time('desk.cases()');
       desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], per_page:1000}, function(error, data) {
         // Filter the data into seprate objects that correspond to each Desk filter
         var priorityFilter = data._embedded.entries.filter(function(caseObj){
@@ -42,11 +43,10 @@ app.post('/', function (req, res) {
         var channelFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Home')
         })
-        /*
         var commenterFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter')
         })
-        */
+        
         // Build and send the message with data from each filter
         res.send(
           {
@@ -89,13 +89,15 @@ app.post('/', function (req, res) {
           }
         );
         // log things to the console for fun times
+        var t1 = performance.now();
+        console.log("Call to desk.cases(); took " + (t1 - t0) + " milliseconds.")
         console.log(
           "priorityFilter"+priorityFilter.length,
           "saasFilter"+saasFilter.length,
           "directFilter"+directFilter.length,
           "communityFilter"+communityFilter.length,
           "channelFilter"+channelFilter.length,
-          //"commenterFilter"+commenterFilter.length,
+          "commenterFilter"+commenterFilter.length
         )
       });
   } else {
