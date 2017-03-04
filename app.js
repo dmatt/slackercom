@@ -89,15 +89,14 @@ app.post('/', function (req, res) {
           }
         );
         // log things to the console for fun times
-        var t1 = performance.now();
-        console.log("Call to desk.cases(); took " + (t1 - t0) + " milliseconds.")
+        console.timeEnd('desk.cases()');
         console.log(
-          "priorityFilter"+priorityFilter.length,
-          "saasFilter"+saasFilter.length,
-          "directFilter"+directFilter.length,
-          "communityFilter"+communityFilter.length,
-          "channelFilter"+channelFilter.length,
-          "commenterFilter"+commenterFilter.length
+          "priorityFilter "+priorityFilter.length+"\n",
+          "saasFilter "+saasFilter.length+"\n",
+          "directFilter "+directFilter.length+"\n",
+          "communityFilter "+communityFilter.length+"\n",
+          "channelFilter "+channelFilter.length+"\n",
+          "commenterFilter "+commenterFilter.length
         )
       });
   } else {
