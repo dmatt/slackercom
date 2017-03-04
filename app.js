@@ -26,10 +26,12 @@ app.post('/', function (req, res) {
       console.log('try a desk cases call')
       // One API call to Desk cases endpoint
       console.time('desk.cases()');
-      desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100}, function(error, data) {
+      desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
         // Filter the data into seprate objects that correspond to each Desk filter
         console.timeEnd('desk.cases()');
-        console.time('filters');
+      });
+    
+console.time('filters');
         var priorityFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
@@ -48,10 +50,10 @@ app.post('/', function (req, res) {
         var commenterFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter')
         })
-        console.timeEnd('filters');
-        
-        // Build and send the message with data from each filter
-        res.send(
+        console.timeEnd('filters');    
+    
+    // Build and send the message with data from each filter
+    res.send(
           {
             "text": "Looking good!\n _BUTT cases recently resolved_",
             /*
@@ -91,18 +93,17 @@ app.post('/', function (req, res) {
           */
           }
         );
-        // log things to the console for fun times
-        console.log(
-          "data "+data._embedded.entries.length+"\n",
-          "priorityFilter "+priorityFilter.length+"\n",
-          "saasFilter "+saasFilter.length+"\n",
-          "directFilter "+directFilter.length+"\n",
-          "communityFilter "+communityFilter.length+"\n",
-          "channelFilter "+channelFilter.length+"\n",
-          "commenterFilter "+commenterFilter.length
-        )
-        console.dir(priorityFilter)
-      });
+      // log things to the console for fun times
+      console.log(
+                "data total entries "+data.total_entries+"\n",
+                "priorityFilter "+priorityFilter.length+"\n",
+                "saasFilter "+saasFilter.length+"\n",
+                "directFilter "+directFilter.length+"\n",
+                "communityFilter "+communityFilter.length+"\n",
+                "channelFilter "+channelFilter.length+"\n",
+                "commenterFilter "+commenterFilter.length
+              )
+              console.dir(priorityFilter)
   } else {
     console.log(req);
     res.send('unauthorized wow');
