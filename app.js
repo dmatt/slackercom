@@ -27,12 +27,60 @@ app.post('/', function (req, res) {
         var priorityFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher')
         })
+        var saasFilter = data._embedded.entries.filter(function(caseObj){
+          return caseObj.labels.includes('Priority publisher')
+        })
+        var directFilter = data._embedded.entries.filter(function(caseObj){
+          return caseObj.labels.includes('Priority publisher')
+        })
+        var communityFilter = data._embedded.entries.filter(function(caseObj){
+          return caseObj.labels.includes('Priority publisher')
+        })
+        var channelFilter = data._embedded.entries.filter(function(caseObj){
+          return caseObj.labels.includes('Priority publisher')
+        })
+        var commenterFilter = data._embedded.entries.filter(function(caseObj){
+          return caseObj.labels.includes('Priority publisher')
+        })        
         // TODO: time to map or filter {data} into different stats
         res.send(
           {
-            "response_type": 'in_channel',
-            "text": 'hi slack wow, '+'there are '+data.total_entries+' new and open cases! '+priorityFilter.length+' of them are Priority cases.'+' holy guacamole 🥑'
-          });
+            "text": "Looking good!\n _12 recently resolved_",
+            "attachments": [
+              
+              {
+                    "fallback": "Required plain-text summary of the attachment.",
+                    "color": "#36a64f",
+                    "title": " ✅ Priority",
+                    "text": "23 New, 15 Open\n"
+                },{
+                    "fallback": "Required plain-text summary of the attachment.",
+                    "color": "#ff0000",
+                    "title": "⚠️ SaaS",
+                    "text": "23 New, 15 Open"
+                },{
+                    "fallback": "Required plain-text summary of the attachment.",
+                    "color": "#36a64f",
+                    "title": " ✅ Direct",
+                    "text": "0 New, 23 Open"
+                },{
+                    "fallback": "Required plain-text summary of the attachment.",
+                    "color": "#36a64f",
+                    "title": " ✅ Community",
+                    "text": "0 New, 23 Open"
+                },{
+                    "fallback": "Required plain-text summary of the attachment.",
+                    "color": "#36a64f",
+                    "title": " ✅ Channel",
+                    "text": "0 New, 23 Open"
+                },{
+                    "fallback": "Required plain-text summary of the attachment.",
+                    "color": "#36a64f",
+                    "title": " ✅ Commenter",
+                    "text": "0 New, 23 Open"
+                }
+    ]
+});
         console.log(data)
         console.log(data._embedded.entries[1])
         console.log(priorityFilter)
@@ -83,7 +131,7 @@ app.listen(3000, function () {
         },{
             "fallback": "Required plain-text summary of the attachment.",
             "color": "#36a64f",
-            "title": " ✅ Commenters",
+            "title": " ✅ Commenter",
             "text": "0 New, 23 Open"
         }
     ]
