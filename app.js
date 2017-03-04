@@ -24,33 +24,41 @@ app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
       console.log('try a desk cases call')
-      // One API call to Desk cases endpoint
+      // Make Desk API calls by paginating through all results
       console.time('desk.cases()');
+      var data
+      var i = 1
       desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
-        // Filter the data into seprate objects that correspond to each Desk filter
         console.timeEnd('desk.cases()');
+        if (data) {
+          console.log(data)
+          return data
+        } else {
+          return error
+        }
       });
     
+// Filter the data into seprate objects that correspond to each Desk filter
 console.time('filters');
-        var priorityFilter = data._embedded.entries.filter(function(caseObj){
+        var priorityFilter = caseata._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
-        var saasFilter = data._embedded.entries.filter(function(caseObj){
+        var saasFilter = caseData._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('SaaS Ads')
         })
-        var directFilter = data._embedded.entries.filter(function(caseObj){
+        var directFilter = caseData._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Direct publisher')
         })
-        var communityFilter = data._embedded.entries.filter(function(caseObj){
+        var communityFilter = caseData._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Community publisher')
         })
-        var channelFilter = data._embedded.entries.filter(function(caseObj){
+        var channelFilter = caseData._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Home')
         })
-        var commenterFilter = data._embedded.entries.filter(function(caseObj){
+        var commenterFilter = caseData._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter')
         })
-        console.timeEnd('filters');    
+        console.timeEnd('filters'); 
     
     // Build and send the message with data from each filter
     res.send(
