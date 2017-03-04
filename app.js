@@ -26,36 +26,32 @@ app.post('/', function (req, res) {
       console.log('try a desk cases call')
       // Make Desk API calls by paginating through all results
       console.time('desk.cases()');
-      var data
+      var dataEntries = []
       var i = 1
       desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
         console.timeEnd('desk.cases()');
-        if (data) {
-          console.log(data)
-          return data
-        } else {
-          return error
-        }
+        console.log(data._embedded.entries.length)
+        dataEntries.push(data._embedded.entries)
       });
     
 // Filter the data into seprate objects that correspond to each Desk filter
 console.time('filters');
-        var priorityFilter = caseata._embedded.entries.filter(function(caseObj){
+        var priorityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
-        var saasFilter = caseData._embedded.entries.filter(function(caseObj){
+        var saasFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('SaaS Ads')
         })
-        var directFilter = caseData._embedded.entries.filter(function(caseObj){
+        var directFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Direct publisher')
         })
-        var communityFilter = caseData._embedded.entries.filter(function(caseObj){
+        var communityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community publisher')
         })
-        var channelFilter = caseData._embedded.entries.filter(function(caseObj){
+        var channelFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Home')
         })
-        var commenterFilter = caseData._embedded.entries.filter(function(caseObj){
+        var commenterFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter')
         })
         console.timeEnd('filters'); 
@@ -103,7 +99,7 @@ console.time('filters');
         );
       // log things to the console for fun times
       console.log(
-                "data total entries "+data.total_entries+"\n",
+                "data total entries "+dataEntries.length+"\n",
                 "priorityFilter "+priorityFilter.length+"\n",
                 "saasFilter "+saasFilter.length+"\n",
                 "directFilter "+directFilter.length+"\n",
