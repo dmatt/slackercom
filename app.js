@@ -28,6 +28,8 @@ app.post('/', function (req, res) {
       console.time('desk.cases()');
       desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], per_page:1000}, function(error, data) {
         // Filter the data into seprate objects that correspond to each Desk filter
+        
+        
         var priorityFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher')
         })
