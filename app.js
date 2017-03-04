@@ -42,13 +42,16 @@ app.post('/', function (req, res) {
         var channelFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Home')
         })
+        /*
         var commenterFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter')
-        })      
+        })
+        */
         // Build and send the message with data from each filter
         res.send(
           {
-            "text": "Looking good!\n _12 recently resolved_",
+            "text": "Looking good!\n _BUTT cases recently resolved_",
+            /*
             "attachments": [
               {
                   "fallback": "Required plain-text summary of the attachment.",
@@ -82,6 +85,7 @@ app.post('/', function (req, res) {
                   "text": "0 New, 23 Open"
               }
             ]
+          */
           }
         );
         // log things to the console for fun times
@@ -91,7 +95,7 @@ app.post('/', function (req, res) {
           "directFilter"+directFilter.length,
           "communityFilter"+communityFilter.length,
           "channelFilter"+channelFilter.length,
-          "commenterFilter"+commenterFilter.length,
+          //"commenterFilter"+commenterFilter.length,
         )
       });
   } else {
