@@ -86,14 +86,13 @@ app.post('/', function (req, res) {
         );
         // log things to the console for fun times
         console.log(
-          priorityFilter,
-          saasFilter,
-          directFilter,
-          communityFilter,
+          "priorityFilter"+priorityFilter.length,
+          "saasFilter"+saasFilter.length,
+          "directFilter"+directFilter.length,
+          "communityFilter"+communityFilter.length,
+          "channelFilter"+channelFilter.length,
+          "commenterFilter"+commenterFilter.length,
         )
-        console.log(data._embedded.entries[1])
-        console.log(priorityFilter)
-        console.log(priorityFilter.length)     
       });
   } else {
     console.log(req);
