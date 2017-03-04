@@ -23,24 +23,27 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
-      console.log('try a desk cases call')
       // Make Desk API calls by paginating through all results
       console.time('desk.cases()');
       var dataEntries = []
       var i = 1
-      desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
-        console.timeEnd('desk.cases()');
-        console.log(data._embedded.entries.length)
-        dataEntries = dataEntries.concat(data._embedded.entries)
-        console.log('BEFORE passing in!',dataEntries)
-        createFilters(dataEntries)
-        slackSend()
-      });
+      var nextAvailable = 1
+      while (nextAvailable) {
+        desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
+          totalPages = data.
+          console.timeEnd('desk.cases()');
+          console.log(data._embedded.entries.length)
+          dataEntries = dataEntries.concat(data._embedded.entries)
+          console.log('BEFORE passing in!',dataEntries.length)
+          createFilters(dataEntries)
+          slackSend()
+        });       
+      }
     
       // Filter the data into seprate objects that correspond to each Desk filter
       function createFilters(dataEntries) {
         console.time('filters');
-        console.log('passed in!',dataEntries)
+        console.log('passed in!',dataEntries.length)
         var priorityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
@@ -70,7 +73,7 @@ app.post('/', function (req, res) {
                   "channelFilter "+channelFilter.length+"\n",
                   "commenterFilter "+commenterFilter.length
                 )
-         console.dir(priorityFilter)        
+         //console.dir(priorityFilter)        
       }
     
     // Build and send the message with data from each filter
