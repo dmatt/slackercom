@@ -28,8 +28,8 @@ app.post('/', function (req, res) {
       console.time('desk.cases()');
       desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], per_page:1000}, function(error, data) {
         // Filter the data into seprate objects that correspond to each Desk filter
-        
-        
+        console.timeEnd('desk.cases()');
+        console.time('filters');
         var priorityFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher')
         })
@@ -48,6 +48,7 @@ app.post('/', function (req, res) {
         var commenterFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter')
         })
+        console.timeEnd('filters');
         
         // Build and send the message with data from each filter
         res.send(
@@ -91,7 +92,6 @@ app.post('/', function (req, res) {
           }
         );
         // log things to the console for fun times
-        console.timeEnd('desk.cases()');
         console.log(
           "priorityFilter "+priorityFilter.length+"\n",
           "saasFilter "+saasFilter.length+"\n",
