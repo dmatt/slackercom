@@ -32,10 +32,14 @@ app.post('/', function (req, res) {
         console.timeEnd('desk.cases()');
         console.log(data._embedded.entries.length)
         dataEntries.push(data._embedded.entries)
+        createFilters(dataEntries)
+        slackSend()
       });
     
-// Filter the data into seprate objects that correspond to each Desk filter
-console.time('filters');
+      // Filter the data into seprate objects that correspond to each Desk filter
+      function createFilters(dataEntries) {
+        console.time('filters');
+        console.log(dataEntries)
         var priorityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
@@ -54,10 +58,23 @@ console.time('filters');
         var commenterFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter')
         })
-        console.timeEnd('filters'); 
+        console.timeEnd('filters');
+        // log things to the console for fun times
+        console.log(
+                  "data total entries "+dataEntries.length+"\n",
+                  "priorityFilter "+priorityFilter.length+"\n",
+                  "saasFilter "+saasFilter.length+"\n",
+                  "directFilter "+directFilter.length+"\n",
+                  "communityFilter "+communityFilter.length+"\n",
+                  "channelFilter "+channelFilter.length+"\n",
+                  "commenterFilter "+commenterFilter.length
+                )
+                console.dir(priorityFilter)        
+      }
     
     // Build and send the message with data from each filter
-    res.send(
+    function slackSend() {
+      res.send(
           {
             "text": "Looking good!\n _BUTT cases recently resolved_",
             /*
@@ -97,17 +114,7 @@ console.time('filters');
           */
           }
         );
-      // log things to the console for fun times
-      console.log(
-                "data total entries "+dataEntries.length+"\n",
-                "priorityFilter "+priorityFilter.length+"\n",
-                "saasFilter "+saasFilter.length+"\n",
-                "directFilter "+directFilter.length+"\n",
-                "communityFilter "+communityFilter.length+"\n",
-                "channelFilter "+channelFilter.length+"\n",
-                "commenterFilter "+commenterFilter.length
-              )
-              console.dir(priorityFilter)
+    }
   } else {
     console.log(req);
     res.send('unauthorized wow');
