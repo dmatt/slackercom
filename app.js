@@ -31,7 +31,7 @@ app.post('/', function (req, res) {
         console.timeEnd('desk.cases()');
         console.time('filters');
         var priorityFilter = data._embedded.entries.filter(function(caseObj){
-          return caseObj.labels.includes('Priority publisher')
+          return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
         var saasFilter = data._embedded.entries.filter(function(caseObj){
           return caseObj.labels.includes('SaaS Ads')
@@ -100,6 +100,7 @@ app.post('/', function (req, res) {
           "channelFilter "+channelFilter.length+"\n",
           "commenterFilter "+commenterFilter.length
         )
+        console.dir(priorityFilter)
       });
   } else {
     console.log(req);
