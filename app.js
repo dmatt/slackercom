@@ -26,19 +26,20 @@ app.post('/', function (req, res) {
       // Make Desk API calls by paginating through all results
       console.time('desk.cases()');
       var dataEntries = []
-      var i = 1
-      var nextAvailable = true
-      while (nextAvailable) {
+      var nextAvail
+      //var nextAvailable = true
+      while (nextAvail != null) {
+        console.log('hi')
         desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
-          data._links.next
-          nextAvailable = data._links.next
+          console.log('next object: ',data._links.next)
+          //nextAvailable = data._links.next
           console.timeEnd('desk.cases()');
           console.log(data._embedded.entries.length)
           dataEntries = dataEntries.concat(data._embedded.entries)
           console.log('BEFORE passing in!',dataEntries.length)
           createFilters(dataEntries)
           slackSend()
-        });       
+        });
       }
     
       // Filter the data into seprate objects that correspond to each Desk filter
