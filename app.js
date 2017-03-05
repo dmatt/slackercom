@@ -26,26 +26,19 @@ app.post('/', function (req, res) {
       // Make Desk API calls by paginating through all results
       console.time('desk.cases()');
       var dataEntries = []
-      var nextAvail = !null
-      var i = 1
-      function callDesk(){
-        desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
+      var i
+      for (i=1; i < 3; i++) {
+          desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
           console.log('next object: ',data._links.next)
-          nextAvail = data._links.next
-          console.timeEnd('desk.cases()');
           console.log(data._embedded.entries.length)
           dataEntries = dataEntries.concat(data._embedded.entries)
           console.log('BEFORE passing in!',dataEntries.length)
-          if (data && data._links.next != null) {
-            i++
-            callDesk()
-          }         
+          console.log(error)
         });
       }
-      callDesk()
+      console.timeEnd('desk.cases()');
       createFilters(dataEntries)
-      slackSend()   
-    }
+      slackSend()
     
       // Filter the data into seprate objects that correspond to each Desk filter
       function createFilters(dataEntries) {
@@ -88,41 +81,6 @@ app.post('/', function (req, res) {
       res.send(
           {
             "text": "Looking good!\n _BUTT cases recently resolved_",
-            /*
-            "attachments": [
-              {
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#36a64f",
-                  "title": " ✅ Priority",
-                  "text": "23 New, 15 Open\n"
-              },{
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#ff0000",
-                  "title": "⚠️ SaaS",
-                  "text": "23 New, 15 Open"
-              },{
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#36a64f",
-                  "title": " ✅ Direct",
-                  "text": "0 New, 23 Open"
-              },{
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#36a64f",
-                  "title": " ✅ Community",
-                  "text": "0 New, 23 Open"
-              },{
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#36a64f",
-                  "title": " ✅ Channel",
-                  "text": "0 New, 23 Open"
-              },{
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#36a64f",
-                  "title": " ✅ Commenter",
-                  "text": "0 New, 23 Open"
-              }
-            ]
-          */
           }
         );
     }
