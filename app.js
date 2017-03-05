@@ -26,13 +26,16 @@ app.post('/', function (req, res) {
       // Make Desk API calls by paginating through all results
       console.time('desk.cases()');
       var dataEntries = []
-      var i
-      for (i = 1; i < 3; i++) {
-        desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
-          console.log('next object: ',data._links.next)
-          dataEntries = dataEntries.concat(data._embedded.entries)
-          console.log(data._embedded.entries.length)            
-          console.log('BEFORE passing in!',dataEntries.length)
+      var i = 1
+      function deskCall() {
+        desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function callback(error, data) {
+          if (data && i < 3) {
+            i++
+            console.log('next object: ',data._links.next)
+            dataEntries = dataEntries.concat(data._embedded.entries)
+            console.log(data._embedded.entries.length)            
+            console.log('BEFORE passing in!',dataEntries.length)
+          }
         });
       }
       console.timeEnd('desk.cases()');
