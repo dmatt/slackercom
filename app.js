@@ -27,10 +27,11 @@ app.post('/', function (req, res) {
       console.time('desk.cases()');
       var dataEntries = []
       var i = 1
-      var nextAvailable = 1
+      var nextAvailable = true
       while (nextAvailable) {
         desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
-          totalPages = data.
+          data._links.next
+          nextAvailable = data._links.next
           console.timeEnd('desk.cases()');
           console.log(data._embedded.entries.length)
           dataEntries = dataEntries.concat(data._embedded.entries)
