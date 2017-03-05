@@ -28,19 +28,16 @@ app.post('/', function (req, res) {
       var dataEntries = []
       var i
       for (i = 1; i < 3; i++) {
-          desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:1}, function(error, data) {
+        desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
           console.log('next object: ',data._links.next)
           dataEntries = dataEntries.concat(data._embedded.entries)
           console.log(data._embedded.entries.length)            
           console.log('BEFORE passing in!',dataEntries.length)
-          if (data && i = 2) {
-            callback()
-          }
         });
-        }
+      }
       console.timeEnd('desk.cases()');
       
-      function callback() { 
+      function callback() {
         createFilters(dataEntries)
         slackSend()
       }
