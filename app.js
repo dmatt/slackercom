@@ -28,12 +28,11 @@ app.post('/', function (req, res) {
       var dataEntries = []
       var i
       for (i=1; i < 3; i++) {
-          desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
+          desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
           console.log('next object: ',data._links.next)
-          console.log(data._embedded.entries.length)
           dataEntries = dataEntries.concat(data._embedded.entries)
+          console.log(data._embedded.entries.length)            
           console.log('BEFORE passing in!',dataEntries.length)
-          console.log(error)
         });
       }
       console.timeEnd('desk.cases()');
