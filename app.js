@@ -27,17 +27,23 @@ app.post('/', function (req, res) {
       console.time('desk.cases()');
       var dataEntries = []
       var i
-      for (i=1; i < 3; i++) {
-          desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
+      for (i = 1; i < 3; i++) {
+          desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:1}, function(error, data) {
           console.log('next object: ',data._links.next)
           dataEntries = dataEntries.concat(data._embedded.entries)
           console.log(data._embedded.entries.length)            
           console.log('BEFORE passing in!',dataEntries.length)
+          if (data && i = 2) {
+            callback()
+          }
         });
-      }
+        }
       console.timeEnd('desk.cases()');
-      createFilters(dataEntries)
-      slackSend()
+      
+      function callback() { 
+        createFilters(dataEntries)
+        slackSend()
+      }
     
       // Filter the data into seprate objects that correspond to each Desk filter
       function createFilters(dataEntries) {
