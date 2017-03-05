@@ -26,13 +26,14 @@ app.post('/', function (req, res) {
       // Make Desk API calls by paginating through all results
       console.time('desk.cases()');
       var dataEntries = []
-      var nextAvail
+      var nextAvail = !null
+      var i
       //var nextAvailable = true
-      while (nextAvail != null) {
-        console.log('hi')
+      //for (i =0)  (nextAvail != null) {
+        console.log('hi',i)
         desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'desc', per_page:100, page:i}, function(error, data) {
           console.log('next object: ',data._links.next)
-          //nextAvailable = data._links.next
+          nextAvail = data._links.next
           console.timeEnd('desk.cases()');
           console.log(data._embedded.entries.length)
           dataEntries = dataEntries.concat(data._embedded.entries)
