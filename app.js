@@ -29,13 +29,13 @@ app.post('/', function (req, res) {
       var i = 1
       function deskCall() {
         desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
-          if (data && i < 3) {
-            i++
+          if (data._links.next != null) {
             console.log('next object: ',data._links.next)
             dataEntries = dataEntries.concat(data._embedded.entries)
             console.log(data._embedded.entries.length)            
             console.log('BEFORE passing in!',dataEntries.length)
             deskCall()
+            i++
           } else if (!data) {
             console.log(error)
           } else {
