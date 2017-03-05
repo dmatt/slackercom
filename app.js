@@ -28,19 +28,25 @@ app.post('/', function (req, res) {
       var dataEntries = []
       var i = 1
       function deskCall() {
-        desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function callback(error, data) {
+        desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
           if (data && i < 3) {
             i++
             console.log('next object: ',data._links.next)
             dataEntries = dataEntries.concat(data._embedded.entries)
             console.log(data._embedded.entries.length)            
             console.log('BEFORE passing in!',dataEntries.length)
+            deskCall()
+          } else if (!data) {
+            console.log(error)
+          } else {
+            callback(dataEntries)
           }
         });
       }
+      deskCall()
       console.timeEnd('desk.cases()');
       
-      function callback() {
+      function callback(dataEntries) {
         createFilters(dataEntries)
         slackSend()
       }
@@ -56,7 +62,7 @@ app.post('/', function (req, res) {
           return caseObj.labels.includes('SaaS Ads')
         })
         var directFilter = dataEntries.filter(function(caseObj){
-          return caseObj.labels.includes('Direct publisher')
+          return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('SaaS Ad') && !caseObj.labels.includes('Channel commenter')
         })
         var communityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community publisher')
