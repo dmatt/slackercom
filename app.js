@@ -13,6 +13,7 @@ const desk = require('./my-desk').createClient({
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
+let statusIcon = ''
 let priorityFilter
 let saasFilter
 let directFilter
@@ -22,6 +23,13 @@ let commenterFilter
 
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
+
+// Filter out the number of new cases within a filter
+function newFilter(allCases) {
+  return allCases.filter(function(caseObj){
+    return caseObj.status.includes('new')
+  }).length
+}
 
 // Returns # of cases resolved > 1 message within past 24 hours
 // How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
@@ -60,22 +68,22 @@ app.post('/', function (req, res) {
         console.log('passed in!',dataEntries.length)
         priorityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
-        })
+        }).length
         saasFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('SaaS Ads')
-        })
+        }).length
         directFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('Channel commenter') && !caseObj.labels.includes('SaaS Ads')
-        })
+        }).length
         communityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community publisher') && !caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
-        })
+        }).length
         channelFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Home')
-        })
+        }).length
         commenterFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter') && caseObj.status.includes('new')
-        })
+        }).length
         
         console.timeEnd('filters');
         // log things to the console for fun times
@@ -90,47 +98,41 @@ app.post('/', function (req, res) {
                 )
       }
     
-    function newFilter(allCases) {
-      return allCases.filter(function(caseObj){
-        return caseObj.status.includes('new')
-      })
-    }
-    
     // Build and send the message with data from each filter
     function slackSend() {
       res.send(
           {
             "response_type": "in_channel",
-            "text": "Looking good!\n"+priorityFilter.length+"_BUTT cases recently resolved_",
+            "text": "Looking good!"+priorityFilter.length+"_BUTT cases recently resolved_",
             "attachments": [
               {
                   "fallback": "Required plain-text summary of the attachment.",
                   "color": disqusGreen,
                   "title": statusIcon+"Priority",
-                  "text": foo+" New," +foo+" Open"
+                  "text": newFilter(priorityFilter)+" New," +priorityFilter-newFilter(priorityFilter)+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#ff0000",
+                  "color": disqusGreen,
                   "title": statusIcon+"SaaS & Ads",
                   "text": foo+" New," +foo+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#36a64f",
+                  "color": disqusGreen,
                   "title": statusIcon+"Direct",
                   "text": foo+" New," +foo+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#36a64f",
+                  "color": disqusGreen,
                   "title": statusIcon+"Community",
                   "text": foo+" New," +foo+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#36a64f",
+                  "color": disqusGreen,
                   "title": statusIcon+"Channel",
                   "text": foo+" New," +foo+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
-                  "color": "#36a64f",
+                  "color": disqusGreen,
                   "title": "Commenter",
                   "text": foo+" New," +foo+" Open"
               }
