@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
-  if (req.body.token === process.env.SLACK_TOKEN) {
+  if (req.body.token === process.env.SLACK_TOKEN && req.body.token === 'status') {
       // Make Desk API calls by paginating through all results
       console.time('desk.cases()');
       var dataEntries = []
@@ -74,7 +74,6 @@ app.post('/', function (req, res) {
         })
         
         // New cases stats
-        
         var priorityNew = priorityFilter.filter(function(caseObj){
           return caseObj.status.includes('new')
         })
@@ -95,7 +94,6 @@ app.post('/', function (req, res) {
         })
         
         // Open cases stats
-        
         var priorityOpen = priorityFilter.length - priorityNew.length
         var saasOpen = saasFilter.length - saasNew.length
         var directOpen = directFilter.length - directNew.length
@@ -104,12 +102,12 @@ app.post('/', function (req, res) {
         var commenterOpen = commenterFilter.length - commenterNew.length
         
         stats = {
-          priority:[priorityFilter,priorityNew,priorityOpen],
-          saas:[saasFilter,saasNew,saasOpen],
-          direct:[directFilter,directNew,directOpen],
-          community:[communityFilter,communityNew,communityOpen],
-          channel:[channelFilter,channelNew,channelOpen],
-          commenter:[commenterFilter,commenterNew,commenterOpen],
+          Priority:[priorityFilter,priorityNew,priorityOpen],
+          Saas:[saasFilter,saasNew,saasOpen],
+          Direct:[directFilter,directNew,directOpen],
+          Community:[communityFilter,communityNew,communityOpen],
+          Channel:[channelFilter,channelNew,channelOpen],
+          Commenter:[commenterFilter,commenterNew,commenterOpen],
         }
         
         console.timeEnd('filters');
@@ -176,62 +174,3 @@ app.post('/', function (req, res) {
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
-
-/*
-
-//complex//
-
-{
-    "text": "Looking good!\n _12 recently resolved_",
-    "attachments": [
-        {
-            "fallback": "Required plain-text summary of the attachment.",
-            "color": "#36a64f",
-            "title": " ✅ Priority",
-            "text": "23 New, 15 Open\n"
-        },{
-            "fallback": "Required plain-text summary of the attachment.",
-            "color": "#ff0000",
-            "title": "⚠️ SaaS",
-            "text": "23 New, 15 Open"
-        },{
-            "fallback": "Required plain-text summary of the attachment.",
-            "color": "#36a64f",
-            "title": " ✅ Direct",
-            "text": "0 New, 23 Open"
-        },{
-            "fallback": "Required plain-text summary of the attachment.",
-            "color": "#36a64f",
-            "title": " ✅ Community",
-            "text": "0 New, 23 Open"
-        },{
-            "fallback": "Required plain-text summary of the attachment.",
-            "color": "#36a64f",
-            "title": " ✅ Channel",
-            "text": "0 New, 23 Open"
-        },{
-            "fallback": "Required plain-text summary of the attachment.",
-            "color": "#36a64f",
-            "title": " ✅ Commenter",
-            "text": "0 New, 23 Open"
-        }
-    ]
-}
-
-//simple//
-
-{
-    "text": "✅ *Priority* 12 New, 10 open\n 🔥 *Direct* 33 New, 89 open"
-}
-
-*/
-
-/* Currently unused
-
-function message(text, attachements) {
-    this.response_type = 'in_channel';
-    this.text = text;
-    this.attachements = attachements;
-}
-
-*/
