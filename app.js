@@ -20,6 +20,12 @@ let directFilter
 let communityFilter
 let channelFilter
 let commenterFilter
+let priorityNew
+let saasNew
+let directNew
+let communityNew
+let channelNew
+let commenterNew
 
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
@@ -28,7 +34,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 function newFilter(allCases) {
   return allCases.filter(function(caseObj){
     return caseObj.status.includes('new')
-  }).length
+  })
 }
 
 // Returns # of cases resolved > 1 message within past 24 hours
@@ -58,32 +64,38 @@ app.post('/', function (req, res) {
       console.timeEnd('desk.cases()');
       
       function filterSend(dataEntries) {
-        createFilters(dataEntries)
+        createStats(dataEntries)
         slackSend()
       }
     
       // Filter the data into seprate objects that correspond to each Desk filter
-      function createFilters(dataEntries) {
+      function createStats(dataEntries) {
         console.time('filters');
         console.log('passed in!',dataEntries.length)
         priorityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
-        }).length
+        })
         saasFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('SaaS Ads')
-        }).length
+        })
         directFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('Channel commenter') && !caseObj.labels.includes('SaaS Ads')
-        }).length
+        })
         communityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community publisher') && !caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
-        }).length
+        })
         channelFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Home')
-        }).length
+        })
         commenterFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter') && caseObj.status.includes('new')
-        }).length
+        })
+        priorityNew = newFilter(priorityFilter)
+        saasNew = newFilter(saasFilter)
+        directNew = newFilter(directFilter)
+        communityNew = newFilter(communityFilter)
+        channelNew = newFilter(channelFilter)
+        commenterNew = newFilter(commenterFilter)
         
         console.timeEnd('filters');
         // log things to the console for fun times
@@ -109,32 +121,32 @@ app.post('/', function (req, res) {
                   "fallback": "Required plain-text summary of the attachment.",
                   "color": disqusGreen,
                   "title": statusIcon+"Priority",
-                  "text": newFilter(priorityFilter)+" New," +priorityFilter-newFilter(priorityFilter)+" Open"
+                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
                   "color": disqusGreen,
                   "title": statusIcon+"SaaS & Ads",
-                  "text": foo+" New," +foo+" Open"
+                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
                   "color": disqusGreen,
                   "title": statusIcon+"Direct",
-                  "text": foo+" New," +foo+" Open"
+                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
                   "color": disqusGreen,
                   "title": statusIcon+"Community",
-                  "text": foo+" New," +foo+" Open"
+                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
                   "color": disqusGreen,
                   "title": statusIcon+"Channel",
-                  "text": foo+" New," +foo+" Open"
+                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
                   "color": disqusGreen,
                   "title": "Commenter",
-                  "text": foo+" New," +foo+" Open"
+                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
               }
             ]
           }
