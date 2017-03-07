@@ -82,10 +82,16 @@ app.post('/', function (req, res) {
         
         //TODO: build an object like: {priority: {new: "",open:""}, saas: {new: "",open:""}}
         
-        var p
+        var priorityNew = priorityFilter.filter(function(caseObj){
+          return caseObj.status.includes('new')
+        })
+        var saasNew
+        var directNew
+        var communityNew
+        var channelNew
+        var commenterNew
         
         stats = {}
-        
         
         console.timeEnd('filters');
         // log things to the console for fun times
