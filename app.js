@@ -30,23 +30,20 @@ app.post('/', function (req, res) {
       function deskCall() {
         desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
           if (i <= Math.ceil(data.total_entries/100)) {
-            console.log('next object: ',data._links.next)
-            dataEntries = dataEntries.concat(data._embedded.entries)
-            console.log(data._embedded.entries.length)            
-            console.log('BEFORE passing in!',dataEntries.length)
+            dataEntries = dataEntries.concat(data._embedded.entries)           
             i++
             deskCall()
           } else if (!data) {
             console.log(error)
           } else {
-            callback(dataEntries)
+            filterSend(dataEntries)
           }
         });
       }
       deskCall()
       console.timeEnd('desk.cases()');
       
-      function callback(dataEntries) {
+      function filterSend(dataEntries) {
         createFilters(dataEntries)
         slackSend()
       }
