@@ -73,14 +73,7 @@ app.post('/', function (req, res) {
           return caseObj.labels.includes('Community commenter') && caseObj.status.includes('new')
         })
         
-        stats = "priorityFilter "+priorityFilter.length+"\n"+
-                "saasFilter "+saasFilter.length+"\n"+
-                "directFilter "+directFilter.length+"\n"+
-                "communityFilter "+communityFilter.length+"\n"+
-                "channelFilter "+channelFilter.length+"\n"+
-                "commenterFilter "+commenterFilter.length
-        
-        //TODO: build an object like: {priority: {new: "",open:""}, saas: {new: "",open:""}}
+        // New cases stats
         
         var priorityNew = priorityFilter.filter(function(caseObj){
           return caseObj.status.includes('new')
@@ -101,6 +94,8 @@ app.post('/', function (req, res) {
           return caseObj.status.includes('new')
         })
         
+        // Open cases stats
+        
         var priorityOpen = priorityFilter.length - priorityNew.length
         var saasOpen = saasFilter.length - saasNew.length
         var directOpen = directFilter.length - directNew.length
@@ -108,7 +103,14 @@ app.post('/', function (req, res) {
         var channelOpen = channelFilter.length - channelNew.length
         var commenterOpen = commenterFilter.length - commenterNew.length
         
-        stats = {priority:[priorityFilter,priorityOpen],}
+        stats = {
+          priority:[priorityFilter,priorityNew,priorityOpen],
+          saas:[saasFilter,saasNew,saasOpen],
+          direct:[directFilter,directNew,directOpen],
+          community:[communityFilter,communityNew,communityOpen],
+          channel:[channelFilter,channelNew,channelOpen],
+          commenter:[commenterFilter,commenterNew,commenterOpen],
+        }
         
         console.timeEnd('filters');
         // log things to the console for fun times
