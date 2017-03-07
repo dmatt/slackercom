@@ -82,6 +82,10 @@ app.post('/', function (req, res) {
         
         //TODO: build an object like: {priority: {new: "",open:""}, saas: {new: "",open:""}}
         
+        var p
+        
+        stats = {}
+        
         
         console.timeEnd('filters');
         // log things to the console for fun times
