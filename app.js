@@ -59,10 +59,10 @@ app.post('/', function (req, res) {
           return caseObj.labels.includes('SaaS Ads')
         })
         var directFilter = dataEntries.filter(function(caseObj){
-          return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('SaaS Ad') && !caseObj.labels.includes('Channel commenter')
+          return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('Channel commenter') && !caseObj.labels.includes('SaaS Ads')
         })
         var communityFilter = dataEntries.filter(function(caseObj){
-          return caseObj.labels.includes('Community publisher')
+          return caseObj.labels.includes('Community publisher') && !caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
         var channelFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Home')
