@@ -68,7 +68,7 @@ app.post('/', function (req, res) {
           return caseObj.labels.includes('Home')
         })
         var commenterFilter = dataEntries.filter(function(caseObj){
-          return caseObj.labels.includes('Community commenter')
+          return caseObj.labels.includes('Community commenter') && caseObj.status.includes('new')
         })
         console.timeEnd('filters');
         // log things to the console for fun times
