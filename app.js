@@ -70,6 +70,7 @@ app.post('/', function (req, res) {
         var commenterFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter') && caseObj.status.includes('new')
         })
+        
         console.timeEnd('filters');
         // log things to the console for fun times
         console.log(
@@ -80,8 +81,7 @@ app.post('/', function (req, res) {
                   "communityFilter "+communityFilter.length+"\n",
                   "channelFilter "+channelFilter.length+"\n",
                   "commenterFilter "+commenterFilter.length
-                )
-         //console.dir(priorityFilter)        
+                )  
       }
     
     // Build and send the message with data from each filter
