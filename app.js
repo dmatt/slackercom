@@ -14,28 +14,10 @@ const desk = require('./my-desk').createClient({
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
 let statusIcon = ''
-let priorityFilter
-let saasFilter
-let directFilter
-let communityFilter
-let channelFilter
-let commenterFilter
-let priorityNew
-let saasNew
-let directNew
-let communityNew
-let channelNew
-let commenterNew
+let stats = {}
 
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
-
-// Filter out the number of new cases within a filter
-function newFilter(allCases) {
-  return allCases.filter(function(caseObj){
-    return caseObj.status.includes('new')
-  })
-}
 
 // Returns # of cases resolved > 1 message within past 24 hours
 // How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
@@ -72,30 +54,27 @@ app.post('/', function (req, res) {
       function createStats(dataEntries) {
         console.time('filters');
         console.log('passed in!',dataEntries.length)
-        priorityFilter = dataEntries.filter(function(caseObj){
+        var priorityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
-        saasFilter = dataEntries.filter(function(caseObj){
+        var saasFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('SaaS Ads')
         })
-        directFilter = dataEntries.filter(function(caseObj){
+        var directFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('Channel commenter') && !caseObj.labels.includes('SaaS Ads')
         })
-        communityFilter = dataEntries.filter(function(caseObj){
+        var communityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community publisher') && !caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
-        channelFilter = dataEntries.filter(function(caseObj){
+        var channelFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Home')
         })
-        commenterFilter = dataEntries.filter(function(caseObj){
+        var commenterFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter') && caseObj.status.includes('new')
         })
-        priorityNew = newFilter(priorityFilter)
-        saasNew = newFilter(saasFilter)
-        directNew = newFilter(directFilter)
-        communityNew = newFilter(communityFilter)
-        channelNew = newFilter(channelFilter)
-        commenterNew = newFilter(commenterFilter)
+        
+        //TODO: build an object l
+        
         
         console.timeEnd('filters');
         // log things to the console for fun times
@@ -121,7 +100,7 @@ app.post('/', function (req, res) {
                   "fallback": "Required plain-text summary of the attachment.",
                   "color": disqusGreen,
                   "title": statusIcon+"Priority",
-                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
+                  "text": priorityNew.length+" New,"+priorityOpen+" Open"
               },{
                   "fallback": "Required plain-text summary of the attachment.",
                   "color": disqusGreen,
