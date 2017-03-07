@@ -10,9 +10,15 @@ const desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-// Disqus colors for output message
+// Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
+let priorityFilter
+let saasFilter
+let directFilter
+let communityFilter
+let channelFilter
+let commenterFilter
 
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
@@ -52,22 +58,22 @@ app.post('/', function (req, res) {
       function createFilters(dataEntries) {
         console.time('filters');
         console.log('passed in!',dataEntries.length)
-        var priorityFilter = dataEntries.filter(function(caseObj){
+        priorityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
-        var saasFilter = dataEntries.filter(function(caseObj){
+        saasFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('SaaS Ads')
         })
-        var directFilter = dataEntries.filter(function(caseObj){
+        directFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('Channel commenter') && !caseObj.labels.includes('SaaS Ads')
         })
-        var communityFilter = dataEntries.filter(function(caseObj){
+        communityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community publisher') && !caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
-        var channelFilter = dataEntries.filter(function(caseObj){
+        channelFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Home')
         })
-        var commenterFilter = dataEntries.filter(function(caseObj){
+        commenterFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Community commenter') && caseObj.status.includes('new')
         })
         
@@ -81,7 +87,7 @@ app.post('/', function (req, res) {
                   "communityFilter "+communityFilter.length+"\n",
                   "channelFilter "+channelFilter.length+"\n",
                   "commenterFilter "+commenterFilter.length
-                )  
+                )
       }
     
     function newFilter(allCases) {
@@ -94,9 +100,43 @@ app.post('/', function (req, res) {
     function slackSend() {
       res.send(
           {
-            "text": "Looking good!\n" "_BUTT cases recently resolved_",
+            "response_type": "in_channel",
+            "text": "Looking good!\n"+priorityFilter.length+"_BUTT cases recently resolved_",
+            "attachments": [
+              {
+                  "fallback": "Required plain-text summary of the attachment.",
+                  "color": disqusGreen,
+                  "title": statusIcon+"Priority",
+                  "text": foo+" New," +foo+" Open"
+              },{
+                  "fallback": "Required plain-text summary of the attachment.",
+                  "color": "#ff0000",
+                  "title": statusIcon+"SaaS & Ads",
+                  "text": foo+" New," +foo+" Open"
+              },{
+                  "fallback": "Required plain-text summary of the attachment.",
+                  "color": "#36a64f",
+                  "title": statusIcon+"Direct",
+                  "text": foo+" New," +foo+" Open"
+              },{
+                  "fallback": "Required plain-text summary of the attachment.",
+                  "color": "#36a64f",
+                  "title": statusIcon+"Community",
+                  "text": foo+" New," +foo+" Open"
+              },{
+                  "fallback": "Required plain-text summary of the attachment.",
+                  "color": "#36a64f",
+                  "title": statusIcon+"Channel",
+                  "text": foo+" New," +foo+" Open"
+              },{
+                  "fallback": "Required plain-text summary of the attachment.",
+                  "color": "#36a64f",
+                  "title": "Commenter",
+                  "text": foo+" New," +foo+" Open"
+              }
+            ]
           }
-        );
+      );
     }
   } else {
     console.log(req);
