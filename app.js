@@ -85,13 +85,30 @@ app.post('/', function (req, res) {
         var priorityNew = priorityFilter.filter(function(caseObj){
           return caseObj.status.includes('new')
         })
-        var saasNew
-        var directNew
-        var communityNew
-        var channelNew
-        var commenterNew
+        var saasNew = saasFilter.filter(function(caseObj){
+          return caseObj.status.includes('new')
+        })
+        var directNew = directFilter.filter(function(caseObj){
+          return caseObj.status.includes('new')
+        })
+        var communityNew = communityFilter.filter(function(caseObj){
+          return caseObj.status.includes('new')
+        })
+        var channelNew = channelFilter.filter(function(caseObj){
+          return caseObj.status.includes('new')
+        })
+        var commenterNew = commenterFilter.filter(function(caseObj){
+          return caseObj.status.includes('new')
+        })
         
-        stats = {}
+        var priorityOpen = priorityFilter.length - priorityNew.length
+        var saasOpen = saasFilter.length - saasNew.length
+        var directOpen = directFilter.length - directNew.length
+        var communityOpen = communityFilter.length - communityNew.length
+        var channelOpen = channelFilter.length - channelNew.length
+        var commenterOpen = commenterFilter.length - commenterNew.length
+        
+        stats = {priority:[priorityFilter,priorityOpen],}
         
         console.timeEnd('filters');
         // log things to the console for fun times
