@@ -14,7 +14,7 @@ const desk = require('./my-desk').createClient({
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
 let statusIcon = ''
-let stats = {}
+let stats = ""
 
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
@@ -73,7 +73,14 @@ app.post('/', function (req, res) {
           return caseObj.labels.includes('Community commenter') && caseObj.status.includes('new')
         })
         
-        //TODO: build an object l
+        stats = "priorityFilter "+priorityFilter.length+"\n"+
+                "saasFilter "+saasFilter.length+"\n"+
+                "directFilter "+directFilter.length+"\n"+
+                "communityFilter "+communityFilter.length+"\n"+
+                "channelFilter "+channelFilter.length+"\n"+
+                "commenterFilter "+commenterFilter.length
+        
+        //TODO: build an object like: {priority: {new: "",open:""}, saas: {new: "",open:""}}
         
         
         console.timeEnd('filters');
@@ -94,8 +101,8 @@ app.post('/', function (req, res) {
       res.send(
           {
             "response_type": "in_channel",
-            "text": "Looking good!"+priorityFilter.length+"_BUTT cases recently resolved_",
-            "attachments": [
+            "text": "Looking good!\n"+stats,
+            /*"attachments": [
               {
                   "fallback": "Required plain-text summary of the attachment.",
                   "color": disqusGreen,
@@ -127,7 +134,7 @@ app.post('/', function (req, res) {
                   "title": "Commenter",
                   "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
               }
-            ]
+            ]*/
           }
       );
     }
