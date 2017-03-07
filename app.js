@@ -84,11 +84,17 @@ app.post('/', function (req, res) {
                 )  
       }
     
+    function newFilter(allCases) {
+      return allCases.filter(function(caseObj){
+        return caseObj.status.includes('new')
+      })
+    }
+    
     // Build and send the message with data from each filter
     function slackSend() {
       res.send(
           {
-            "text": "Looking good!\n _BUTT cases recently resolved_",
+            "text": "Looking good!\n" "_BUTT cases recently resolved_",
           }
         );
     }
