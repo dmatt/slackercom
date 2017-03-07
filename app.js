@@ -101,7 +101,7 @@ app.post('/', function (req, res) {
       res.send(
           {
             "response_type": "in_channel",
-            "text": "Looking good!\n"+stats,
+            "text": "\n"+stats,
             /*"attachments": [
               {
                   "fallback": "Required plain-text summary of the attachment.",
