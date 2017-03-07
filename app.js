@@ -29,7 +29,7 @@ app.post('/', function (req, res) {
       var i = 1
       function deskCall() {
         desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
-          if (i < 3) {
+          if (i <= Math.ceil(data.total_entries/100)) {
             console.log('next object: ',data._links.next)
             dataEntries = dataEntries.concat(data._embedded.entries)
             console.log(data._embedded.entries.length)            
