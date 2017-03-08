@@ -13,7 +13,7 @@ const desk = require('./my-desk').createClient({
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
-// let statusIcon = ''
+let statusIcon
 let stats = ""
 
 // Express middleware for parsing request/resonse bodies
@@ -99,13 +99,14 @@ app.post('/', function (req, res) {
         var commenterOpen = commenterFilter.length - commenterNew.length
         
         // Object so we can easily build the slack message
+        // Format: {Filter Name: Total, New, Open, "On-fire" threshold}
         stats = {
-          Priority:[priorityFilter.length,priorityNew.length,priorityOpen],
-          "Saas & Ads":[saasFilter.length,saasNew.length,saasOpen],
-          Direct:[directFilter.length,directNew.length,directOpen],
-          Community:[communityFilter.length,communityNew.length,communityOpen],
-          Channel:[channelFilter.length,channelNew.length,channelOpen],
-          Commenter:[commenterFilter.length,commenterNew.length,commenterOpen],
+          Priority:[priorityFilter.length,priorityNew.length,priorityOpen,10],
+          "Saas & Ads":[saasFilter.length,saasNew.length,saasOpen,40],
+          Direct:[directFilter.length,directNew.length,directOpen,40],
+          Community:[communityFilter.length,communityNew.length,communityOpen,30],
+          Channel:[channelFilter.length,channelNew.length,channelOpen,30],
+          Commenter:[commenterFilter.length,commenterNew.length,commenterOpen,60],
         }
       }
     
@@ -114,16 +115,21 @@ app.post('/', function (req, res) {
       var attachments = []
       var statusColor
       Object.keys(stats).map(function(objectKey, i) {
-        if (stats[objectKey][0] > 20) {
+        if (stats[objectKey][0] > stats[objectKey][3]) {
           statusColor = disqusRed
+          statusIcon = "🔥"
+        } else if (stats[objectKey][0] < 5) {
+          statusColor = disqusGreen
+          statusIcon = ":partyporkchop:"
         } else {
           statusColor = disqusGreen
+          statusIcon = "🆒"
         }
         attachments.push({
           "fallback": stats[objectKey][0] + " total" + stats[objectKey][1] + " new" + stats[objectKey][2] + " open",
           "color": statusColor,       
-          "title": objectKey,
-          "text": stats[objectKey][0] + " :envelope:" + stats[objectKey][1] + " :new:" + stats[objectKey][2] + " :speech_balloon:"
+          "title": statusIcon + objectKey + ": " + stats[objectKey][0],
+          "text": stats[objectKey][1] + "new" + stats[objectKey][2] + " open"
         })
       });
       res.send(
