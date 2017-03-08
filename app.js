@@ -13,7 +13,7 @@ const desk = require('./my-desk').createClient({
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
-let statusIcon = ''
+// let statusIcon = ''
 let stats = ""
 
 // Express middleware for parsing request/resonse bodies
@@ -26,10 +26,9 @@ app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN && req.body.text === 'status') {
       // Make Desk API calls by paginating through all results
-      console.time('desk.cases()');
       var dataEntries = []
       var i = 1
-      // Recursively call Desk i
+      // Recursively call Desk until there are no more pages of results
       function deskCall() {
         desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
           if (i <= Math.ceil(data.total_entries/100)) {
@@ -102,16 +101,12 @@ app.post('/', function (req, res) {
         // Object so we can easily build the slack message
         stats = {
           Priority:[priorityFilter.length,priorityNew.length,priorityOpen],
-          Saas:[saasFilter.length,saasNew.length,saasOpen],
+          "Saas & Ads":[saasFilter.length,saasNew.length,saasOpen],
           Direct:[directFilter.length,directNew.length,directOpen],
           Community:[communityFilter.length,communityNew.length,communityOpen],
           Channel:[channelFilter.length,channelNew.length,channelOpen],
           Commenter:[commenterFilter.length,commenterNew.length,commenterOpen],
         }
-        
-        console.timeEnd('filters');
-        // log things to the console for fun times
-        console.log("stats: ",JSON.stringify(stats))
       }
     
     // Build and send the message with data from each filter
@@ -131,7 +126,6 @@ app.post('/', function (req, res) {
           "text": stats[objectKey][0] + " :envelope:" + stats[objectKey][1] + " :new:" + stats[objectKey][2] + " :speech_balloon:"
         })
       });
-      console.log("attachments: ",attachments)
       res.send(
           {
             "response_type": "in_channel",
