@@ -118,6 +118,7 @@ app.post('/', function (req, res) {
     
     // Build and send the message with data from each filter
     function slackSend() {
+      var attachements = 
       res.send(
           {
             "response_type": "in_channel",
