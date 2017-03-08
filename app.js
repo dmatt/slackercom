@@ -118,7 +118,12 @@ app.post('/', function (req, res) {
     
     // Build and send the message with data from each filter
     function slackSend() {
-      var attachements = 
+      var attachements = []
+      Object.keys(stats).map(function(objectKey, i) {
+        var title = stats[i]
+        var text = stats[objectKey][0] + " :envelope:" + stats[objectKey][1] + " :new:" + stats[objectKey][2] + " :speech_balloon:" 
+        
+      });
       res.send(
           {
             "response_type": "in_channel",
