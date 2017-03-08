@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
-  if (req.body.token === process.env.SLACK_TOKEN && req.body.token === 'status') {
+  if (req.body.token === process.env.SLACK_TOKEN && req.body.text === 'status') {
       // Make Desk API calls by paginating through all results
       console.time('desk.cases()');
       var dataEntries = []
@@ -102,7 +102,7 @@ app.post('/', function (req, res) {
         var commenterOpen = commenterFilter.length - commenterNew.length
         
         stats = {
-          Priority:[priorityFilter,priorityNew,priorityOpen],
+          Priority:[priorityFilter.leng,priorityNew,priorityOpen],
           Saas:[saasFilter,saasNew,saasOpen],
           Direct:[directFilter,directNew,directOpen],
           Community:[communityFilter,communityNew,communityOpen],
@@ -112,15 +112,7 @@ app.post('/', function (req, res) {
         
         console.timeEnd('filters');
         // log things to the console for fun times
-        console.log(
-                  "data total entries "+dataEntries.length+"\n",
-                  "priorityFilter "+priorityFilter.length+"\n",
-                  "saasFilter "+saasFilter.length+"\n",
-                  "directFilter "+directFilter.length+"\n",
-                  "communityFilter "+communityFilter.length+"\n",
-                  "channelFilter "+channelFilter.length+"\n",
-                  "commenterFilter "+commenterFilter.length
-                )
+        console.log("stats: ",JSON.stringify(stats))
       }
     
     // Build and send the message with data from each filter
@@ -128,7 +120,7 @@ app.post('/', function (req, res) {
       res.send(
           {
             "response_type": "in_channel",
-            "text": ":partywizard:\n"+stats,
+            "text": ":partywizard:\n",
             /*"attachments": [
               {
                   "fallback": "Required plain-text summary of the attachment.",
