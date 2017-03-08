@@ -29,6 +29,7 @@ app.post('/', function (req, res) {
       console.time('desk.cases()');
       var dataEntries = []
       var i = 1
+      // Recursively call Desk i
       function deskCall() {
         desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
           if (i <= Math.ceil(data.total_entries/100)) {
@@ -43,7 +44,6 @@ app.post('/', function (req, res) {
         });
       }
       deskCall()
-      console.timeEnd('desk.cases()');
       
       function filterSend(dataEntries) {
         createStats(dataEntries)
@@ -52,8 +52,6 @@ app.post('/', function (req, res) {
     
       // Filter the data into seprate objects that correspond to each Desk filter
       function createStats(dataEntries) {
-        console.time('filters');
-        console.log('passed in!',dataEntries.length)
         var priorityFilter = dataEntries.filter(function(caseObj){
           return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
         })
@@ -119,11 +117,17 @@ app.post('/', function (req, res) {
     // Build and send the message with data from each filter
     function slackSend() {
       var attachments = []
+      var statusColor
       Object.keys(stats).map(function(objectKey, i) {
+        if (stats[objectKey][0] > 20) {
+          statusColor = disqusRed
+        } else {
+          statusColor = disqusGreen
+        }
         attachments.push({
-          "fallback": "Required plain-text summary of the attachment.",
-          "color": disqusGreen,       
-          "title": stats[i],
+          "fallback": stats[objectKey][0] + " total" + stats[objectKey][1] + " new" + stats[objectKey][2] + " open",
+          "color": statusColor,       
+          "title": objectKey,
           "text": stats[objectKey][0] + " :envelope:" + stats[objectKey][1] + " :new:" + stats[objectKey][2] + " :speech_balloon:"
         })
       });
@@ -131,41 +135,8 @@ app.post('/', function (req, res) {
       res.send(
           {
             "response_type": "in_channel",
-            "text": ":partywizard:\n"+JSON.stringify(stats),
+            "text": ":partywizard:\n",
             "attachments": attachments
-            /*"attachments": [
-              {
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": disqusGreen,
-                  "title": statusIcon+"Priority",
-                  "text": priorityNew.length+" New,"+priorityOpen+" Open"
-              },{
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": disqusGreen,
-                  "title": statusIcon+"SaaS & Ads",
-                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
-              },{
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": disqusGreen,
-                  "title": statusIcon+"Direct",
-                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
-              },{
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": disqusGreen,
-                  "title": statusIcon+"Community",
-                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
-              },{
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": disqusGreen,
-                  "title": statusIcon+"Channel",
-                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
-              },{
-                  "fallback": "Required plain-text summary of the attachment.",
-                  "color": disqusGreen,
-                  "title": "Commenter",
-                  "text": priorityNew.length+" New,"+priorityFilter.length-priorityNew.length+" Open"
-              }
-            ]*/
           }
       );
     }
