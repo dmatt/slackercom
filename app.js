@@ -118,16 +118,21 @@ app.post('/', function (req, res) {
     
     // Build and send the message with data from each filter
     function slackSend() {
-      var attachements = []
+      var attachments = []
       Object.keys(stats).map(function(objectKey, i) {
-        var title = stats[i]
-        var text = stats[objectKey][0] + " :envelope:" + stats[objectKey][1] + " :new:" + stats[objectKey][2] + " :speech_balloon:" 
-        
+        attachments.push({
+          "fallback": "Required plain-text summary of the attachment.",
+          "color": disqusGreen,       
+          "title": stats[i],
+          "text": stats[objectKey][0] + " :envelope:" + stats[objectKey][1] + " :new:" + stats[objectKey][2] + " :speech_balloon:"
+        })
       });
+      console.log("attachments: ",attachments)
       res.send(
           {
             "response_type": "in_channel",
             "text": ":partywizard:\n"+JSON.stringify(stats),
+            "attachments": attachments
             /*"attachments": [
               {
                   "fallback": "Required plain-text summary of the attachment.",
