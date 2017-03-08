@@ -101,13 +101,14 @@ app.post('/', function (req, res) {
         var channelOpen = channelFilter.length - channelNew.length
         var commenterOpen = commenterFilter.length - commenterNew.length
         
+        // Object so we can easily build the slack message
         stats = {
-          Priority:[priorityFilter.leng,priorityNew,priorityOpen],
-          Saas:[saasFilter,saasNew,saasOpen],
-          Direct:[directFilter,directNew,directOpen],
-          Community:[communityFilter,communityNew,communityOpen],
-          Channel:[channelFilter,channelNew,channelOpen],
-          Commenter:[commenterFilter,commenterNew,commenterOpen],
+          Priority:[priorityFilter.length,priorityNew.length,priorityOpen],
+          Saas:[saasFilter.length,saasNew.length,saasOpen],
+          Direct:[directFilter.length,directNew.length,directOpen],
+          Community:[communityFilter.length,communityNew.length,communityOpen],
+          Channel:[channelFilter.length,channelNew.length,channelOpen],
+          Commenter:[commenterFilter.length,commenterNew.length,commenterOpen],
         }
         
         console.timeEnd('filters');
@@ -120,7 +121,7 @@ app.post('/', function (req, res) {
       res.send(
           {
             "response_type": "in_channel",
-            "text": ":partywizard:\n",
+            "text": ":partywizard:\n"+JSON.stringify(stats),
             /*"attachments": [
               {
                   "fallback": "Required plain-text summary of the attachment.",
