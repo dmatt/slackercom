@@ -118,7 +118,7 @@ app.post('/', function (req, res) {
         if (stats[objectKey][0] > stats[objectKey][3]) {
           statusColor = disqusRed
           statusIcon = "🔥"
-        } else if (stats[objectKey][0] < 5) {
+        } else if (stats[objectKey][0] <= 5) {
           statusColor = disqusGreen
           statusIcon = ":partyporkchop:"
         } else {
@@ -128,14 +128,14 @@ app.post('/', function (req, res) {
         attachments.push({
           "fallback": stats[objectKey][0] + " total" + stats[objectKey][1] + " new" + stats[objectKey][2] + " open",
           "color": statusColor,       
-          "title": statusIcon + objectKey + ": " + stats[objectKey][0],
-          "text": stats[objectKey][1] + "new" + stats[objectKey][2] + " open"
+          "title": statusIcon + " " + objectKey + ": " + stats[objectKey][0],
+          "text": stats[objectKey][1] + " new, " + stats[objectKey][2] + " open"
         })
       });
       res.send(
           {
             "response_type": "in_channel",
-            "text": ":partywizard:\n",
+            "text": "Here's our status:",
             "attachments": attachments
           }
       );
