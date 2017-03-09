@@ -9,14 +9,14 @@ const bodyParser = require('body-parser')
 //   token
 //   token_secret
 //   
-//   filters - Array of filter names that you'd like to grab from Desk and output as Slack attachments
-//   statusCondition - Arbitrary criterea to list within Desk, parameters available: http://dev.desk.com/API/cases/#fields
-//   filterConditions - Arbitrary criterea to list within Desk, parameters available: 
+//   filters - Array of filter names that you'd like to grab from Desk and output as Slack attachments. Example: ['Pro customers','Paid customers','Free customers']
+//   statusCondition - Object of arbitrary criterea for data to grab from Desk for the status() function, parameters available: http://dev.desk.com/API/cases/#fields
+//   createStats() - Filters to further segment data that is returned from Desk
 //
 // Commands:
-//   /support - default command returns status of all important Desk filters
-//   /support help how many <status> support cases, e.g. hubot how many new,open support tickets
-//   /support 347519  show me support - default status is: new,open
+//   /support - default command returns case status of all important Desk filters
+//   /support help - returns help with commands
+//   /support 347519 - returns case that matche
 //   /support archon@gmail.com hubot show me <status> support cases, e.g. hubot show me new,open support tickets
 
 const desk = require('./my-desk').createClient({
