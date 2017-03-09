@@ -25,6 +25,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN && req.body.text.length === 0) {
+    
+function     
       console.time("status")    
       // Make Desk API calls by paginating through all results
       var dataEntries = []
@@ -142,6 +144,7 @@ app.post('/', function (req, res) {
       );
       console.timeEnd("status")
     }
+  }
   } else if (req.body.token === process.env.SLACK_TOKEN && /[0123456789]{1,7}/.test(req.body.text)) {
     desk.get("cases", {case_id: req.body.text}, function(error, data) {
       res.send(
