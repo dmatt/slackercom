@@ -35,13 +35,8 @@ app.post('/', function (req, res) {
     caseIdSearch()
   } else if (req.body.text === "archon810@gmail.com") {
     emailSearch()
-  } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "help") {
-    res.send(
-      {
-        "response_type": "in_channel",
-        "text": "Type `/support` for status accross all filters. Add a case ID `347519` or an email `archon810@gmail.com` to get specific.",
-      }
-    )
+  } else if (req.body.text === "help") {
+    help()
   } else {
     console.log(req);
     res.send('unauthorized wow');
@@ -165,6 +160,8 @@ app.post('/', function (req, res) {
       console.timeEnd("status")
     }
   }
+  
+  // Handle each command, and return relevant information to slack
   function caseIdSearch() {
     desk.get("cases", {case_id: req.body.text}, function(error, data) {
       res.send(
@@ -186,6 +183,14 @@ app.post('/', function (req, res) {
       );
       console.dir(data)
     });
+  }
+  function help() {
+    res.send(
+      {
+        "response_type": "in_channel",
+        "text": "Type `/support` for status accross all filters. Add a case ID `347519` or an email `archon810@gmail.com` to get specific.",
+      }
+    )
   }
 })
 
