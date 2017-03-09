@@ -39,7 +39,7 @@ app.post('/', function (req, res) {
     help()
   } else {
     console.log(req);
-    res.send('unauthorized wow');
+    res.send('Sorry bub, I\'m not quite following. Type `/support help`  );
   }
   function status() {    
       console.time("status")    
