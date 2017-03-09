@@ -1,7 +1,20 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-// local desk api wrapper extended from https://www.npmjs.com/package/desk-api because it doesn't handle custom domains
+
+// Configuration:
+//   subdomain
+//   consumer_key
+//   consumer_secret
+//   token
+//   token_secret
+//
+// Commands:
+//   /support - default command returns status of all important Desk  is: new,open
+//   /support help how many <status> support cases, e.g. hubot how many new,open support tickets
+//   /support 347519  show me support - default status is: new,open
+//   /support archon@gmail.com hubot show me <status> support cases, e.g. hubot show me new,open support tickets
+
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
@@ -18,9 +31,6 @@ let stats = ""
 
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
-
-// Returns # of cases resolved > 1 message within past 24 hours
-// How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
 
 app.post('/', function (req, res) {
   
@@ -166,7 +176,7 @@ app.post('/', function (req, res) {
   }
   // Return case that matches case id
   function caseIdSearch(text) {
-    desk.get("cases", {case_id: req.body.text}, function(error, data) {
+    desk.get("cases", {case_id: text}, function(error, data) {
       res.send(
         {
           "response_type": "in_channel",
@@ -178,7 +188,7 @@ app.post('/', function (req, res) {
   }
   // Return case that matches email
   function emailSearch(text) {
-    desk.get("cases", {case_id: req.body.text}, function(error, data) {
+    desk.get("cases", {case_id: text}, function(error, data) {
       res.send(
         {
           "response_type": "in_channel",
@@ -193,13 +203,12 @@ app.post('/', function (req, res) {
     res.send(
       {
         "response_type": "in_channel",
-        "text": "Type `/support` for status accross all filters. Add a case ID `347519` or an email `archon810@gmail.com` to get specific.",
+        "text": "Type `/support` for status accross all filters. Add a case ID `347519` or an email `archon@gmail.com` to get specific.",
       }
     )
   }
 })
 
-// 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
