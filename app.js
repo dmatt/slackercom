@@ -140,8 +140,17 @@ app.post('/', function (req, res) {
           }
       );
     }
-  } else if {
-    
+  } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "347519") {
+    res.send('Case ID ya');
+  } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "archon810@gmail.com") {
+    res.send('Email address ya');
+  } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "help") {
+    res.send(
+      {
+        "response_type": "in_channel",
+        "text": "Type `/support` for status accross all filters. Add a case ID `347519` or an email `archon810@gmail.com` to get specific.",
+      }
+    )
   } else {
     console.log(req);
     res.send('unauthorized wow');
