@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
-  if (req.body.token === process.env.SLACK_TOKEN && req.body.text === 'status') {
+  if (req.body.token === process.env.SLACK_TOKEN && req.body.text.length === 0) {
       // Make Desk API calls by paginating through all results
       var dataEntries = []
       var i = 1
@@ -140,6 +140,8 @@ app.post('/', function (req, res) {
           }
       );
     }
+  } else if {
+    
   } else {
     console.log(req);
     res.send('unauthorized wow');
