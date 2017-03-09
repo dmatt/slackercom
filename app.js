@@ -103,8 +103,8 @@ app.post('/', function (req, res) {
         // Format: {Filter Name: Total, New, Open, "On-fire" threshold}
         stats = {
           Priority:[priorityFilter.length,priorityNew.length,priorityOpen,10],
-          "Saas & Ads":[saasFilter.length,saasNew.length,saasOpen,40],
-          Direct:[directFilter.length,directNew.length,directOpen,40],
+          "Saas & Ads":[saasFilter.length,saasNew.length,saasOpen,30],
+          Direct:[directFilter.length,directNew.length,directOpen,30],
           Community:[communityFilter.length,communityNew.length,communityOpen,30],
           Channel:[channelFilter.length,channelNew.length,channelOpen,30],
           Commenter:[commenterFilter.length,commenterNew.length,commenterOpen,60],
