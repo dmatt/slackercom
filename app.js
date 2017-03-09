@@ -143,15 +143,14 @@ app.post('/', function (req, res) {
       console.timeEnd("status")
     }
   } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "347519") {
-    desk.get("cases", {case_id: 347519}, function(error, data) {
+    desk.get("cases", {case_id: req.body.text}, function(error, data) {
       res.send(
         {
           "response_type": "in_channel",
-          "text": data._embedded.entries,
+          "text": "hello"+JSON.stringify(data._embedded.entries.blurb),
         }
       );
-      console.log(data._embedded.entries)
-      console.dir(data._embedded.entries.blurb)
+      console.dir(data)
     });
   } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "archon810@gmail.com") {
     res.send(
