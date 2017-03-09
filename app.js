@@ -23,10 +23,32 @@ app.use(bodyParser.urlencoded({extended: false}));
 // How to build message response back to slack http://phabricator.local.disqus.net/diffusion/HUBOT/browse/master/scripts/embedcomment.coffee
 
 app.post('/', function (req, res) {
+  
+  if (req.body.token)
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN && req.body.text.length === 0) {
-    
-function     
+    status()
+  } else if (req.body.token === process.env.SLACK_TOKEN && /[0123456789]{1,7}/.test(req.body.text)) {
+    caseIdSearch()
+  } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "archon810@gmail.com") {
+    res.send(
+      {
+        "response_type": "in_channel",
+        "text": "email ya",
+      }
+    );
+  } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "help") {
+    res.send(
+      {
+        "response_type": "in_channel",
+        "text": "Type `/support` for status accross all filters. Add a case ID `347519` or an email `archon810@gmail.com` to get specific.",
+      }
+    )
+  } else {
+    console.log(req);
+    res.send('unauthorized wow');
+  }
+  function status() {    
       console.time("status")    
       // Make Desk API calls by paginating through all results
       var dataEntries = []
@@ -145,7 +167,7 @@ function
       console.timeEnd("status")
     }
   }
-  } else if (req.body.token === process.env.SLACK_TOKEN && /[0123456789]{1,7}/.test(req.body.text)) {
+  function caseIdSearch() {
     desk.get("cases", {case_id: req.body.text}, function(error, data) {
       res.send(
         {
@@ -155,23 +177,17 @@ function
       );
       console.dir(data)
     });
-  } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "archon810@gmail.com") {
-    res.send(
-      {
-        "response_type": "in_channel",
-        "text": "email ya",
-      }
-    );
-  } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "help") {
-    res.send(
-      {
-        "response_type": "in_channel",
-        "text": "Type `/support` for status accross all filters. Add a case ID `347519` or an email `archon810@gmail.com` to get specific.",
-      }
-    )
-  } else {
-    console.log(req);
-    res.send('unauthorized wow');
+  }
+  function emailSearch() {
+    desk.get("cases", {case_id: req.body.text}, function(error, data) {
+      res.send(
+        {
+          "response_type": "in_channel",
+          "text": "hello"+JSON.stringify(data._embedded.entries[0].blurb),
+        }
+      );
+      console.dir(data)
+    });
   }
 })
 
