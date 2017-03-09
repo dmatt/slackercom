@@ -143,12 +143,15 @@ app.post('/', function (req, res) {
       console.timeEnd("status")
     }
   } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "347519") {
-    res.send(
-      {
-        "response_type": "in_channel",
-        "text": "Case ID ya",
-      }
-    );
+    desk.case({id:347519}, function(error, data) {
+      res.send(
+        {
+          "response_type": "in_channel",
+          "text": data,
+        }
+      );    
+      
+    });
   } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "archon810@gmail.com") {
     res.send(
       {
