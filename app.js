@@ -142,12 +142,12 @@ app.post('/', function (req, res) {
       );
       console.timeEnd("status")
     }
-  } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "347519") {
+  } else if (req.body.token === process.env.SLACK_TOKEN && /[0123456789]{1,7}/.test(req.body.text)) {
     desk.get("cases", {case_id: req.body.text}, function(error, data) {
       res.send(
         {
           "response_type": "in_channel",
-          "text": "hello"+JSON.stringify(data._embedded.entries.blurb),
+          "text": "hello"+JSON.stringify(data._embedded.entries[0].blurb),
         }
       );
       console.dir(data)
