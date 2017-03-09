@@ -24,19 +24,17 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.post('/', function (req, res) {
   
-  if (req.body.token)
   // Check the slack token so that this request is authenticated
-  if (req.body.token === process.env.SLACK_TOKEN && req.body.text.length === 0) {
+  if (req.body.token === process.env.SLACK_TOKEN) {
+    
+  }
+  
+  if (req.body.text.length === 0) {
     status()
-  } else if (req.body.token === process.env.SLACK_TOKEN && /[0123456789]{1,7}/.test(req.body.text)) {
+  } else if (/[0123456789]{1,7}/.test(req.body.text)) {
     caseIdSearch()
-  } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "archon810@gmail.com") {
-    res.send(
-      {
-        "response_type": "in_channel",
-        "text": "email ya",
-      }
-    );
+  } else if (req.body.text === "archon810@gmail.com") {
+    emailSearch()
   } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "help") {
     res.send(
       {
