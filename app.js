@@ -16,8 +16,8 @@ const bodyParser = require('body-parser')
 // Commands:
 //   /support - default command returns case status of all important Desk filters
 //   /support help - returns help with commands
-//   /support 347519 - returns case that matche
-//   /support archon@gmail.com hubot show me <status> support cases, e.g. hubot show me new,open support tickets
+//   /support 347519 - returns case that matches ID provided
+//   /support archon@gmail.com - returns case that matches email provided
 
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
