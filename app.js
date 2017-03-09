@@ -25,6 +25,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN && req.body.text.length === 0) {
+      console.time("status")    
       // Make Desk API calls by paginating through all results
       var dataEntries = []
       var i = 1
@@ -139,11 +140,22 @@ app.post('/', function (req, res) {
             "attachments": attachments
           }
       );
+      console.timeEnd("status")
     }
   } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "347519") {
-    res.send('Case ID ya');
+    res.send(
+      {
+        "response_type": "in_channel",
+        "text": "Case ID ya",
+      }
+    );
   } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "archon810@gmail.com") {
-    res.send('Email address ya');
+    res.send(
+      {
+        "response_type": "in_channel",
+        "text": "email ya",
+      }
+    );
   } else if (req.body.token === process.env.SLACK_TOKEN && req.body.text === "help") {
     res.send(
       {
