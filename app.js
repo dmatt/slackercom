@@ -9,7 +9,6 @@ const bodyParser = require('body-parser')
 //   token
 //   token_secret
 //   
-//   filters - Array of filter names that you'd like to grab from Desk and output as Slack attachments. Example: ['Pro customers','Paid customers','Free customers']
 //   statusCondition - Object of arbitrary criterea for data to grab from Desk for the status() function, parameters available: http://dev.desk.com/API/cases/#fields
 //   createStats() - Filters to further segment data that is returned from Desk
 //
@@ -27,6 +26,16 @@ const desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
+let i = 1
+let statusParams = {
+  labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], 
+  status:['new,open'], 
+  sort_field:'created_at', 
+  sort_direction: 'asc', 
+  per_page:100, 
+  page:i
+}
+
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
@@ -40,33 +49,31 @@ app.post('/', function (req, res) {
   
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
+    // Decide what command was entered in slack and call the correct function
+    if (req.body.text.length === 0) {
+      status()
+    } else if (/[0123456789]{1,7}/.test(req.body.text)) {
+      caseIdSearch(req.body.text)
+    } else if (req.body.text === "archon810@gmail.com") {
+      emailSearch(req.body.text)
+    } else if (req.body.text === "help") {
+      help()
+    } else {
+      console.log(req);
+      res.send('Sorry bub, I\'m not quite following. Type `/support help` to check what I can understand.');
+    }    
+  } else {
     
   }
-  
-  // Decide what command was entered in slack and call the correct function
-  if (req.body.text.length === 0) {
-    status()
-  } else if (/[0123456789]{1,7}/.test(req.body.text)) {
-    caseIdSearch(req.body.text)
-  } else if (req.body.text === "archon810@gmail.com") {
-    emailSearch(req.body.text)
-  } else if (req.body.text === "help") {
-    help()
-  } else {
-    console.log(req);
-    res.send('Sorry bub, I\'m not quite following. Type `/support help` to check what I can understand.');
-  }
-
   // Handle each command, and return relevant information to slack
   
   // Return stats on all case filters from Desk
   function status() {    
       console.time("status")
       var dataEntries = []
-      var i = 1
       // Recursively call Desk until there are no more pages of results
       function deskCall() {
-        desk.cases({labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], status:['new,open'], sort_field:'created_at', sort_direction: 'asc', per_page:100, page:i}, function(error, data) {
+        desk.cases(statusParams, function(error, data) {
           if (i <= Math.ceil(data.total_entries/100)) {
             dataEntries = dataEntries.concat(data._embedded.entries)           
             i++
@@ -135,7 +142,7 @@ app.post('/', function (req, res) {
         var commenterOpen = commenterFilter.length - commenterNew.length
         
         // Object so we can easily build the slack message
-        // Format: {Filter Name: Total, New, Open, "On-fire" threshold}
+        // Format: {"Filter Name": All cases, New cases, Open cases, "Needs attention" threshold for each filter}
         stats = {
           Priority:[priorityFilter.length,priorityNew.length,priorityOpen,10],
           "Saas & Ads":[saasFilter.length,saasNew.length,saasOpen,30],
