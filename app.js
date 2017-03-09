@@ -29,21 +29,25 @@ app.post('/', function (req, res) {
     
   }
   
+  // Decide what command was entered in slack and call the correct function
   if (req.body.text.length === 0) {
     status()
   } else if (/[0123456789]{1,7}/.test(req.body.text)) {
-    caseIdSearch()
+    caseIdSearch(req.body.text)
   } else if (req.body.text === "archon810@gmail.com") {
-    emailSearch()
+    emailSearch(req.body.text)
   } else if (req.body.text === "help") {
     help()
   } else {
     console.log(req);
-    res.send('Sorry bub, I\'m not quite following. Type `/support help`  );
+    res.send('Sorry bub, I\'m not quite following. Type `/support help` to check what I can understand.');
   }
+
+  // Handle each command, and return relevant information to slack
+  
+  // Return stats on all case filters from Desk
   function status() {    
-      console.time("status")    
-      // Make Desk API calls by paginating through all results
+      console.time("status")
       var dataEntries = []
       var i = 1
       // Recursively call Desk until there are no more pages of results
@@ -160,9 +164,8 @@ app.post('/', function (req, res) {
       console.timeEnd("status")
     }
   }
-  
-  // Handle each command, and return relevant information to slack
-  function caseIdSearch() {
+  // Return case that matches case id
+  function caseIdSearch(text) {
     desk.get("cases", {case_id: req.body.text}, function(error, data) {
       res.send(
         {
@@ -173,7 +176,8 @@ app.post('/', function (req, res) {
       console.dir(data)
     });
   }
-  function emailSearch() {
+  // Return case that matches email
+  function emailSearch(text) {
     desk.get("cases", {case_id: req.body.text}, function(error, data) {
       res.send(
         {
@@ -184,6 +188,7 @@ app.post('/', function (req, res) {
       console.dir(data)
     });
   }
+  // Return help text with examples
   function help() {
     res.send(
       {
@@ -194,6 +199,7 @@ app.post('/', function (req, res) {
   }
 })
 
+// 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
