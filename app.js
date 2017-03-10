@@ -9,8 +9,10 @@ const bodyParser = require('body-parser')
 //   token
 //   token_secret
 //   
-//   statusCondition - Object of arbitrary criterea for data to grab from Desk for the status() function, parameters available: http://dev.desk.com/API/cases/#fields
-//   createStats() - Filters to further segment data that is returned from Desk
+//   statusParams - Object of criteria for `cases` API call via deskCall(), parameters available: http://dev.desk.com/API/cases/#fields
+//   createStats() - Array.prototype.filter() tests to further segment data from deskCall() into specific filters
+//   stats - Object of filter names and variables defined in createStats() to output as Slack attachments.
+//
 //
 // Commands:
 //   /support - default command returns case status of all important Desk filters
