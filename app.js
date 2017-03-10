@@ -121,7 +121,7 @@ app.post('/', function (req, res) {
           return caseObj.labels.includes('Community commenter') && caseObj.status.includes('new')
         })
         
-        // New cases stats
+        // New cases stats only for further segments
         var priorityNew = priorityFilter.filter(function(caseObj){
           return caseObj.status.includes('new')
         })
@@ -141,7 +141,7 @@ app.post('/', function (req, res) {
           return caseObj.status.includes('new')
         })
         
-        // Open cases stats
+        // Open cases stats using complicated maths
         var priorityOpen = priorityFilter.length - priorityNew.length
         var saasOpen = saasFilter.length - saasNew.length
         var directOpen = directFilter.length - directNew.length
@@ -159,8 +159,7 @@ app.post('/', function (req, res) {
           Channel:[channelFilter.length,channelNew.length,channelOpen,30],
           Commenter:[commenterFilter.length,commenterNew.length,commenterOpen,60],
         }
-      }
-    
+      }    
     // Build and send the message with data from each filter
     function slackSend() {
       var attachments = []
