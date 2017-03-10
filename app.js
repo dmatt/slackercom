@@ -65,10 +65,14 @@ app.post('/', function (req, res) {
       res.send('Sorry bub, I\'m not quite following. Type `/support help` to check what I can understand.');
     }    
   } else {
-    
+    res.send(
+      {
+        "response_type": "ephemeral",
+        "text": "Wow, such unauthorized",
+      }
+    )
   }
   // Handle each command, and return relevant information to slack
-  
   // Return stats on all case filters from Desk
   function status() {    
       console.time("status")
@@ -215,7 +219,7 @@ app.post('/', function (req, res) {
   function help() {
     res.send(
       {
-        "response_type": "in_channel",
+        "response_type": "ephemeral",
         "text": "Type `/support` for status accross all filters. Add a case ID `347519` or an email `archon@gmail.com` to get specific.",
       }
     )
