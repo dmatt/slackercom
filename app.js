@@ -28,16 +28,6 @@ const desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-let i = 1
-let statusParams = {
-  labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], 
-  status:['new,open'], 
-  sort_field:'created_at', 
-  sort_direction: 'asc', 
-  per_page:100, 
-  page:i
-}
-
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
@@ -79,8 +69,17 @@ app.post('/', function (req, res) {
       console.time("status")
       var dataEntries = []
       // Recursively call Desk until there are no more pages of results
+      let i = 1
       function deskCall() {
-        desk.cases(statusParams, function(error, data) {
+        desk.cases({
+          labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], 
+          status:['new,open'], 
+          sort_field:'created_at', 
+          sort_direction: 'asc', 
+          per_page:100, 
+          page:i
+        }, function(error, data) {
+          console.log(i,Math.ceil(data.total_entries/100))
           if (i <= Math.ceil(data.total_entries/100)) {
             dataEntries = dataEntries.concat(data._embedded.entries)           
             i++
