@@ -16,9 +16,9 @@ const bodyParser = require('body-parser')
 //
 // Commands:
 //   /support - default command returns case status of all important Desk filters
-//   /support help - returns help with commands
 //   /support 347519 - returns case that matches ID provided
 //   /support archon@gmail.com - returns case that matches email provided
+//   /support help - returns help with commands
 
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
@@ -54,7 +54,7 @@ app.post('/', function (req, res) {
     // Decide what command was entered in slack and call the correct function
     if (req.body.text.length === 0) {
       status()
-    } else if (/[0123456789]{1,7}/.test(req.body.text)) {
+    } else if (/^[0-9]{1,7}$/.test(req.body.text)) {
       caseIdSearch(req.body.text)
     } else if (req.body.text === "archon810@gmail.com") {
       emailSearch(req.body.text)
@@ -62,7 +62,7 @@ app.post('/', function (req, res) {
       help()
     } else {
       console.log(req);
-      res.send('Sorry bub, I\'m not quite following. Type `/support help` to check what I can understand.');
+      res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
     }    
   } else {
     res.send(
@@ -194,13 +194,18 @@ app.post('/', function (req, res) {
   // Return case that matches case id
   function caseIdSearch(text) {
     desk.get("cases", {case_id: text}, function(error, data) {
-      res.send(
-        {
-          "response_type": "in_channel",
-          "text": "hello"+JSON.stringify(data._embedded.entries[0].blurb),
-        }
-      );
-      console.dir(data)
+      if (data) {
+        res.send(
+          {
+            "response_type": "in_channel",
+            "text": "hello"+JSON.stringify(data._embedded.entries[0].blurb),
+          }
+        );
+        console.dir(data)
+      } else if (error) {
+        c
+        
+      }
     });
   }
   // Return case that matches email
