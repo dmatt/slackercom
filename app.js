@@ -85,6 +85,7 @@ app.post('/', function (req, res) {
             i++
             deskCall()
           } else if (!data) {
+            error()
             console.log(error)
           } else {
             filterSend(dataEntries)
@@ -194,17 +195,18 @@ app.post('/', function (req, res) {
   // Return case that matches case id
   function caseIdSearch(text) {
     desk.get("cases", {case_id: text}, function(error, data) {
-      if (data) {
+      if (data._embedded.entries.length > 0) {
         res.send(
           {
             "response_type": "in_channel",
-            "text": "hello"+JSON.stringify(data._embedded.entries[0].blurb),
+            "text": JSON.stringify(data._embedded.entries[0].blurb),
           }
         );
         console.dir(data)
-      } else if (error) {
-        c
-        
+      } else if (data._embedded.entries.length < 1) {
+        empty()
+      } else {
+        help()
       }
     });
   }
@@ -214,7 +216,7 @@ app.post('/', function (req, res) {
       res.send(
         {
           "response_type": "in_channel",
-          "text": "hello"+JSON.stringify(data._embedded.entries[0].blurb),
+          "text": JSON.stringify(data._embedded.entries[0].blurb),
         }
       );
       console.dir(data)
@@ -226,6 +228,15 @@ app.post('/', function (req, res) {
       {
         "response_type": "ephemeral",
         "text": "Type `/support` for status accross all filters. Add a case ID `347519` or an email `archon@gmail.com` to get specific.",
+      }
+    )
+  }
+  // Return error text when Desk fails
+  function empty() {
+    res.send(
+      {
+        "response_type": "ephemeral",
+        "text": "Sorry, Desk give me any results for that search :(",
       }
     )
   }
