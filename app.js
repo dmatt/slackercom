@@ -16,7 +16,7 @@ const bodyParser = require('body-parser')
 //
 // Commands:
 //   /support - default command returns case status of all important Desk filters
-//   /support 347519 - returns case that matches ID provided
+//   /support https://help.disqus.com/agent/case/347519 - returns case that matches ID provided
 //   /support archon@gmail.com - returns case that matches email provided
 //   /support help - returns help with commands
 
@@ -54,8 +54,9 @@ app.post('/', function (req, res) {
     // Decide what command was entered in slack and call the correct function
     if (req.body.text.length === 0) {
       status()
-    } else if (/^[0-9]{1,7}$/.test(req.body.text)) {
-      caseIdSearch(req.body.text)
+      // TODO: regex should validate the full Desk link, not ID
+    } else if (/^[0-9]{1,7}$/.test(req.body.text.split('case/')[1])) {
+      caseIdSearch(req.body.text.split('case/')[1])
     } else if (req.body.text === "archon810@gmail.com") {
       emailSearch(req.body.text)
     } else if (req.body.text === "help") {
@@ -213,13 +214,19 @@ app.post('/', function (req, res) {
   // Return case that matches email
   function emailSearch(text) {
     desk.get("cases", {case_id: text}, function(error, data) {
-      res.send(
-        {
-          "response_type": "in_channel",
-          "text": JSON.stringify(data._embedded.entries[0].blurb),
-        }
-      );
-      console.dir(data)
+      if (data._embedded.entries.length > 0) {
+        res.send(
+          {
+            "response_type": "in_channel",
+            "text": JSON.stringify(data._embedded.entries[0].blurb),
+          }
+        );
+        console.dir(data)
+      } else if (data._embedded.entries.length < 1) {
+        empty()
+      } else {
+        help()
+      }
     });
   }
   // Return help text with examples
@@ -227,7 +234,7 @@ app.post('/', function (req, res) {
     res.send(
       {
         "response_type": "ephemeral",
-        "text": "Type `/support` for status accross all filters. Add a case ID `347519` or an email `archon@gmail.com` to get specific.",
+        "text": "Type `/support` for status accross all filters. Add a case link `https://help.disqus.com/agent/case/347519` or an email `archon@gmail.com` to get specific.",
       }
     )
   }
@@ -236,7 +243,7 @@ app.post('/', function (req, res) {
     res.send(
       {
         "response_type": "ephemeral",
-        "text": "Sorry, Desk give me any results for that search :(",
+        "text": "Sorry, Desk give me any results :(",
       }
     )
   }
