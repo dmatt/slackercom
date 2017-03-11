@@ -209,6 +209,7 @@ app.post('/', function (req, res) {
       }
     });
   }
+  // Return 
   // Return help text with examples
   function help() {
     res.send(
