@@ -210,7 +210,20 @@ app.post('/', function (req, res) {
     });
   }
   // Return case attachment from Desk search
-  function caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts) {}
+  function caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts) {
+    var attachement = [
+      {
+        "author_name": "Assigned: " + ,
+        "fallback": status + " case from " + customerName + "- #" + id + ": "+ subject,
+        "pretext": status + " case from " + customerName,
+        "title": "#" + id + ": "+ subject,
+        "title_link": "https://help.disqus.com/agent/case/"+id,
+        "text": blurb,
+        "color": "#7CD197"
+        }
+    ]
+    return attachement
+  }
   // Return help text with examples
   function help() {
     res.send(
