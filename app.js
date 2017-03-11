@@ -209,7 +209,8 @@ app.post('/', function (req, res) {
       }
     });
   }
-  // Return 
+  // Return case attachment from Desk search
+  function caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts) {}
   // Return help text with examples
   function help() {
     res.send(
