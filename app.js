@@ -177,6 +177,7 @@ app.post('/', function (req, res) {
   function caseIdSearch(text) {
     desk.get("cases", {case_id: text}, function(error, data) {
       if (data._embedded.entries.length > 0) {
+        
         var attachement = caseCard("hi there this is a case","new","Artem","123456","What the butt","Pivot intuitive piverate hacker parallax co-working pair programming parallax venture capital minimum viable product. Waterfall is so 2000 and late workflow prototype user story disrupt engaging driven quantitative vs. qualitative. Actionable insight thinker-maker-doer big data intuitive pair programming integrate iterate actionable insight unicorn human-centered design Steve Jobs ideate ship it thought leader. Integrate unicorn Steve Jobs Steve Jobs disrupt workflow iterate affordances pair programming food-truck integrate pair programming.","Priority,SaaS","Greaves",123456789)
         res.send(
           {
@@ -184,7 +185,7 @@ app.post('/', function (req, res) {
             "attachments": [attachement],
           }
         );
-        console.dir(data)
+        console.log("Case DATA: ",data._embedded.entries)
       } else if (data._embedded.entries.length < 1) {
         empty()
       } else {
