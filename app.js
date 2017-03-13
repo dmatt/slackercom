@@ -181,12 +181,13 @@ app.post('/', function (req, res) {
         // caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts)
         var customer
         desk.get("getLink", data._embedded.entries[0]._links.customer.href, function(error, data) {
+          console.log(data)
           customer = data
         })
         var attachement = caseCard(
           null,
           data._embedded.entries[0].status,
-          customer.first_name,
+          //customer.first_name,
           data._embedded.entries[0].id,
           data._embedded.entries[0].subject,
           data._embedded.entries[0].blurb,
