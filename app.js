@@ -197,11 +197,6 @@ app.post('/', function (req, res) {
   
   }
   
-  
-  
-  
-  
-  
   */
   
   // Return case that matches case id
