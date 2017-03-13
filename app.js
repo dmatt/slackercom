@@ -176,18 +176,19 @@ app.post('/', function (req, res) {
   // Return case that matches case id
   function caseIdSearch(text) {
     desk.get("cases", {case_id: text}, function(error, data) {
+      console.log(data)
       if (data._embedded.entries.length > 0) {
         // caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts)
         var attachement = caseCard(
           null,
-          data.status,
-          data._links.customer[0],
-          data.id,
-          data.subject,
-          data.blurb,
-          data.labels,
-          data._links.assigned_user[0],
-          data.received_at
+          data._embedded.entries[0].status,
+          data._embedded.entries[0]._links,
+          data._embedded.entries[0].id,
+          data._embedded.entries[0].subject,
+          data._embedded.entries[0].blurb,
+          data._embedded.entries[0].labels,
+          data._embedded.entries[0]._links.assigned_user[0],
+          data._embedded.entries[0].received_at
         )
         res.send(
           {
@@ -195,9 +196,7 @@ app.post('/', function (req, res) {
             "attachments": [attachement],
           }
         );
-        console.log(
-          "Case DATA: ",data._embedded.entries
-        )
+        console.log()
       } else if (data._embedded.entries.length < 1) {
         empty()
       } else {
