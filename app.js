@@ -173,9 +173,31 @@ app.post('/', function (req, res) {
       console.timeEnd("status")
     }
   }
+  
+  /* 
+  
+  desk.case(text, {}, function(error, data) {})
+  
+  case() {
+  
+  desk.customer(href/id, {}, function(error, data) {
+  
+  caseCard(params)
+  
+  })
+  
+  }
+  
+  
+  
+  
+  
+  
+  */
+  
   // Return case that matches case id
   function caseIdSearch(text) {
-    desk.get("cases", {case_id: text}, function(error, data) {
+    desk.case(text, {}, function(error, data) {
       console.log(data)
       if (data._embedded.entries.length > 0) {
         // caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts)
@@ -195,7 +217,6 @@ app.post('/', function (req, res) {
           customer.last_name,//data._embedded.entries[0]._links.assigned_user[0],
           data._embedded.entries[0].received_at
         )
-        console.log(data._embedded.entries[0]._links)
         res.send(
           {
             "response_type": "in_channel",
