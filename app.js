@@ -177,13 +177,15 @@ app.post('/', function (req, res) {
   /* 
   
   desk.case(text, {}, function(error, data) {
-  
-  })
     if (error) empty()
     desk.customer(data.href/id, {}, function(error, data) {
       if (error) empty()
       desk.user(data.href/id, {}, function(error, data) {
+        if (error) empty()
+        caseCard(customer,user,other params)
     })
+  })
+})  
   
   case() {
   
