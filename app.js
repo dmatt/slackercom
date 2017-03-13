@@ -180,19 +180,19 @@ app.post('/', function (req, res) {
       if (data._embedded.entries.length > 0) {
         // caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts)
         var customer
-        desk.get("getLink", data._embedded.entries[0]._links.customer.href, function(error, data) {
+        desk.customer(data._embedded.entries[0]._links.customer.href.split("customers/")[1], function(error, data) {
           console.log(data)
           customer = data
         })
         var attachement = caseCard(
           null,
           data._embedded.entries[0].status,
-          //customer.first_name,
+          customer.first_name,
           data._embedded.entries[0].id,
           data._embedded.entries[0].subject,
           data._embedded.entries[0].blurb,
           data._embedded.entries[0].labels,
-          "assigned_user",//data._embedded.entries[0]._links.assigned_user[0],
+          customer.last_name,//data._embedded.entries[0]._links.assigned_user[0],
           data._embedded.entries[0].received_at
         )
         console.log(data._embedded.entries[0]._links)

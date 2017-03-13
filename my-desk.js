@@ -31,18 +31,6 @@ Client.prototype.get = function(resource, params, callback) {
   );
 }
 
-Client.prototype.getLink = function(resource, params, callback) {
-  return this.oauth.get(
-    'https://' + this.subdomain + '.disqus.com' + resource + '?' + querystring.stringify(params),
-    this.oauthToken, 
-    this.oauthTokenSecret, 
-    function(error, data, response) {
-      if(!error) data = JSON.parse(data);
-      callback(error, data, response);
-    }
-  );
-}
-
 /**
  * Parameters:
  *   params - hash of key/value pairs to be sent as query parameters
