@@ -208,12 +208,15 @@ app.post('/', function (req, res) {
       if (data !== null) {
         var caseData = data
         // caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts)
-        console.log("caseData customer link",caseData._links.customer)
+        console.log("caseData customer link",caseData._links.customer.href.split("customers/")[1])
         desk.customer(caseData._links.customer.href.split("customers/")[1], {}, function(error, data) {
+          console.log("customer link DATA: ",data)
           if (data !== null) {
             var customerData = data
+            console.log("USER LINK href split",caseData._links.assigned_user.href.split("users/")[1])
             desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
-              console.log("woo!",caseData.id,customerData.first_name,data.public_name)
+              console.log("USER link DATA: ",data)
+              console.log("woo!",caseData.id,customerData.display_name,customerData.avatar,data.public_name)
             })
           } else {
             help()

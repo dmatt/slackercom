@@ -74,7 +74,7 @@ Client.prototype.customers = function(params, callback) {
  *  desk.customer(123, {}, function(error, data) {});
  */
 Client.prototype.customer = function(id, params, callback) {
-  return this.get('customer/' + id, params, callback);
+  return this.get('customers/' + id, params, callback);
 };
 
 /**
@@ -131,7 +131,7 @@ Client.prototype.users = function(params, callback) {
  *  desk.user(123, {}, function(error, data) {});
  */
 Client.prototype.user = function(id, params, callback) {
-  return this.get('user/' + id, params, callback);
+  return this.get('users/' + id, params, callback);
 };
 
 
