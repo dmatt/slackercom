@@ -206,7 +206,15 @@ app.post('/', function (req, res) {
     desk.case(text, {}, function(error, data) {
       console.log("DATA",data)
       if (data !== null) {
+        
         // caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts)
+        desk.customer(data._links.customer.id.split("customers/")[1], {}, function(error, data) {
+          if (data !== null) {
+            desk.user(data.href/id, {}, function(error, data) {})
+          } else {
+            help()
+          }
+        })
         var attachement = caseCard(
           null,
           data.status,
