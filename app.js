@@ -177,15 +177,20 @@ app.post('/', function (req, res) {
   function caseIdSearch(text) {
     desk.get("cases", {case_id: text}, function(error, data) {
       if (data._embedded.entries.length > 0) {
-        
-        var attachement = caseCard("hi there this is a case","new","Artem","123456","What the butt","Pivot intuitive piverate hacker parallax co-working pair programming parallax venture capital minimum viable product. Waterfall is so 2000 and late workflow prototype user story disrupt engaging driven quantitative vs. qualitative. Actionable insight thinker-maker-doer big data intuitive pair programming integrate iterate actionable insight unicorn human-centered design Steve Jobs ideate ship it thought leader. Integrate unicorn Steve Jobs Steve Jobs disrupt workflow iterate affordances pair programming food-truck integrate pair programming.","Priority,SaaS","Greaves",123456789)
+        // caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts)
+        var case = data._embedded.entries
+        var attachement = caseCard(null,"new","Artem","123456","What the butt","Pivot intuitive piverate hacker parallax co-working pair programming parallax venture capital minimum viable product. Waterfall is so 2000 and late workflow prototype user story disrupt engaging driven quantitative vs. qualitative. Actionable insight thinker-maker-doer big data intuitive pair programming integrate iterate actionable insight unicorn human-centered design Steve Jobs ideate ship it thought leader. Integrate unicorn Steve Jobs Steve Jobs disrupt workflow iterate affordances pair programming food-truck integrate pair programming.","Priority,SaaS","Greaves",123456789)
         res.send(
           {
             "response_type": "in_channel",
             "attachments": [attachement],
           }
         );
-        console.log("Case DATA: ",data._embedded.entries)
+        console.log(
+          "Case DATA: ",data._embedded.entries,
+          "Case LABELS: ",data._embedded.entries.labels,
+          "Case RECEIVED_AT: ",data._embedded.entries.received_at
+        )
       } else if (data._embedded.entries.length < 1) {
         empty()
       } else {
@@ -214,9 +219,8 @@ app.post('/', function (req, res) {
   // Return case attachment from Desk search
   function caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts) {
     var attachement = {
-      "pretext": text,
-      "fallback": status + " case from " + customerName + "- #" + id + ": "+ subject,
       "pretext": status + " case from " + customerName,
+      "fallback": status + " case from " + customerName + "- #" + id + ": "+ subject,
       "title": "#" + id + ": "+ subject,
       "title_link": "https://help.disqus.com/agent/case/"+id,
       "text": blurb,
