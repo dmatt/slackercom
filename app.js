@@ -206,11 +206,15 @@ app.post('/', function (req, res) {
     desk.case(text, {}, function(error, data) {
       console.log("DATA",data)
       if (data !== null) {
-        
+        var caseData = data
         // caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts)
-        desk.customer(data._links.customer.id.split("customers/")[1], {}, function(error, data) {
+        console.log("caseData customer link",caseData._links.customer)
+        desk.customer(caseData._links.customer.href.split("customers/")[1], {}, function(error, data) {
           if (data !== null) {
-            desk.user(data.href/id, {}, function(error, data) {})
+            var customerData = data
+            desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
+              console.log("woo!",caseData.id,customerData.first_name,data.public_name)
+            })
           } else {
             help()
           }
