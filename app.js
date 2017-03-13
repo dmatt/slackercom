@@ -176,6 +176,8 @@ app.post('/', function (req, res) {
   
   /* 
   
+  TODO: 3 Desk API calls for case data using callbacks
+  
   desk.case(text, {}, function(error, data) {
     if (error) empty()
     desk.customer(data.href/id, {}, function(error, data) {
@@ -202,24 +204,17 @@ app.post('/', function (req, res) {
   // Return case that matches case id
   function caseIdSearch(text) {
     desk.case(text, {}, function(error, data) {
-      console.log(data)
-      if (data._embedded.entries.length > 0) {
+      console.log("DATA",data)
+      if (data !== null) {
         // caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts)
-        var customer
-        desk.customer(data._embedded.entries[0]._links.customer.href.split("customers/")[1], function(error, data) {
-          console.log(data)
-          customer = data
-        })
         var attachement = caseCard(
           null,
-          data._embedded.entries[0].status,
-          customer.first_name,
-          data._embedded.entries[0].id,
-          data._embedded.entries[0].subject,
-          data._embedded.entries[0].blurb,
-          data._embedded.entries[0].labels,
-          customer.last_name,//data._embedded.entries[0]._links.assigned_user[0],
-          data._embedded.entries[0].received_at
+          data.status,
+          data.id,
+          data.subject,
+          data.blurb,
+          data.labels.toString(),
+          data.received_at
         )
         res.send(
           {
@@ -227,7 +222,6 @@ app.post('/', function (req, res) {
             "attachments": [attachement],
           }
         );
-        console.log()
       } else if (data._embedded.entries.length < 1) {
         empty()
       } else {
@@ -254,17 +248,17 @@ app.post('/', function (req, res) {
     });
   }
   // Return case attachment from Desk search
-  function caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts) {
+  function caseCard(text, status, id, subject, blurb, labels, ts) {
     var attachement = {
-      "pretext": status + " case from " + customerName,
-      "fallback": status + " case from " + customerName + "- #" + id + ": "+ subject,
+      "pretext": status + " case from " + 'customerName',
+      "fallback": status + " case from " + "customerName" + "- #" + id + ": "+ subject,
       "title": "#" + id + ": "+ subject,
       "title_link": "https://help.disqus.com/agent/case/"+id,
       "text": blurb,
       "fields": [
         {
           "title": "Assigned",
-          "value": assigned,
+          "value": "assigned",
           "short": true
         },
         {
