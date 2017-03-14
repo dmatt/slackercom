@@ -204,39 +204,31 @@ app.post('/', function (req, res) {
   // Return case that matches case id
   function caseIdSearch(text) {
     desk.case(text, {}, function(error, data) {
-      console.log("DATA",data)
       if (data !== null) {
         var caseData = data
-        // caseCard(text, status, customerName, id, subject, blurb, labels, assigned, ts)
-        console.log("caseData customer link",caseData._links.customer.href.split("customers/")[1])
         desk.customer(caseData._links.customer.href.split("customers/")[1], {}, function(error, data) {
-          console.log("customer link DATA: ",data)
           if (data !== null) {
             var customerData = data
-            console.log("USER LINK href split",caseData._links.assigned_user.href.split("users/")[1])
-            desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
-              console.log("USER link DATA: ",data)
-              console.log("woo!",caseData.id,customerData.display_name,customerData.avatar,data.public_name)
-            })
+            if (data !== null) {
+              desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
+                console.log("woo!",caseData.id,customerData.display_name,customerData.avatar,data.public_name)
+                var attachment = caseCard(
+                  customer,user,other params
+                )
+                res.send(
+                  {
+                    "response_type": "in_channel",
+                    "attachments": [attachement],
+                  }
+                );
+              })
+            } else {
+              help()
+            }
           } else {
             help()
           }
         })
-        var attachement = caseCard(
-          null,
-          data.status,
-          data.id,
-          data.subject,
-          data.blurb,
-          data.labels.toString(),
-          data.received_at
-        )
-        res.send(
-          {
-            "response_type": "in_channel",
-            "attachments": [attachement],
-          }
-        );
       } else if (data._embedded.entries.length < 1) {
         empty()
       } else {
