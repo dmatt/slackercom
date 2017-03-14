@@ -223,9 +223,9 @@ app.post('/', function (req, res) {
   }
   // Returns most recent case ids that matches email
   function emailSearch(email) {
-    desk.cases({case_id: email}, function(error, data) {
+    desk.get('cases/search/',{email: email, sort_field:'created_at', sort_direction: 'desc'}, function(error, data) {
       if (data._embedded.entries.length > 0) {
-        console.log(data)
+        caseAttachment(data._embedded.entries[0].id)
       } else if (data._embedded.entries.length < 1) {
         empty()
       } else {
