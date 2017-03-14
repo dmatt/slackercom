@@ -213,7 +213,16 @@ app.post('/', function (req, res) {
               desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
                 console.log("woo!",caseData.id,customerData.display_name,customerData.avatar,data.public_name)
                 var attachment = caseCard(
-                  customer,user,other params
+                  null,
+                  data.status,
+                  data.id,
+                  data.subject,
+                  data.blurb,
+                  data.labels.toString(),
+                  data.received_at,
+                  customerData.display_name,
+                  customerData.website,
+                  data.public_name
                 )
                 res.send(
                   {
@@ -255,17 +264,24 @@ app.post('/', function (req, res) {
     });
   }
   // Return case attachment from Desk search
-  function caseCard(text, status, id, subject, blurb, labels, ts) {
+  function caseCard(text, status, id, subject, blurb, labels, ts, customer, website, assigned) {
+    var website = function(){ 
+      if (website) {
+        return "("+website+")"
+      } else {
+        return ""
+      }
+    }
     var attachement = {
-      "pretext": status + " case from " + 'customerName',
-      "fallback": status + " case from " + "customerName" + "- #" + id + ": "+ subject,
+      "pretext": status + " case from " + customer + website,
+      "fallback": status + " case from " + customer + website + "- #" + id + ": "+ subject,
       "title": "#" + id + ": "+ subject,
       "title_link": "https://help.disqus.com/agent/case/"+id,
       "text": blurb,
       "fields": [
         {
           "title": "Assigned",
-          "value": "assigned",
+          "value": assigned,
           "short": true
         },
         {
