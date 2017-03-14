@@ -212,22 +212,23 @@ app.post('/', function (req, res) {
             if (data !== null) {
               desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
                 console.log("woo!",caseData.id,customerData.display_name,customerData.avatar,data.public_name)
+                // function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, assigned)
                 var attachment = caseCard(
                   null,
-                  data.status,
-                  data.id,
-                  data.subject,
-                  data.blurb,
-                  data.labels.toString(),
-                  data.received_at,
+                  caseData.status,
+                  caseData.id,
+                  caseData.subject,
+                  caseData.blurb,
+                  caseData.labels.toString(),
+                  caseData.received_at,
                   customerData.display_name,
-                  customerData.website,
+                  customerData.company,
                   data.public_name
                 )
                 res.send(
                   {
                     "response_type": "in_channel",
-                    "attachments": [attachement],
+                    "attachments": [attachment],
                   }
                 );
               })
@@ -264,17 +265,13 @@ app.post('/', function (req, res) {
     });
   }
   // Return case attachment from Desk search
-  function caseCard(text, status, id, subject, blurb, labels, ts, customer, website, assigned) {
-    var website = function(){ 
-      if (website) {
-        return "("+website+")"
-      } else {
-        return ""
-      }
+  function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, assigned) {
+    if (company) {
+      company = "("+company+")"
     }
     var attachement = {
-      "pretext": status + " case from " + customer + website,
-      "fallback": status + " case from " + customer + website + "- #" + id + ": "+ subject,
+      "pretext": status + " case from " + customer + company,
+      "fallback": status + " case from " + customer + company + "- #" + id + ": "+ subject,
       "title": "#" + id + ": "+ subject,
       "title_link": "https://help.disqus.com/agent/case/"+id,
       "text": blurb,
