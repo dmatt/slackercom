@@ -28,7 +28,8 @@ app.post('/', function (req, res) {
       status()
       // TODO: regex should validate the full Desk link, not ID
     } else if (/^[0-9]{1,7}$/.test(req.body.text.split('case/')[1])) {
-      caseIdSearch(req.body.text.split('case/')[1])
+      caseAttachment(req.body.text.split('case/')[1])
+      // TODO: regex for email recognition
     } else if (req.body.text === "archon810@gmail.com") {
       emailSearch(req.body.text)
     } else if (req.body.text === "help") {
@@ -175,8 +176,8 @@ app.post('/', function (req, res) {
   }
 
   // When given case ID, get and send all case, customer, and assigned user details to slack
-  function caseIdSearch(text) {
-    desk.case(text, {}, function(error, data) {
+  function caseAttachment(id) {
+    desk.case(id, {}, function(error, data) {
       if (data !== null) {
         var caseData = data
         desk.customer(caseData._links.customer.href.split("customers/")[1], {}, function(error, data) {
@@ -221,10 +222,10 @@ app.post('/', function (req, res) {
     });
   }
   // Returns most recent case ids that matches email
-  function emailSearch(text) {
-    desk.get("cases", {case_id: text}, function(error, data) {
+  function emailSearch(email) {
+    desk.get("cases", {case_id: email}, function(error, data) {
       if (data._embedded.entries.length > 0) {
-        return // TODO: call case build and send
+        return // TODO: call caseAttachment(id) with ID
       } else if (data._embedded.entries.length < 1) {
         empty()
       } else {
