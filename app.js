@@ -174,7 +174,7 @@ app.post('/', function (req, res) {
     }
   }
 
-  // Return case that matches case id
+  // When given case ID, get and send all case, customer, and assigned user details to slack
   function caseIdSearch(text) {
     desk.case(text, {}, function(error, data) {
       if (data !== null) {
@@ -220,17 +220,11 @@ app.post('/', function (req, res) {
       }
     });
   }
-  // Return case that matches email
+  // Returns most recent case ids that matches email
   function emailSearch(text) {
     desk.get("cases", {case_id: text}, function(error, data) {
       if (data._embedded.entries.length > 0) {
-        res.send(
-          {
-            "response_type": "in_channel",
-            "text": JSON.stringify(data._embedded.entries[0].blurb),
-          }
-        );
-        console.dir(data)
+        return // TODO: call case build and send
       } else if (data._embedded.entries.length < 1) {
         empty()
       } else {
@@ -238,7 +232,8 @@ app.post('/', function (req, res) {
       }
     });
   }
-  // Return case attachment from Desk search
+  
+  // Returns a single case attachment using data from 
   function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, customerGrav, assigned) {
     if (company) {
       company = "("+company+")"
@@ -247,6 +242,7 @@ app.post('/', function (req, res) {
       "pretext": status + " case from " + customer + " " + company,
       "fallback": status + " case from " + customer + " " + company + "- #" + id + ": "+ subject,
       "author_icon": customerGrav,
+      "author_name":  customer + " " + company,
       "title": "#" + id + ": "+ subject,
       "title_link": "https://help.disqus.com/agent/case/"+id,
       "text": blurb,
