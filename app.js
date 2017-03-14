@@ -173,34 +173,7 @@ app.post('/', function (req, res) {
       console.timeEnd("status")
     }
   }
-  
-  /* 
-  
-  TODO: 3 Desk API calls for case data using callbacks
-  
-  desk.case(text, {}, function(error, data) {
-    if (error) empty()
-    desk.customer(data.href/id, {}, function(error, data) {
-      if (error) empty()
-      desk.user(data.href/id, {}, function(error, data) {
-        if (error) empty()
-        caseCard(customer,user,other params)
-    })
-  })
-})  
-  
-  case() {
-  
-  desk.customer(href/id, {}, function(error, data) {
-  
-  caseCard(params)
-  
-  })
-  
-  }
-  
-  */
-  
+
   // Return case that matches case id
   function caseIdSearch(text) {
     desk.case(text, {}, function(error, data) {
@@ -212,7 +185,7 @@ app.post('/', function (req, res) {
             if (data !== null) {
               desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
                 console.log("woo!",caseData.id,customerData.display_name,customerData.avatar,data.public_name)
-                // function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, assigned)
+                // function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, customerGrav, assigned)
                 var attachment = caseCard(
                   null,
                   caseData.status,
@@ -223,6 +196,7 @@ app.post('/', function (req, res) {
                   caseData.received_at,
                   customerData.display_name,
                   customerData.company,
+                  customerData.avatar,
                   data.public_name
                 )
                 res.send(
@@ -265,13 +239,14 @@ app.post('/', function (req, res) {
     });
   }
   // Return case attachment from Desk search
-  function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, assigned) {
+  function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, customerGrav, assigned) {
     if (company) {
       company = "("+company+")"
     }
     var attachement = {
-      "pretext": status + " case from " + customer + company,
-      "fallback": status + " case from " + customer + company + "- #" + id + ": "+ subject,
+      "pretext": status + " case from " + customer + " " + company,
+      "fallback": status + " case from " + customer + " " + company + "- #" + id + ": "+ subject,
+      "author_icon": customerGrav,
       "title": "#" + id + ": "+ subject,
       "title_link": "https://help.disqus.com/agent/case/"+id,
       "text": blurb,
