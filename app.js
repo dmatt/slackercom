@@ -30,7 +30,7 @@ app.post('/', function (req, res) {
     } else if (/^[0-9]{1,7}$/.test(req.body.text.split('case/')[1])) {
       caseAttachment(req.body.text.split('case/')[1])
       // TODO: regex for email recognition
-    } else if (req.body.text === "archon810@gmail.com") {
+    } else if (/([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)) {
       emailSearch(req.body.text)
     } else if (req.body.text === "help") {
       help()
@@ -223,9 +223,9 @@ app.post('/', function (req, res) {
   }
   // Returns most recent case ids that matches email
   function emailSearch(email) {
-    desk.get("cases", {case_id: email}, function(error, data) {
+    desk.cases({case_id: email}, function(error, data) {
       if (data._embedded.entries.length > 0) {
-        return // TODO: call caseAttachment(id) with ID
+        console.log(data)
       } else if (data._embedded.entries.length < 1) {
         empty()
       } else {
