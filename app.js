@@ -185,7 +185,6 @@ app.post('/', function (req, res) {
             var customerData = data
             if (data !== null) {
               desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
-                console.log("woo!",caseData.id,customerData.display_name,customerData.avatar,data.public_name)
                 // function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, customerGrav, assigned)
                 var attachment = caseCard(
                   null,
@@ -194,7 +193,7 @@ app.post('/', function (req, res) {
                   caseData.subject,
                   caseData.blurb,
                   caseData.labels.toString(),
-                  Date.parse(caseData.received_at),
+                  Date.parse(caseData.received_at)/1000,
                   customerData.display_name,
                   customerData.company,
                   customerData.avatar,
