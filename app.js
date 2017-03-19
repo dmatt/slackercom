@@ -62,7 +62,6 @@ app.post('/', function (req, res) {
           per_page:100, 
           page:i
         }, function(error, data) {
-          console.log(i,Math.ceil(data.total_entries/100))
           if (i <= Math.ceil(data.total_entries/100)) {
             dataEntries = dataEntries.concat(data._embedded.entries)           
             i++
@@ -144,12 +143,12 @@ app.post('/', function (req, res) {
       }
     // Build and send the message with data from each filter
     function slackSend() {
-      var total
+      var total = 0
       var attachments = []
       var statusColor
       Object.keys(stats).map(function(objectKey, i) {
-        total = total + stats[objectKey][0]
-        console.log(stats[objectKey][0], total)
+        total += stats[objectKey][0]
+        console.log(stats[objectKey], stats[objectKey][0], total)
         if (stats[objectKey][0] > stats[objectKey][3]) {
           statusColor = disqusRed
           statusIcon = "🔥"
