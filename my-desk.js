@@ -1,3 +1,5 @@
+// Adapted version of the desk-api NPM package https://www.npmjs.com/package/desk-api
+
 var querystring = require('querystring');
 var OAuth = require('oauth').OAuth;
 
