@@ -194,7 +194,7 @@ app.post('/', function (req, res) {
                   caseData.subject,
                   caseData.blurb,
                   caseData.labels.toString(),
-                  caseData.received_at,
+                  Date.parse(caseData.received_at),
                   customerData.display_name,
                   customerData.company,
                   customerData.avatar,
