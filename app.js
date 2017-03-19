@@ -141,12 +141,15 @@ app.post('/', function (req, res) {
           Channel:[channelFilter.length,channelNew.length,channelOpen,30],
           Commenter:[commenterFilter.length,commenterNew.length,commenterOpen,60],
         }
-      }    
+      }
     // Build and send the message with data from each filter
     function slackSend() {
+      var total
       var attachments = []
       var statusColor
       Object.keys(stats).map(function(objectKey, i) {
+        total = total + stats[objectKey][0]
+        console.log(stats[objectKey][0], total)
         if (stats[objectKey][0] > stats[objectKey][3]) {
           statusColor = disqusRed
           statusIcon = "🔥"
@@ -167,7 +170,7 @@ app.post('/', function (req, res) {
       res.send(
           {
             "response_type": "in_channel",
-            "text": "Here's our status:",
+            "text": total + "total cases right now. We've recently resoved X!.",
             "attachments": attachments
           }
       );
