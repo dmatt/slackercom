@@ -55,7 +55,7 @@ app.post('/', function (req, res) {
       let i = 1
       function deskCall() {
         desk.cases({
-          labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], 
+          labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'],
           status:['new,open'], 
           sort_field:'created_at', 
           sort_direction: 'asc',
