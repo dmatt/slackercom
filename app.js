@@ -186,29 +186,34 @@ app.post('/', function (req, res) {
           if (data !== null) {
             var customerData = data
             if (data !== null) {
-              
-              desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
-                // function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, customerGrav, assigned)
-                var attachment = caseCard(
-                  null,
-                  caseData.status,
-                  caseData.id,
-                  caseData.subject,
-                  caseData.blurb,
-                  caseData.labels.toString(),
-                  Date.parse(caseData.received_at)/1000,
-                  customerData.display_name,
-                  customerData.company,
-                  customerData.avatar,
-                  data.public_name
-                )
-                res.send(
-                  {
-                    "response_type": "in_channel",
-                    "attachments": [attachment],
+              var assignedName = 'Nobody'
+              if (caseData._links.assigned_user) {
+                desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
+                  if (data) {
+                    assignedName = data.public_name
                   }
-                );
-              })
+                })
+              }
+              // function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, customerGrav, assigned)
+              var attachment = caseCard(
+                null,
+                caseData.status,
+                caseData.id,
+                caseData.subject,
+                caseData.blurb,
+                caseData.labels.toString(),
+                Date.parse(caseData.received_at)/1000,
+                customerData.display_name,
+                customerData.company,
+                customerData.avatar,
+                assignedName
+              )
+            res.send(
+              {
+                "response_type": "in_channel",
+                "attachments": [attachment],
+              }
+            );
             } else {
               help()
             }
