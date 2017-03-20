@@ -186,6 +186,7 @@ app.post('/', function (req, res) {
           if (data !== null) {
             var customerData = data
             if (data !== null) {
+              
               desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
                 // function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, customerGrav, assigned)
                 var attachment = caseCard(
