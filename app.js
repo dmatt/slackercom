@@ -187,10 +187,14 @@ app.post('/', function (req, res) {
             var customerData = data
             if (data !== null) {
               var assignedName = 'Nobody'
+              console.log("if caseData._links.assigned_user:", caseData._links.assigned_user)
               if (caseData._links.assigned_user) {
                 desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
+                  console.log("if data :", caseData._links.assigned_user)
                   if (data) {
+                    console.log(assignedName)
                     assignedName = data.public_name
+                    console.log(assignedName)
                   }
                 })
               }
