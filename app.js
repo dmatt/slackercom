@@ -58,7 +58,7 @@ app.post('/', function (req, res) {
           labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], 
           status:['new,open'], 
           sort_field:'created_at', 
-          sort_direction: 'asc', 
+          sort_direction: 'asc',
           per_page:100, 
           page:i
         }, function(error, data) {
@@ -169,7 +169,7 @@ app.post('/', function (req, res) {
       res.send(
           {
             "response_type": "in_channel",
-            "text": total + "total cases right now. We've recently resoved X!.",
+            "text": total + " total cases right now.",
             "attachments": attachments
           }
       );
