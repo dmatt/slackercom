@@ -187,10 +187,8 @@ app.post('/', function (req, res) {
             var customerData = data
             if (data !== null) {
               var assignedName = 'Nobody'
-              console.log("if caseData._links.assigned_user:", caseData._links.assigned_user)
               if (caseData._links.assigned_user) {
                 desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
-                  console.log("if data :", caseData._links.assigned_user)
                   if (data) {
                     var attachment = caseCard(
                       null,
@@ -203,10 +201,14 @@ app.post('/', function (req, res) {
                       customerData.display_name,
                       customerData.company,
                       customerData.avatar,
-                      null
-
+                      data.public_name
                     )
-                    res.send()
+                    res.send(
+                      {
+                        "response_type": "in_channel",
+                        "attachments": [attachment],
+                      }
+                    )
                   }
                 })
               } else {
