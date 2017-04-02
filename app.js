@@ -13,6 +13,7 @@ const desk = require('./my-desk').createClient({
 
 // Optional: open a google sheet for storing metrics during slackSend()
 const doc = new GoogleSpreadsheet(process.env.SHEET_KEY);
+let sheet;
 
 // Elements for output message
 const disqusRed = '#e76c35'
@@ -317,6 +318,67 @@ app.post('/', function (req, res) {
     )
   }
 })
+
+function store(stats) {
+  async.series([
+    function setAuth(step) {
+      // OR, if you cannot save the file locally (like on heroku) 
+      var creds_json = {
+        client_email: process.env.CLIENT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY
+      }
+   
+      doc.useServiceAccountAuth(creds_json, step);
+    },
+    function workingWithRows(step) {
+      // google provides some query options 
+      sheet.getRows({
+        offset: 1,
+        limit: 20,
+        orderby: 'col2'
+      }, function( err, rows ){
+        console.log('Read '+rows.length+' rows');
+   
+        // the row is an object with keys set by the column headers 
+        rows[0].colname = 'new val';
+        rows[0].save(); // this is async 
+   
+        // deleting a row 
+        rows[0].del();  // this is async 
+   
+        step();
+      });
+    },
+    function workingWithCells(step) {
+      sheet.getCells({
+        'min-row': 1,
+        'max-row': 5,
+        'return-empty': true
+      }, function(err, cells) {
+        var cell = cells[0];
+        console.log('Cell R'+cell.row+'C'+cell.col+' = '+cells.value);
+   
+        // cells have a value, numericValue, and formula 
+        cell.value == '1'
+        cell.numericValue == 1;
+        cell.formula == '=ROW()';
+   
+        // updating `value` is "smart" and generally handles things for you 
+        cell.value = 123;
+        cell.value = '=A1+B2'
+        cell.save(); //async 
+   
+        // bulk updates make it easy to update many cells at once 
+        cells[0].value = 1;
+        cells[1].value = 2;
+        cells[2].formula = '=A1+B1';
+        sheet.bulkUpdateCells(cells); //async 
+   
+        step();
+      });
+    },
+  ]);
+}
 
 app.listen(process.env.PORT || 3000, function () {
   var port
