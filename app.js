@@ -151,7 +151,6 @@ app.post('/', function (req, res) {
       var total = 0
       var attachments = []
       var statusColor
-      console.log(doc);
       Object.keys(stats).map(function(objectKey, i) {
         total += stats[objectKey][0]
         console.log(stats[objectKey], stats[objectKey][0], total)
@@ -335,20 +334,20 @@ function store(stats) {
       sheet.getRows({
         offset: 1,
         limit: 20,
-        orderby: 'col2'
       }, function( err, rows ){
         console.log('Read '+rows.length+' rows');
    
         // the row is an object with keys set by the column headers 
         rows[0].colname = 'new val';
-        rows[0].save(); // this is async 
+        rows[0].save(); // this is async
    
         // deleting a row 
         rows[0].del();  // this is async 
    
         step();
       });
-    },
+    }
+    /*
     function workingWithCells(step) {
       sheet.getCells({
         'min-row': 1,
@@ -377,6 +376,7 @@ function store(stats) {
         step();
       });
     },
+    */
   ]);
 }
 
