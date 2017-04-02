@@ -327,7 +327,7 @@ function store(stats) {
       var creds_json = {
         client_email: process.env.CLIENT_EMAIL,
         private_key: process.env.GOOGLE_PRIVATE_KEY
-      }
+      };
    
       doc.useServiceAccountAuth(creds_json, step);
     },
@@ -379,10 +379,11 @@ function store(stats) {
       });
     },
     */
-  ]// optional callback
-function(err, results) {
+  ], // optional callback 
+               function(err, results) {
+    console.log(err, results)
     // results is now equal to ['one', 'two']
-});
+  });
   console.log("🎂")
 }
 
