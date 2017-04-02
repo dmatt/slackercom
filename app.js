@@ -178,6 +178,7 @@ app.post('/', function (req, res) {
             "attachments": attachments
           }
       );
+      store(stats);
       console.timeEnd("status")
     }
   }
@@ -319,6 +320,7 @@ app.post('/', function (req, res) {
 })
 
 function store(stats) {
+  console.log("👻")
   async.series([
     function setAuth(step) {
       // OR, if you cannot save the file locally (like on heroku) 
@@ -335,7 +337,7 @@ function store(stats) {
         offset: 1,
         limit: 20,
       }, function( err, rows ){
-        console.log('Read '+rows.length+' rows');
+        console.log('💉 Read '+rows.length+' rows');
    
         // the row is an object with keys set by the column headers 
         rows[0].colname = 'new val';
@@ -377,7 +379,11 @@ function store(stats) {
       });
     },
     */
-  ]);
+  ]// optional callback
+function(err, results) {
+    // results is now equal to ['one', 'two']
+});
+  console.log("🎂")
 }
 
 app.listen(process.env.PORT || 3000, function () {
