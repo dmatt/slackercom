@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const googleSheets = require('google-spreadsheet');
+const GoogleSpreadsheet = require('google-spreadsheet');
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
@@ -10,9 +10,8 @@ const desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-if (process.env.SHEET_KEY) { 
-  const sheet = new googleSheets(process.env.SHEET_KEY);
-}
+// Optional: open a google sheet for storing metrics during slackSend()
+const doc = new GoogleSpreadsheet(process.env.SHEET_KEY);
 
 // Elements for output message
 const disqusRed = '#e76c35'
@@ -150,10 +149,7 @@ app.post('/', function (req, res) {
       var total = 0
       var attachments = []
       var statusColor
-      if (process.env.SHEET_KEY) {
-        console.log("💐",sheet)
-      }
-      
+      console.log(doc);
       Object.keys(stats).map(function(objectKey, i) {
         total += stats[objectKey][0]
         console.log(stats[objectKey], stats[objectKey][0], total)

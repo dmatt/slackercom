@@ -18,10 +18,10 @@ Slash command handler for Disqus slack.
   - token
   - token_secret
   - slack_token
+  - sheet_key (optional)
   
 3. Configure the following variables and functions in `app.js` to GET your desired data from Desk
    
   - `statusParams` - Object of criteria for `cases` API call via `deskCall()`, parameters available: http://dev.desk.com/API/cases/#fields
   - `createStats()` - Array.prototype.filter() tests to further segment data from `deskCall()` into specific filters
   - stats - Object of filter names and variables defined in `createStats()` to output up to 20 Slack attachments
-  
