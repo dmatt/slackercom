@@ -326,7 +326,6 @@ app.post('/', function (req, res) {
 
 function store(stats) {
   console.log("👻")
-  
   GoogleSpreadsheets.cells(
         {
           key: '1f6wuZwxzaZgOMq6zjqrAyUSiSf4t8-slsKGWZMJcG4A',
