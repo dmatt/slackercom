@@ -336,7 +336,7 @@ function store(stats) {
       // Cells will contain a 2 dimensional array with all cell data in the
       // range requested.
     });
-  });  
+  });
   console.log("🎂")
 }
 
