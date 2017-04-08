@@ -331,12 +331,18 @@ app.post('/', function (req, res) {
 function store(stats) {
   console.log("👻")
   
-    var oauth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URL);
+  var jwtClient = new google.auth.JWT(
+    key.client_email,
+    null,
+    key.private_key,
+    [scope1, scope2],
+    null
+  );
   // Assuming you already obtained an OAuth2 token that has access to the correct scopes somehow... 
   
   oauth2Client.setCredentials({
-      access_token: ACCESS_TOKEN,
-      refresh_token: REFRESH_TOKEN
+    access_token: ACCESS_TOKEN,
+    refresh_token: REFRESH_TOKEN
   });
   
   GoogleSpreadsheets.cells(
