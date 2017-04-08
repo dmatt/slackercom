@@ -2,7 +2,8 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const async = require('async');
-const GoogleSpreadsheet = require('google-spreadsheet');
+const GoogleSpreadsheets = require('google-spreadsheets');
+const google = require('googleapis');
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
@@ -12,8 +13,12 @@ const desk = require('./my-desk').createClient({
 });
 
 // Optional: open a google sheet for storing metrics during slackSend()
-const doc = new GoogleSpreadsheet(process.env.SHEET_KEY);
-let sheet;
+var oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
+// Assuming you already obtained an OAuth2 token that has access to the correct scopes somehow...
+oauth2Client.setCredentials({
+	access_token: ACCESS_TOKEN,
+	refresh_token: REFRESH_TOKEN
+});
 
 // Elements for output message
 const disqusRed = '#e76c35'

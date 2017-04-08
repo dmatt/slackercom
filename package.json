@@ -7,8 +7,9 @@
     "express": "^4.15.2",
     "oauth": "^0.9.15",
     "body-parser": "^1.17.1",
-    "google-spreadsheet": "^2.0.3",
-    "async": "^2.2.0"
+    "async": "^2.3.0",
+    "google-spreadsheets": "^0.5.1",
+    "googleapis": "^18.0.0"
   },
   "devDependencies": {},
   "scripts": {
