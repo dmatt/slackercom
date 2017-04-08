@@ -3,7 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const async = require('async');
 const GoogleSpreadsheets = require('google-spreadsheets');
-// OPTIONAL FOR GOOGLE AUTH const google = require('googleapis');
+const google = require('googleapis');
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
@@ -326,6 +326,14 @@ app.post('/', function (req, res) {
 
 function store(stats) {
   console.log("👻")
+  
+    var oauth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, REDIRECT_URL);
+  // Assuming you already obtained an OAuth2 token that has access to the correct scopes somehow... 
+  oauth2Client.setCredentials({
+      access_token: ACCESS_TOKEN,
+      refresh_token: REFRESH_TOKEN
+  });
+  
   GoogleSpreadsheets.cells(
         {
           key: '1f6wuZwxzaZgOMq6zjqrAyUSiSf4t8-slsKGWZMJcG4A',
