@@ -332,7 +332,7 @@ function store(stats) {
   }, function(err, spreadsheet) {
     console.log(err)
     spreadsheet.worksheets[0].cells({
-      range: 'A1G1:R5C5'
+      range: 'A1G1:A30G30'
     }, function(err, cells) {
       console.log(cells);
       // Cells will contain a 2 dimensional array with all cell data in the
