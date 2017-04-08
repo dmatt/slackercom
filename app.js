@@ -29,6 +29,10 @@ let stats = ""
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
 
+app.get("/oauth2callback", function (request, response) {
+  response.send("hi");
+});
+
 app.post('/', function (req, res) {
   
   // Check the slack token so that this request is authenticated
@@ -327,8 +331,9 @@ app.post('/', function (req, res) {
 function store(stats) {
   console.log("👻")
   
-    var oauth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, REDIRECT_URL);
+    var oauth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URL);
   // Assuming you already obtained an OAuth2 token that has access to the correct scopes somehow... 
+  
   oauth2Client.setCredentials({
       access_token: ACCESS_TOKEN,
       refresh_token: REFRESH_TOKEN
