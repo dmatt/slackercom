@@ -330,9 +330,11 @@ function store(stats) {
     key: '1f6wuZwxzaZgOMq6zjqrAyUSiSf4t8-slsKGWZMJcG4A',
     // auth: oauth2Client
   }, function(err, spreadsheet) {
+    console.log(err)
     spreadsheet.worksheets[0].cells({
-      range: 'R1C1:R5C5'
+      range: 'A1G1:R5C5'
     }, function(err, cells) {
+      console.log(cells);
       // Cells will contain a 2 dimensional array with all cell data in the
       // range requested.
     });
