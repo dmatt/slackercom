@@ -3,7 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const async = require('async');
 const GoogleSpreadsheets = require('google-spreadsheets');
-const google = require('googleapis');
+// OPTIONAL FOR GOOGLE AUTH const google = require('googleapis');
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
@@ -12,13 +12,13 @@ const desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-// Optional: open a google sheet for storing metrics during slackSend()
-var oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
+// OPTIONAL: if you want to perform authenticated requests.
+// var oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 // Assuming you already obtained an OAuth2 token that has access to the correct scopes somehow...
-oauth2Client.setCredentials({
-	access_token: ACCESS_TOKEN,
-	refresh_token: REFRESH_TOKEN
-});
+// oauth2Client.setCredentials({
+// 	access_token: ACCESS_TOKEN,
+// 	refresh_token: REFRESH_TOKEN
+// });
 
 // Elements for output message
 const disqusRed = '#e76c35'
@@ -326,69 +326,17 @@ app.post('/', function (req, res) {
 
 function store(stats) {
   console.log("👻")
-  async.series([
-    function setAuth(step) {
-      // OR, if you cannot save the file locally (like on heroku) 
-      var creds_json = {
-        client_email: process.env.CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY
-      };
-   
-      doc.useServiceAccountAuth(creds_json, step);
-    },
-    function workingWithRows(step) {
-      // google provides some query options 
-      sheet.getRows({
-        offset: 1,
-        limit: 20,
-      }, function( err, rows ){
-        console.log('💉 Read '+rows.length+' rows');
-   
-        // the row is an object with keys set by the column headers 
-        rows[0].colname = 'new val';
-        rows[0].save(); // this is async
-   
-        // deleting a row 
-        rows[0].del();  // this is async 
-   
-        step();
-      });
-    }
-    /*
-    function workingWithCells(step) {
-      sheet.getCells({
-        'min-row': 1,
-        'max-row': 5,
-        'return-empty': true
-      }, function(err, cells) {
-        var cell = cells[0];
-        console.log('Cell R'+cell.row+'C'+cell.col+' = '+cells.value);
-   
-        // cells have a value, numericValue, and formula 
-        cell.value == '1'
-        cell.numericValue == 1;
-        cell.formula == '=ROW()';
-   
-        // updating `value` is "smart" and generally handles things for you 
-        cell.value = 123;
-        cell.value = '=A1+B2'
-        cell.save(); //async 
-   
-        // bulk updates make it easy to update many cells at once 
-        cells[0].value = 1;
-        cells[1].value = 2;
-        cells[2].formula = '=A1+B1';
-        sheet.bulkUpdateCells(cells); //async 
-   
-        step();
-      });
-    },
-    */
-  ], // optional callback 
-               function(err, results) {
-    console.log(err, results)
-    // results is now equal to ['one', 'two']
-  });
+  GoogleSpreadsheets({
+    key: '1f6wuZwxzaZgOMq6zjqrAyUSiSf4t8-slsKGWZMJcG4A',
+    // auth: oauth2Client
+  }, function(err, spreadsheet) {
+    spreadsheet.worksheets[0].cells({
+      range: 'R1C1:R5C5'
+    }, function(err, cells) {
+      // Cells will contain a 2 dimensional array with all cell data in the
+      // range requested.
+    });
+  });  
   console.log("🎂")
 }
 
