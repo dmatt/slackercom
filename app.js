@@ -326,19 +326,17 @@ app.post('/', function (req, res) {
 
 function store(stats) {
   console.log("👻")
-  GoogleSpreadsheets({
-    key: '1f6wuZwxzaZgOMq6zjqrAyUSiSf4t8-slsKGWZMJcG4A',
-    // auth: oauth2Client
-  }, function(err, spreadsheet) {
-    console.log(err)
-    spreadsheet.worksheets[0].cells({
-      range: 'A1G1:A30G30'
-    }, function(err, cells) {
-      console.log(cells);
-      // Cells will contain a 2 dimensional array with all cell data in the
-      // range requested.
-    });
-  });
+  
+  GoogleSpreadsheets.cells(
+        {
+          key: '1f6wuZwxzaZgOMq6zjqrAyUSiSf4t8-slsKGWZMJcG4A',
+          worksheet: 1,
+          range: 'A1G1:A30G30'
+        },
+        function(err, cells) {
+          console.log("cells:", err, cells);
+        }
+  );
   console.log("🎂")
 }
 
