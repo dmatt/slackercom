@@ -330,12 +330,10 @@ app.post('/', function (req, res) {
 
 function store(stats) {
   console.log("👻")
-  
-  var key = process.env.GOOGLE_APPLICATION_CREDENTIALS;  
   var jwtClient = new google.auth.JWT(
-    JSON.parse(key).client_email,
+    'tickets@disqus-tickets.iam.gserviceaccount.com',
     null,
-    JSON.parse(key).private_key,
+    process.env.GOOGLE_PRIVATE_KEY,
     ['https://www.googleapis.com/auth/spreadsheets.readonly'],
     null
   );
