@@ -323,7 +323,7 @@ app.post('/', function (req, res) {
 function store(stats) {
   console.log("👻")
   var jwtClient = new google.auth.JWT(
-    process.env.GOOGLE_PRIVATE_KEY,
+    process.env.CLIENT_EMAIL,
     null,
     process.env.GOOGLE_PRIVATE_KEY,
     ['https://www.googleapis.com/auth/spreadsheets.readonly'],
