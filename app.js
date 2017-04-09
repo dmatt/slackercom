@@ -331,18 +331,19 @@ app.post('/', function (req, res) {
 function store(stats) {
   console.log("👻")
   
-  var key = require('/path/to/key.json');
+  var key = process.env.GOOGLE_APPLICATION_CREDENTIALS;  
   var jwtClient = new google.auth.JWT(
-    process.env.CLIENT_EMAIL,
+    JSON.parse(key).client_email,
     null,
-    process.env.GOOGLE_PRIVATE_KEY,
-    [scope1, scope2],
+    JSON.parse(key).private_key,
+    ['https://www.googleapis.com/auth/spreadsheets.readonly'],
     null
   );
   
   GoogleSpreadsheets.cells(
         {
           key: '1f6wuZwxzaZgOMq6zjqrAyUSiSf4t8-slsKGWZMJcG4A',
+          auth: jwtClient,
           worksheet: 1,
           range: 'A1G1:A30G30'
         },
