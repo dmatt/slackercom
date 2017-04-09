@@ -12,14 +12,6 @@ const desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-// OPTIONAL: if you want to perform authenticated requests.
-// var oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
-// Assuming you already obtained an OAuth2 token that has access to the correct scopes somehow...
-// oauth2Client.setCredentials({
-// 	access_token: ACCESS_TOKEN,
-// 	refresh_token: REFRESH_TOKEN
-// });
-
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
@@ -331,7 +323,7 @@ app.post('/', function (req, res) {
 function store(stats) {
   console.log("👻")
   var jwtClient = new google.auth.JWT(
-    'tickets@disqus-tickets.iam.gserviceaccount.com',
+    process.env.GOOGLE_PRIVATE_KEY,
     null,
     process.env.GOOGLE_PRIVATE_KEY,
     ['https://www.googleapis.com/auth/spreadsheets.readonly'],

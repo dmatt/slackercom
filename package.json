@@ -9,7 +9,7 @@
     "body-parser": "^1.17.1",
     "async": "^2.3.0",
     "google-spreadsheets": "^0.5.1",
-    "googleapis": "^2.1.7"
+    "googleapis": "^18.0.0"
   },
   "devDependencies": {},
   "scripts": {
