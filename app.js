@@ -1,7 +1,6 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const async = require('async');
 const GoogleSpreadsheets = require('google-spreadsheets');
 const google = require('googleapis');
 const desk = require('./my-desk').createClient({
