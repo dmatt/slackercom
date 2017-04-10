@@ -3,6 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const GoogleSpreadsheets = require('google-spreadsheets');
 const google = require('googleapis');
+const Spreadsheet = require('edit-google-spreadsheet');
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
@@ -321,25 +322,15 @@ app.post('/', function (req, res) {
 
 function store(stats) {
   console.log("👻")
-  var jwtClient = new google.auth.JWT(
-    process.env.CLIENT_EMAIL,
-    null,
-    process.env.GOOGLE_PRIVATE_KEY,
-    ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-    null
-  );
-  
-  GoogleSpreadsheets.cells(
-        {
-          key: '1f6wuZwxzaZgOMq6zjqrAyUSiSf4t8-slsKGWZMJcG4A',
-          auth: jwtClient,
-          worksheet: 1,
-          range: 'A1G1:A30G30'
-        },
-        function(err, cells) {
-          console.log("cells:", err, cells);
-        }
-  );
+  Spreadsheet.load({
+    debug: true,
+    spreadsheetId: '1f6wuZwxzaZgOMq6zjqrAyUSiSf4t8-slsKGWZMJcG4A',
+    worksheetName: 'Sheet1',
+  },
+    function sheetReady(err, spreadsheet) {
+    //use speadsheet!
+    console.log(err,spreadsheet)
+  });
   console.log("🎂")
 }
 
