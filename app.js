@@ -3,7 +3,6 @@ const app = express()
 const bodyParser = require('body-parser')
 const GoogleSpreadsheets = require('google-spreadsheets');
 const google = require('googleapis');
-const Spreadsheet = require('edit-google-spreadsheet');
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
@@ -322,15 +321,7 @@ app.post('/', function (req, res) {
 
 function store(stats) {
   console.log("👻")
-  Spreadsheet.load({
-    debug: true,
-    spreadsheetId: '1f6wuZwxzaZgOMq6zjqrAyUSiSf4t8-slsKGWZMJcG4A',
-    worksheetName: 'Sheet1',
-  },
-    function sheetReady(err, spreadsheet) {
-    //use speadsheet!
-    console.log(err,spreadsheet)
-  });
+  // TODO: AUTH AND GOOGLE SPREADSHEETS :(
   console.log("🎂")
 }
 
