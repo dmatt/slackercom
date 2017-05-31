@@ -16,7 +16,7 @@ var Client = function(config) {
     config.version || "1.0",
     null,
     'HMAC-SHA1'
-  );
+
 
   return this;
 };
