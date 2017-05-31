@@ -30,10 +30,10 @@ app.post('/', function (req, res) {
     // Detect which command was entered in slack and call the correct function
     if (req.body.text.length === 0) {
       status()
-      // validates a full Desk link
+    // validates a full Desk link
     } else if (/^[0-9]{1,7}$/.test(req.body.text.split('case/')[1])) {
       caseAttachment(req.body.text.split('case/')[1])
-      // validates email
+    // validates email
     } else if (/([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)) {
       emailSearch(req.body.text)
     } else if (req.body.text === "help") {
