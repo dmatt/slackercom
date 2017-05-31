@@ -25,16 +25,15 @@ app.get("/oauth2callback", function (request, response) {
 });
 
 app.post('/', function (req, res) {
-  
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
-    // Decide what command was entered in slack and call the correct function
+    // Detect which command was entered in slack and call the correct function
     if (req.body.text.length === 0) {
       status()
-      // TODO: regex should validate the full Desk link, not ID
+      // validates a full Desk link
     } else if (/^[0-9]{1,7}$/.test(req.body.text.split('case/')[1])) {
       caseAttachment(req.body.text.split('case/')[1])
-      // TODO: regex for email recognition
+      // validates email
     } else if (/([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)) {
       emailSearch(req.body.text)
     } else if (req.body.text === "help") {
