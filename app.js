@@ -103,10 +103,8 @@ app.post('/', function (req, res) {
           return caseObj.labels.includes('Home')
         })
         var commenterFilter = dataEntries.filter(function(caseObj){
-          return caseObj.labels.includes('Community commenter') && caseObj.status.includes('new')
+          return caseObj.labels.includes('Community commenter')
         })
-        
-        console.log("🍪",commenterFilter);
         
         // New cases stats only for further segments
         var priorityNew = priorityFilter.filter(function(caseObj){
