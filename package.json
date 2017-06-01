@@ -9,7 +9,8 @@
     "body-parser": "^1.17.1",
     "google-spreadsheets": "^0.5.1",
     "googleapis": "^18.0.0",
-    "edit-google-spreadsheet": "^0.2.21"
+    "edit-google-spreadsheet": "^0.2.21",
+    "glitchup": "^1.1.0"
   },
   "devDependencies": {},
   "scripts": {

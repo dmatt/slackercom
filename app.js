@@ -17,6 +17,10 @@ const disqusGreen = '#7fbd5a'
 let statusIcon
 let stats = ""
 
+// Use glitchup package to prevent server from sleeping
+const glitchup = require('glitchup');
+glitchup();
+
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
 
