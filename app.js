@@ -20,10 +20,6 @@ let stats = ""
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
 
-app.get("/oauth2callback", function (request, response) {
-  response.send("hi");
-});
-
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
