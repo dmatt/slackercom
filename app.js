@@ -27,8 +27,9 @@ glitchup();
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
 
-app.get('/cron', function (req, res) {
-  
+app.get('/cron-'+process.env.CRON_KEY, function (req, res) {
+  console.log("🍆",req,res);
+  status();
 })
 
 app.post('/', function (req, res) {
