@@ -28,8 +28,8 @@ glitchup();
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/cron-'+process.env.CRON_KEY, function (req, res) {
-  console.log("🍆",req,res);
-  status();
+  console.log("🍆",res);
+  status(res);
 })
 
 app.post('/', function (req, res) {
