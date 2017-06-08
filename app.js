@@ -21,6 +21,9 @@ let stats = ""
 const glitchup = require('glitchup');
 glitchup();
 
+// use a web cron service, like https://cron-job.org or other, to hit an endpoint you define
+// yep, that's it - so it'd be https://tickets.glitch.me/your-endpoint and it'd call that function.
+
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
 
