@@ -215,7 +215,7 @@ function status(res,type) {
         if (i <= Math.ceil(data.total_entries/100)) {
           dataEntries = dataEntries.concat(data._embedded.entries)           
           i++
-          deskCall()
+          getOpenCases()
         } else if (!data) {
           error()
           console.log(error)
@@ -224,7 +224,26 @@ function status(res,type) {
         }
       });
     }
-    deskCall()
+    getOpenCases()
+  
+    function getResolvedCases() {
+          desk.cases({
+            labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], 
+            status:['resolved'], 
+            sort_field:'created_at', 
+            sort_direction: 'asc',
+            per_page:100
+          }, function(error, data) {
+            if (!data) {
+              error()
+              console.log(error)
+            } else {
+              console.log("🥙",data)
+            }
+          });
+        }
+    
+  //getResolvedCases()
 
     function filterSend(dataEntries) {
       createStats(dataEntries)
