@@ -203,7 +203,7 @@ function status(res,type) {
     var dataEntries = []
     // Recursively call Desk until there are no more pages of results
     let i = 1
-    function deskCall() {
+    function getOpenCases() {
       desk.cases({
         labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], 
         status:['new,open'], 
