@@ -10,7 +10,8 @@
     "google-spreadsheets": "^0.5.1",
     "googleapis": "^18.0.0",
     "edit-google-spreadsheet": "^0.2.21",
-    "glitchup": "^1.1.0"
+    "glitchup": "^1.1.0",
+    "request": "^2.81.0"
   },
   "devDependencies": {},
   "scripts": {

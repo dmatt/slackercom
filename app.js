@@ -3,6 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const GoogleSpreadsheets = require('google-spreadsheets');
 const google = require('googleapis');
+var request = require('request');
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
@@ -325,6 +326,18 @@ function status(res) {
     store(stats);
     console.timeEnd("status")
   }
+}
+
+function webhook() {
+  request.post(
+    'https://hooks.slack.com/services/T024PTBSY/B5R2CAP8A/'+process.env.SLACK_WEBHOOK,
+    { json: { text: 'hi' } },
+    function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body)
+        }
+    }
+  );
 }
 
 function store(stats) {
