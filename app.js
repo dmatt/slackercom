@@ -322,14 +322,12 @@ function status(res,type) {
           "text": total + " total cases right now.",
           "attachments": attachments
         }
-    // depending on request origin, send the response as slash command answer or as webhook
-    if (type === 'commandResponse') {
-      res.send(statusMessage);
-    } else {
+    // depending on request origin, also send the response as webhook for daily notifications
+    if (type === 'notification') {
       webhook({text:"Morning report incoming!"});
-      res.send(statusMessage);
       webhook(statusMessage);
     }
+    res.send(statusMessage);
     store(stats);
     console.timeEnd("status")
   }
