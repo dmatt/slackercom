@@ -30,7 +30,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/cron-'+process.env.CRON_KEY, function (req, res) {
   console.log("🍆",res);
-  status(res);
+  status(res,'notification');
 })
 
 app.post('/', function (req, res) {
@@ -316,22 +316,23 @@ function status(res) {
         "text": stats[objectKey][1] + " new, " + stats[objectKey][2] + " open"
       })
     });
-    res.send(
-        {
+    
+    let statusMessage = {
           "response_type": "in_channel",
           "text": total + " total cases right now.",
           "attachments": attachments
         }
-    );
+    // if 
+    res ? res.send(statusMessage) : webhook(statusMessage);
     store(stats);
     console.timeEnd("status")
   }
 }
 
-function webhook() {
+function webhook(message) {
   request.post(
     'https://hooks.slack.com/services/T024PTBSY/B5R2CAP8A/'+process.env.SLACK_WEBHOOK,
-    { json: { text: 'hi' } },
+    { json: message },
     function (error, response, body) {
         if (!error && response.statusCode == 200) {
             console.log(body)
