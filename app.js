@@ -326,7 +326,8 @@ function status(res,type) {
     if (type === 'commandResponse') {
       res.send(statusMessage);
     } else {
-      webhook(statusMessage); 
+      webhook({text:"Morning report incoming!"});
+      webhook(statusMessage);
     }
     store(stats);
     console.timeEnd("status")
