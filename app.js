@@ -327,6 +327,7 @@ function status(res,type) {
       res.send(statusMessage);
     } else {
       webhook({text:"Morning report incoming!"});
+      res.send(statusMessage);
       webhook(statusMessage);
     }
     store(stats);
