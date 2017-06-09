@@ -227,7 +227,7 @@ function status(res,type) {
     getOpenCases()
   
     function getResolvedCases() {
-          desk.cases({
+          desk.get('cases',{
             labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], 
             status:['resolved'], 
             sort_field:'created_at', 
