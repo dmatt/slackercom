@@ -38,7 +38,7 @@ app.post('/', function (req, res) {
   if (req.body.token === process.env.SLACK_TOKEN) {
     // Detect which command was entered in slack and call the correct function
     if (req.body.text.length === 0) {
-      status(res)
+      status(res,'commandResponse')
     // validates a full Desk link
     } else if (/^[0-9]{1,7}$/.test(req.body.text.split('case/')[1])) {
       caseAttachment(req.body.text.split('case/')[1])
@@ -198,7 +198,7 @@ app.post('/', function (req, res) {
 
 // Handle each command, and return relevant information to slack
 // Return stats on all case filters from Desk
-function status(res) {
+function status(res,type) {
     console.time("status")
     var dataEntries = []
     // Recursively call Desk until there are no more pages of results
@@ -322,8 +322,12 @@ function status(res) {
           "text": total + " total cases right now.",
           "attachments": attachments
         }
-    // if 
-    res ? res.send(statusMessage) : webhook(statusMessage);
+    // depending on request origin, send the response as slash command answer or as webhook
+    if (type === 'commandResponse') {
+      res.send(statusMessage);
+    } else {
+      webhook(statusMessage); 
+    }
     store(stats);
     console.timeEnd("status")
   }
@@ -331,7 +335,7 @@ function status(res) {
 
 function webhook(message) {
   request.post(
-    'https://hooks.slack.com/services/T024PTBSY/B5R2CAP8A/'+process.env.SLACK_WEBHOOK,
+    'https://hooks.slack.com/services/T024PTBSY/B5R2C2KDY/'+process.env.SLACK_WEBHOOK,
     { json: message },
     function (error, response, body) {
         if (!error && response.statusCode == 200) {
