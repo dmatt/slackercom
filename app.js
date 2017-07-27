@@ -278,7 +278,7 @@ function status(res,type) {
       })
       var saasNew = saasFilter
       .filter(function(caseObj){
-        return caseObj.status.includes('new')
+        return caseObj.status.includes('new') && !caseObj.labels.includes('Ad Content Report')
       })
       var directNew = directFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
