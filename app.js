@@ -256,7 +256,7 @@ function status(res,type) {
         return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
       })
       var saasFilter = dataEntries.filter(function(caseObj){
-        return caseObj.labels.includes('SaaS Ads')
+        return caseObj.labels.includes('SaaS Ads') && !caseObj.labels.includes('Ad Content Report')
       })
       console.log("saasFilter variable", saasFilter);
       var directFilter = dataEntries.filter(function(caseObj){
@@ -278,7 +278,7 @@ function status(res,type) {
       })
       var saasNew = saasFilter
       .filter(function(caseObj){
-        return caseObj.status.includes('new') && !caseObj.labels.includes('Ad Content Report')
+        return caseObj.status.includes('new')
       })
       var directNew = directFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
