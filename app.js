@@ -258,6 +258,7 @@ function status(res,type) {
       var saasFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('SaaS Ads')
       })
+      console.log("saasFilter variable", saasFilter);
       var directFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('Channel commenter') && !caseObj.labels.includes('SaaS Ads')
       })
@@ -275,7 +276,8 @@ function status(res,type) {
       var priorityNew = priorityFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      var saasNew = saasFilter.filter(function(caseObj){
+      var saasNew = saasFilter
+      .filter(function(caseObj){
         return caseObj.status.includes('new')
       })
       var directNew = directFilter.filter(function(caseObj){
