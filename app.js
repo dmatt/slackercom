@@ -58,6 +58,8 @@ app.post('/', function (req, res) {
       emailSearch(req.body.text)
     } else if (req.body.text === "help") {
       help()
+    } else if (req.body.text === "csat") {
+      csat()
     } else {
       console.log(req);
       res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
@@ -187,6 +189,16 @@ app.post('/', function (req, res) {
     }
     return attachement
   }
+  // Return CSAT digest
+  function csat() {
+    res.send(
+      {
+        "response_type": "ephemeral",
+        "text": "Type `/support` for status accross all filters. Add a case link `https://help.disqus.com/agent/case/347519` or an email `archon@gmail.com` to get specific.",
+      }
+    )
+  }
+  
   // Return help text with examples
   function help() {
     res.send(
