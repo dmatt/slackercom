@@ -196,10 +196,8 @@ app.post('/', function (req, res) {
   // Find the last DM we read, and process new ones since then
   function getDMs() {
     return new Promise(function(resolve, reject) {
-      // We don't know the last DM id, so we request it
-      console.log('No last dm recorded, getting one');  
-      T.get('direct_messages', { count: 10 }, function(err, dms, response) {
-        console.log("dms---------->", dms, "response---------->", response)
+      T.get('direct_messages', { count: 100 }, function(err, dms, response) {
+        console.log("dms length ---------->", dms.length)
         if (dms.length) {
           dmCounter = dms.length;
           // We got the last DM, so we begin processing DMs from there
@@ -217,7 +215,7 @@ app.post('/', function (req, res) {
   }
 
   function tellMeDMs(dms) {
-    console.log(dms);
+    //console.log(dms);
   };  
   
   // Return CSAT digest
