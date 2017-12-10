@@ -8,7 +8,8 @@
     "oauth": "^0.9.15",
     "body-parser": "^1.17.1",
     "glitchup": "^1.1.0",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+		"twit": "*"
   },
   "devDependencies": {},
   "scripts": {

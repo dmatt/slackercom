@@ -10,6 +10,19 @@ const desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
+var Twitter = require('twit'),
+  config = { // Be sure to update the .env file with your API keys 
+    twitter: {
+      consumer_key: process.env.CONSUMER_KEY,
+      consumer_secret: process.env.CONSUMER_SECRET,
+      access_token: process.env.ACCESS_TOKEN,
+      access_token_secret: process.env.ACCESS_TOKEN_SECRET
+    }
+  },
+  T = new Twitter(config.twitter),
+  dmCounter = 0,
+  dmsToRead="";
+
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
