@@ -198,7 +198,8 @@ app.post('/', function (req, res) {
     return new Promise(function(resolve, reject) {
       // We don't know the last DM id, so we request it
       console.log('No last dm recorded, getting one');  
-      T.get('direct_messages', { count: 1 }, function(err, dms, response) {
+      T.get('direct_messages', { count: 10 }, function(err, dms, response) {
+        console.log("dms---------->", dms, "response---------->", response)
         if (dms.length) {
           dmCounter = dms.length;
           // We got the last DM, so we begin processing DMs from there
@@ -252,7 +253,6 @@ app.post('/', function (req, res) {
 // Handle each command, and return relevant information to slack
 // Return stats on all case filters from Desk
 function status(res,type) {
-    console.time("status")
     var dataEntries = []
     // Recursively call Desk until there are no more pages of results
     let i = 1
@@ -271,7 +271,6 @@ function status(res,type) {
           getOpenCases()
         } else if (!data) {
           error()
-          console.log(error)
         } else {
           filterSend(dataEntries)
         }
@@ -289,9 +288,7 @@ function status(res,type) {
           }, function(error, data) {
             if (!data) {
               error()
-              console.log(error)
             } else {
-              console.log("🥙",data)
             }
           });
         }
@@ -311,7 +308,6 @@ function status(res,type) {
       var saasFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('SaaS Ads') && !caseObj.labels.includes('Ad Content Report')
       })
-      console.log("saasFilter variable", saasFilter);
       var directFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('Channel commenter') && !caseObj.labels.includes('SaaS Ads')
       })
@@ -372,7 +368,6 @@ function status(res,type) {
     var statusColor
     Object.keys(stats).map(function(objectKey, i) {
       total += stats[objectKey][0]
-      console.log(stats[objectKey], stats[objectKey][0], total)
       if (stats[objectKey][0] > stats[objectKey][3]) {
         statusColor = disqusRed
         statusIcon = "🔥"
@@ -402,8 +397,8 @@ function status(res,type) {
       webhook(statusMessage);
     }
     res.send(statusMessage);
-    store(stats);
-    console.timeEnd("status")
+    // TODO Write function that stores this data to database
+    //store(stats);
   }
 }
 
@@ -417,12 +412,6 @@ function webhook(message) {
         }
     }
   );
-}
-
-function store(stats) {
-  console.log("👻")
-  // TODO: AUTH AND GOOGLE SPREADSHEETS OR Database :(
-  console.log("🎂")
 }
 
 app.listen(process.env.PORT || 3000, function () {
