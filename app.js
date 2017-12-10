@@ -24,6 +24,26 @@ var Twitter = require('twit'),
   dmCounter = 0,
   dmsToRead="";
 
+// Find the last DM we read, and process new ones since then
+function getDMs(){
+  return new Promise(function(resolve, reject) {
+    // We don't know the last DM id, so we request it
+    console.log('No last dm recorded, getting one');  
+    T.get('direct_messages', { count: 1 }, function(err, dms, response) {
+      if (dms.length) {
+        // We got the last DM, so we begin processing DMs from there
+        processDM(dms, function(pdms){
+          resolve(pdms);
+        });
+      } else {
+        // We've never received any DMs at all, so we can't do anything yet
+        console.log('This user has no DMs. Send one to it to kick things off!');
+        resolve("This user has no DMs. Send one to it to kick things off.");
+      }
+    });       
+  });
+}
+
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
