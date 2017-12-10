@@ -24,26 +24,6 @@ var Twitter = require('twit'),
   dmCounter = 0,
   dmsToRead="";
 
-// Find the last DM we read, and process new ones since then
-function getDMs(){
-  return new Promise(function(resolve, reject) {
-    // We don't know the last DM id, so we request it
-    console.log('No last dm recorded, getting one');  
-    T.get('direct_messages', { count: 1 }, function(err, dms, response) {
-      if (dms.length) {
-        // We got the last DM, so we begin processing DMs from there
-        processDM(dms, function(pdms){
-          resolve(pdms);
-        });
-      } else {
-        // We've never received any DMs at all, so we can't do anything yet
-        console.log('This user has no DMs. Send one to it to kick things off!');
-        resolve("This user has no DMs. Send one to it to kick things off.");
-      }
-    });       
-  });
-}
-
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
@@ -79,6 +59,8 @@ app.post('/', function (req, res) {
       emailSearch(req.body.text)
     } else if (req.body.text === "help") {
       help()
+    } else if (req.body.text === "dms") {
+      getDMs()
     } else if (req.body.text === "csat") {
       csat()
     } else {
@@ -210,6 +192,33 @@ app.post('/', function (req, res) {
     }
     return attachement
   }
+  
+  // Find the last DM we read, and process new ones since then
+  function getDMs() {
+    return new Promise(function(resolve, reject) {
+      // We don't know the last DM id, so we request it
+      console.log('No last dm recorded, getting one');  
+      T.get('direct_messages', { count: 1 }, function(err, dms, response) {
+        if (dms.length) {
+          dmCounter = dms.length;
+          // We got the last DM, so we begin processing DMs from there
+          tellMeDMs(dms, function(pdms){
+            res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
+            resolve(dms);
+          });
+        } else {
+          // We've never received any DMs at all, so we can't do anything yet
+          console.log('This user has no DMs. Send one to it to kick things off!');
+          resolve("This user has no DMs. Send one to it to kick things off.");
+        }
+      });
+    });
+  }
+
+  function tellMeDMs(dms) {
+    console.log(dms);
+  };  
+  
   // Return CSAT digest
   function csat() {
     res.send(
