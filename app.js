@@ -1,8 +1,6 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const GoogleSpreadsheets = require('google-spreadsheets');
-const google = require('googleapis');
 var request = require('request');
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
@@ -368,7 +366,7 @@ function webhook(message) {
 
 function store(stats) {
   console.log("👻")
-  // TODO: AUTH AND GOOGLE SPREADSHEETS :(
+  // TODO: AUTH AND GOOGLE SPREADSHEETS OR Database :(
   console.log("🎂")
 }
 
