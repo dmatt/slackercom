@@ -196,21 +196,19 @@ app.post('/', function (req, res) {
     return attachement
   }
   
-  // Find the last 10 DMs that do not have replies from me (there's no read/unread state via API 
+  // Find the last 10 recieved and sent DMs and count those without replies (there's no read/unread state via API 
   // https://twittercommunity.com/t/please-let-me-know-if-we-can-get-unread-messages-id-from-twitter-api-1-1/11745/2 )
   
   function getDMs() {
     return new Promise(function(resolve, reject) {
-      T.get('direct_messages', { count: 5 }, function(err, dms, response) {
+      T.get('direct_messages', { count: 7 }, function(err, dms, response) {
         console.log("dms data ---------->", dms)
         twitterDMs = dms;
         if (dms.length) {
           dmCounter = dms.length;
           // We got the last DM, so we begin processing DMs from there
-          (dms, function(pdms){
             res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
             resolve(dms);
-          });
         } else {
           // We've never received any DMs at all, so we can't do anything yet
           console.log('This user has no DMs. Send one to it to kick things off!');
@@ -222,16 +220,14 @@ app.post('/', function (req, res) {
 
   function getDMsSent() {  
     return new Promise(function(resolve, reject) {
-      T.get('direct_messages/sent', { count: 5 }, function(err, dmsSent, response) {
+      T.get('direct_messages/sent', { count: 7 }, function(err, dmsSent, response) {
         console.log("dms data SENT ---------->", dmsSent)
         twitterDMsSent = dmsSent;
         if (dmsSent.length) {
           dmCounter = dmsSent.length;
           // We got the last DM, so we begin processing DMs from there
-          (dmsSent, function(pdms){
             res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
             resolve(dmsSent);
-          });
         } else {
           // We've never received any DMs at all, so we can't do anything yet
           console.log('This user has no DMs. Send one to it to kick things off!');
