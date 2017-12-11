@@ -23,7 +23,8 @@ var Twitter = require('twit'),
   T = new Twitter(config.twitter),
   dmCounter = 0,
   dmsToRead="",
-  twitterDMs={};
+  twitterDMs={},
+  twitterDMsSent={};
 
 // Elements for output message
 const disqusRed = '#e76c35'
@@ -208,6 +209,27 @@ app.post('/', function (req, res) {
           tellMeDMs(dms, function(pdms){
             res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
             resolve(dms);
+          });
+        } else {
+          // We've never received any DMs at all, so we can't do anything yet
+          console.log('This user has no DMs. Send one to it to kick things off!');
+          resolve("This user has no DMs. Send one to it to kick things off.");
+        }
+      });
+    });
+  }
+
+  function getDMs() {  
+    return new Promise(function(resolve, reject) {
+      T.get('direct_messages/sent', { count: 5 }, function(err, dmsSent, response) {
+        console.log("SENT ---------->", dmsSent)
+        twitterDMsSent = dmsSent;
+        if (dmsSent.length) {
+          dmCounter = dmsSent.length;
+          // We got the last DM, so we begin processing DMs from there
+          tellMeDMs(dmsSent, function(pdms){
+            res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
+            resolve(dmsSent);
           });
         } else {
           // We've never received any DMs at all, so we can't do anything yet
@@ -406,6 +428,10 @@ function status(res,type) {
 
 app.get('/twitter', function (req, res) {
   res.send(twitterDMs)
+})
+
+app.get('/twitter_sent', function (req, res) {
+  res.send(twitterDMsSent)
 })
 
 function webhook(message) {
