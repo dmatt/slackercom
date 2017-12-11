@@ -201,7 +201,7 @@ app.post('/', function (req, res) {
   
   function getDMs() {
     return new Promise(function(resolve, reject) {
-      T.get('direct_messages', { count: 7 }, function(err, dms, response) {
+      T.get('direct_messages', { count: 10 }, function(err, dms, response) {
         console.log("dms data ---------->", dms)
         twitterDMs = dms;
         if (dms.length) {
@@ -215,12 +215,8 @@ app.post('/', function (req, res) {
           resolve("This user has no DMs. Send one to it to kick things off.");
         }
       });
-    });
-  }
-
-  function getDMsSent() {  
-    return new Promise(function(resolve, reject) {
-      T.get('direct_messages/sent', { count: 7 }, function(err, dmsSent, response) {
+      
+      T.get('direct_messages/sent', { count: 10 }, function(err, dmsSent, response) {
         console.log("dms data SENT ---------->", dmsSent)
         twitterDMsSent = dmsSent;
         if (dmsSent.length) {
@@ -233,7 +229,8 @@ app.post('/', function (req, res) {
           console.log('This user has no DMs. Send one to it to kick things off!');
           resolve("This user has no DMs. Send one to it to kick things off.");
         }
-      });
+      });      
+      
     });
   }
   
