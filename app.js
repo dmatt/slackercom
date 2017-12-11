@@ -196,8 +196,8 @@ app.post('/', function (req, res) {
   // Find the last DM we read, and process new ones since then
   function getDMs() {
     return new Promise(function(resolve, reject) {
-      T.get('direct_messages', { count: 100 }, function(err, dms, response) {
-        console.log("dms length ---------->", dms.length)
+      T.get('direct_messages', { count: 5 }, function(err, dms, response) {
+        console.log("dms data ---------->", dms)
         if (dms.length) {
           dmCounter = dms.length;
           // We got the last DM, so we begin processing DMs from there
