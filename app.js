@@ -22,7 +22,8 @@ var Twitter = require('twit'),
   },
   T = new Twitter(config.twitter),
   dmCounter = 0,
-  dmsToRead="";
+  dmsToRead="",
+  twitterDMs={};
 
 // Elements for output message
 const disqusRed = '#e76c35'
@@ -193,11 +194,14 @@ app.post('/', function (req, res) {
     return attachement
   }
   
-  // Find the last DM we read, and process new ones since then
+  // Find the last 10 DMs that do not have replies from me (there's no read/unread state via API 
+  // https://twittercommunity.com/t/please-let-me-know-if-we-can-get-unread-messages-id-from-twitter-api-1-1/11745/2 )
+  
   function getDMs() {
     return new Promise(function(resolve, reject) {
       T.get('direct_messages', { count: 5 }, function(err, dms, response) {
         console.log("dms data ---------->", dms)
+        twitterDMs = dms;
         if (dms.length) {
           dmCounter = dms.length;
           // We got the last DM, so we begin processing DMs from there
@@ -399,6 +403,10 @@ function status(res,type) {
     //store(stats);
   }
 }
+
+app.get('/twitter', function (req, res) {
+  res.send(twitterDMs)
+})
 
 function webhook(message) {
   request.post(
