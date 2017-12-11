@@ -63,6 +63,7 @@ app.post('/', function (req, res) {
       help()
     } else if (req.body.text === "dms") {
       getDMs()
+      getDMsSent()
     } else if (req.body.text === "csat") {
       csat()
     } else {
@@ -206,7 +207,7 @@ app.post('/', function (req, res) {
         if (dms.length) {
           dmCounter = dms.length;
           // We got the last DM, so we begin processing DMs from there
-          tellMeDMs(dms, function(pdms){
+          (dms, function(pdms){
             res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
             resolve(dms);
           });
@@ -219,15 +220,15 @@ app.post('/', function (req, res) {
     });
   }
 
-  function getDMs() {  
+  function getDMsSent() {  
     return new Promise(function(resolve, reject) {
       T.get('direct_messages/sent', { count: 5 }, function(err, dmsSent, response) {
-        console.log("SENT ---------->", dmsSent)
+        console.log("dms data SENT ---------->", dmsSent)
         twitterDMsSent = dmsSent;
         if (dmsSent.length) {
           dmCounter = dmsSent.length;
           // We got the last DM, so we begin processing DMs from there
-          tellMeDMs(dmsSent, function(pdms){
+          (dmsSent, function(pdms){
             res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
             resolve(dmsSent);
           });
@@ -239,10 +240,6 @@ app.post('/', function (req, res) {
       });
     });
   }
-
-  function tellMeDMs(dms) {
-    //console.log(dms);
-  };  
   
   // Return CSAT digest
   function csat() {
