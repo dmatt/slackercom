@@ -22,7 +22,6 @@ var Twitter = require('twit'),
   },
   T = new Twitter(config.twitter),
   dmCounter = 0,
-  dmsToRead="",
   twitterDMs={},
   twitterDMsSent={};
 
@@ -63,7 +62,6 @@ app.post('/', function (req, res) {
       help()
     } else if (req.body.text === "dms") {
       getDMs()
-      getDMsSent()
     } else if (req.body.text === "csat") {
       csat()
     } else {
@@ -208,6 +206,7 @@ app.post('/', function (req, res) {
           console.log("dms data SENT ---------->", dmsSent)
           twitterDMsSent = dmsSent;
           if (dms.length && dmsSent.length ) {
+            dms.forEach
             dmCounter = dms.length + dmsSent.length;
             // We got the last DM, so we begin processing DMs from there
               res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
@@ -219,9 +218,6 @@ app.post('/', function (req, res) {
           }
         });        
       });
-     
-    
-      
     });
   }
   
@@ -364,6 +360,7 @@ function status(res,type) {
         Community:[communityFilter.length,communityNew.length,communityOpen,30],
         Channel:[channelFilter.length,channelNew.length,channelOpen,30],
         Commenter:[commenterFilter.length,commenterNew.length,commenterOpen,60],
+        // Twitter: dmCounter
       }
     }
   // Build and send the message with data from each filter
