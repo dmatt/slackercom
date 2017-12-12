@@ -204,32 +204,23 @@ app.post('/', function (req, res) {
       T.get('direct_messages', { count: 10 }, function(err, dms, response) {
         console.log("dms data ---------->", dms)
         twitterDMs = dms;
-        if (dms.length) {
-          dmCounter = dms.length;
-          // We got the last DM, so we begin processing DMs from there
-            res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
-            resolve(dms);
-        } else {
-          // We've never received any DMs at all, so we can't do anything yet
-          console.log('This user has no DMs. Send one to it to kick things off!');
-          resolve("This user has no DMs. Send one to it to kick things off.");
-        }
+        T.get('direct_messages/sent', { count: 10 }, function(err, dmsSent, response) {
+          console.log("dms data SENT ---------->", dmsSent)
+          twitterDMsSent = dmsSent;
+          if (dms.length && dmsSent.length ) {
+            dmCounter = dms.length + dmsSent.length;
+            // We got the last DM, so we begin processing DMs from there
+              res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
+              resolve(dms);
+          } else {
+            // We've never received any DMs at all, so we can't do anything yet
+            console.log('This user has no DMs. Send one to it to kick things off!');
+            resolve("This user has no DMs. Send one to it to kick things off.");
+          }
+        });        
       });
-      
-      T.get('direct_messages/sent', { count: 10 }, function(err, dmsSent, response) {
-        console.log("dms data SENT ---------->", dmsSent)
-        twitterDMsSent = dmsSent;
-        if (dmsSent.length) {
-          dmCounter = dmsSent.length;
-          // We got the last DM, so we begin processing DMs from there
-            res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
-            resolve(dmsSent);
-        } else {
-          // We've never received any DMs at all, so we can't do anything yet
-          console.log('This user has no DMs. Send one to it to kick things off!');
-          resolve("This user has no DMs. Send one to it to kick things off.");
-        }
-      });      
+     
+    
       
     });
   }
