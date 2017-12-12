@@ -198,6 +198,7 @@ app.post('/', function (req, res) {
   // https://twittercommunity.com/t/please-let-me-know-if-we-can-get-unread-messages-id-from-twitter-api-1-1/11745/2 )
   
   function getDMs() {
+    dmCounter = 0
     return new Promise(function(resolve, reject) {
       T.get('direct_messages', { count: 10 }, function(err, dms, response) {
         console.log("dms data ---------->", dms)
@@ -206,7 +207,11 @@ app.post('/', function (req, res) {
           console.log("dms data SENT ---------->", dmsSent)
           twitterDMsSent = dmsSent;
           if (dms.length && dmsSent.length ) {
-            dms.forEach
+            dms.forEach( function (obj, i) {
+               if (obj.sender_id == 1) {
+                 dmCounter++
+               }
+            });
             dmCounter = dms.length + dmsSent.length;
             // We got the last DM, so we begin processing DMs from there
               res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
@@ -360,7 +365,7 @@ function status(res,type) {
         Community:[communityFilter.length,communityNew.length,communityOpen,30],
         Channel:[channelFilter.length,channelNew.length,channelOpen,30],
         Commenter:[commenterFilter.length,commenterNew.length,commenterOpen,60],
-        // Twitter: dmCounter
+        // Twitter: [dmCounter, dmCounter, dmCounter, 3],
       }
     }
   // Build and send the message with data from each filter
