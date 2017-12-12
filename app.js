@@ -208,9 +208,7 @@ app.post('/', function (req, res) {
           twitterDMsSent = dmsSent;
           if (dms.length && dmsSent.length ) {
             dms.forEach( function (obj, i) {
-               if (obj.sender_id == 1) {
-                 dmCounter++
-               }
+               dmCounter += dmsSent.filter(dmSent => (dmSent.Name === obj.sender.id)).length;
             });
             dmCounter = dms.length + dmsSent.length;
             // We got the last DM, so we begin processing DMs from there
