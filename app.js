@@ -42,7 +42,6 @@ glitchup();
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/cron-'+process.env.CRON_KEY, function (req, res) {
-  console.log("🍆",res);
   status(res,'notification');
 })
 
@@ -201,16 +200,13 @@ app.post('/', function (req, res) {
     dmCounter = 0
     return new Promise(function(resolve, reject) {
       T.get('direct_messages', { count: 10 }, function(err, dms, response) {
-        console.log("dms data ---------->", dms)
         twitterDMs = dms;
         T.get('direct_messages/sent', { count: 10 }, function(err, dmsSent, response) {
-          console.log("dms data SENT ---------->", dmsSent)
           twitterDMsSent = dmsSent;
           if (dms.length && dmsSent.length ) {
             dms.forEach( function (obj, i) {
-               dmCounter += dmsSent.filter(dmSent => (dmSent.Name === obj.sender.id)).length;
+               dmCounter += dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length;
             });
-            dmCounter = dms.length + dmsSent.length;
             // We got the last DM, so we begin processing DMs from there
               res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
               resolve(dms);
