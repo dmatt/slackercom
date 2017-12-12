@@ -199,19 +199,23 @@ app.post('/', function (req, res) {
   function getDMs() {
     dmCounter = 0
     return new Promise(function(resolve, reject) {
-      T.get('direct_messages', { count: 10 }, function(err, dms, response) {
+      T.get('direct_messages', { count: 30 }, function(err, dms, response) {
         twitterDMs = dms;
-        T.get('direct_messages/sent', { count: 10 }, function(err, dmsSent, response) {
+        T.get('direct_messages/sent', { count: 30 }, function(err, dmsSent, response) {
           twitterDMsSent = dmsSent;
+          // We have DMs and Sent DMs so we can compare and count
           if (dms.length && dmsSent.length ) {
+            // Search for each DM sender in sent object and increment counter if not found 
             dms.forEach( function (obj, i) {
                console.log("obj.sender.id ", obj.sender.id)
-               console.log("length of", dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length)
-               dmCounter += dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length;
+               console.log("length of match obj.sender.id -> dmSent.recipient.id", dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length)
+              if (dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length < 1) {
+                dmCounter++
+              }
             });
             // We got the last DM, so we begin processing DMs from there
-              res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
-              resolve(dms);
+            res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
+            resolve(dms);
           } else {
             // We've never received any DMs at all, so we can't do anything yet
             console.log('This user has no DMs. Send one to it to kick things off!');
