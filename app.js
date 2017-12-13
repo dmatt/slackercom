@@ -196,6 +196,10 @@ app.post('/', function (req, res) {
   // Find the last 10 recieved and sent DMs and count those without replies (there's no read/unread state via API 
   // https://twittercommunity.com/t/please-let-me-know-if-we-can-get-unread-messages-id-from-twitter-api-1-1/11745/2 )
   
+  function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+  }
+  
   function getDMs() {
     dmCounter = 0
     return new Promise(function(resolve, reject) {
@@ -206,6 +210,7 @@ app.post('/', function (req, res) {
             twitterDMsSent = dmsSent;
             // We have Sent DMs so we can compare and count
             if (dmsSent.length ) {
+              var uniqueDms = dms.filter(dm => (onlyUnique))
               // Search for each DM sender in sent object and increment counter if not found 
               dms.forEach( function (obj, i) {
                  console.log("obj.sender.id ", obj.sender.id)
