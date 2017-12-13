@@ -211,7 +211,6 @@ app.post('/', function (req, res) {
                  console.log("obj.sender.id ", obj.sender.id)
                  console.log("length of match obj.sender.id -> dmSent.recipient.id", dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length)
                 if (dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length < 1) {
-                  // && recip.id === sender.id < 1
                   dmCounter++
                 }
               });
