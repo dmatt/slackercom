@@ -198,7 +198,7 @@ app.post('/', function (req, res) {
   
   function onlyUnique(value, index, self) { 
     console.log("hi");
-    console.log(self.indexOf(value));
+    console.log(self.indexOf(self));
     return self.indexOf(value) === index;
   }
   
