@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-var request = require('request');
+const request = require('request');
 const desk = require('./my-desk').createClient({
   subdomain: 'help',
   consumer_key: process.env.CONSUMER_KEY,
@@ -10,7 +10,7 @@ const desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-var Twitter = require('twit'),
+const Twitter = require('twit'),
   config = { // Be sure to update the .env file with your API keys 
     twitter: {
       consumer_key: process.env.TWITTER_CONSUMER_KEY,
