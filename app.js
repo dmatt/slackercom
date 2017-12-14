@@ -315,53 +315,53 @@ function status(res,type) {
 
     // Filter the data into seprate objects that correspond to each Desk filter
     function createStats(dataEntries) {
-      let priorityFilter = dataEntries.filter(function(caseObj){
+      var priorityFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
       })
-      let saasFilter = dataEntries.filter(function(caseObj){
+      var saasFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('SaaS Ads') && !caseObj.labels.includes('Ad Content Report')
       })
-      let directFilter = dataEntries.filter(function(caseObj){
+      var directFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('Channel commenter') && !caseObj.labels.includes('SaaS Ads')
       })
-      let communityFilter = dataEntries.filter(function(caseObj){
+      var communityFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Community publisher') && !caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
       })
-      let channelFilter = dataEntries.filter(function(caseObj){
+      var channelFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Home')
       })
-      let commenterFilter = dataEntries.filter(function(caseObj){
+      var commenterFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Community commenter')
       })
 
       // New cases stats only for further segments
-      let priorityNew = priorityFilter.filter(function(caseObj){
+      var priorityNew = priorityFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      let saasNew = saasFilter
+      var saasNew = saasFilter
       .filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      let directNew = directFilter.filter(function(caseObj){
+      var directNew = directFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      let communityNew = communityFilter.filter(function(caseObj){
+      var communityNew = communityFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      let channelNew = channelFilter.filter(function(caseObj){
+      var channelNew = channelFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      let commenterNew = commenterFilter.filter(function(caseObj){
+      var commenterNew = commenterFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
 
       // Open cases stats using complicated maths
-      let priorityOpen = priorityFilter.length - priorityNew.length
-      let saasOpen = saasFilter.length - saasNew.length
-      let directOpen = directFilter.length - directNew.length
-      let communityOpen = communityFilter.length - communityNew.length
-      let channelOpen = channelFilter.length - channelNew.length
-      let commenterOpen = commenterFilter.length - commenterNew.length
+      var priorityOpen = priorityFilter.length - priorityNew.length
+      var saasOpen = saasFilter.length - saasNew.length
+      var directOpen = directFilter.length - directNew.length
+      var communityOpen = communityFilter.length - communityNew.length
+      var channelOpen = channelFilter.length - channelNew.length
+      var commenterOpen = commenterFilter.length - commenterNew.length
 
       // Object so we can easily build the slack message
       // Format: {"Filter Name": All cases, New cases, Open cases, "Needs attention" threshold for each filter}
@@ -377,9 +377,9 @@ function status(res,type) {
     }
   // Build and send the message with data from each filter
   function slackSend() {
-    let total = 0
-    let attachments = []
-    let statusColor
+    var total = 0
+    var attachments = []
+    var statusColor
     Object.keys(stats).map(function(objectKey, i) {
       total += stats[objectKey][0]
       if (stats[objectKey][0] > stats[objectKey][3]) {
@@ -437,7 +437,7 @@ function webhook(message) {
 }
 
 app.listen(process.env.PORT || 3000, function () {
-  let port
+  var port
   process.env.PORT ? port = process.env.PORT : port = 3000
   console.log('disqus-tickets app listening on port ' + port + '!')
 })
