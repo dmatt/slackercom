@@ -80,16 +80,16 @@ app.post('/', function (req, res) {
   function caseAttachment(id) {
     desk.case(id, {}, function(error, data) {
       if (data !== null) {
-        var caseData = data
+        let caseData = data
         desk.customer(caseData._links.customer.href.split("customers/")[1], {}, function(error, data) {
           if (data !== null) {
-            var customerData = data
+            let customerData = data
             if (data !== null) {
-              var assignedName = 'Nobody'
+              let assignedName = 'Nobody'
               if (caseData._links.assigned_user) {
                 desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
                   if (data) {
-                    var attachment = caseCard(
+                    let attachment = caseCard(
                       null,
                       caseData.status,
                       caseData.id,
@@ -112,7 +112,7 @@ app.post('/', function (req, res) {
                 })
               } else {
                 // function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, customerGrav, assigned)
-                var attachment = caseCard(
+                let attachment = caseCard(
                   null,
                   caseData.status,
                   caseData.id,
@@ -167,7 +167,7 @@ app.post('/', function (req, res) {
     if (!assigned) {
       assigned = "Nobody"
     }
-    var attachement = {
+    let attachement = {
       "pretext": status + " case from " + customer + " " + company,
       "fallback": status + " case from " + customer + " " + company + "- #" + id + ": "+ subject,
       "author_icon": customerGrav,
@@ -212,7 +212,7 @@ app.post('/', function (req, res) {
             twitterDMsSent = dmsSent;
             // We have Sent DMs so we can compare and count
             if (dmsSent.length ) {
-              var uniqueDms = dms.filter( onlyUnique )
+              const uniqueDms = dms.filter( onlyUnique )
               // Search for each DM sender in sent object and increment counter if not found 
               uniqueDms.forEach( function (obj, i) {
                 if (dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length < 1) {
@@ -266,7 +266,7 @@ app.post('/', function (req, res) {
 // Handle each command, and return relevant information to slack
 // Return stats on all case filters from Desk
 function status(res,type) {
-    var dataEntries = []
+    let dataEntries = []
     // Recursively call Desk until there are no more pages of results
     let i = 1
     function getOpenCases() {
@@ -315,53 +315,53 @@ function status(res,type) {
 
     // Filter the data into seprate objects that correspond to each Desk filter
     function createStats(dataEntries) {
-      var priorityFilter = dataEntries.filter(function(caseObj){
+      let priorityFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
       })
-      var saasFilter = dataEntries.filter(function(caseObj){
+      let saasFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('SaaS Ads') && !caseObj.labels.includes('Ad Content Report')
       })
-      var directFilter = dataEntries.filter(function(caseObj){
+      let directFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('Channel commenter') && !caseObj.labels.includes('SaaS Ads')
       })
-      var communityFilter = dataEntries.filter(function(caseObj){
+      let communityFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Community publisher') && !caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
       })
-      var channelFilter = dataEntries.filter(function(caseObj){
+      let channelFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Home')
       })
-      var commenterFilter = dataEntries.filter(function(caseObj){
+      let commenterFilter = dataEntries.filter(function(caseObj){
         return caseObj.labels.includes('Community commenter')
       })
 
       // New cases stats only for further segments
-      var priorityNew = priorityFilter.filter(function(caseObj){
+      let priorityNew = priorityFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      var saasNew = saasFilter
+      let saasNew = saasFilter
       .filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      var directNew = directFilter.filter(function(caseObj){
+      let directNew = directFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      var communityNew = communityFilter.filter(function(caseObj){
+      let communityNew = communityFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      var channelNew = channelFilter.filter(function(caseObj){
+      let channelNew = channelFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
-      var commenterNew = commenterFilter.filter(function(caseObj){
+      let commenterNew = commenterFilter.filter(function(caseObj){
         return caseObj.status.includes('new')
       })
 
       // Open cases stats using complicated maths
-      var priorityOpen = priorityFilter.length - priorityNew.length
-      var saasOpen = saasFilter.length - saasNew.length
-      var directOpen = directFilter.length - directNew.length
-      var communityOpen = communityFilter.length - communityNew.length
-      var channelOpen = channelFilter.length - channelNew.length
-      var commenterOpen = commenterFilter.length - commenterNew.length
+      let priorityOpen = priorityFilter.length - priorityNew.length
+      let saasOpen = saasFilter.length - saasNew.length
+      let directOpen = directFilter.length - directNew.length
+      let communityOpen = communityFilter.length - communityNew.length
+      let channelOpen = channelFilter.length - channelNew.length
+      let commenterOpen = commenterFilter.length - commenterNew.length
 
       // Object so we can easily build the slack message
       // Format: {"Filter Name": All cases, New cases, Open cases, "Needs attention" threshold for each filter}
@@ -377,9 +377,9 @@ function status(res,type) {
     }
   // Build and send the message with data from each filter
   function slackSend() {
-    var total = 0
-    var attachments = []
-    var statusColor
+    let total = 0
+    let attachments = []
+    let statusColor
     Object.keys(stats).map(function(objectKey, i) {
       total += stats[objectKey][0]
       if (stats[objectKey][0] > stats[objectKey][3]) {
@@ -437,7 +437,7 @@ function webhook(message) {
 }
 
 app.listen(process.env.PORT || 3000, function () {
-  var port
+  let port
   process.env.PORT ? port = process.env.PORT : port = 3000
   console.log('disqus-tickets app listening on port ' + port + '!')
 })
