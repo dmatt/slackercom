@@ -10,7 +10,7 @@ const desk = require('./my-desk').createClient({
   token_secret: process.env.TOKEN_SECRET
 });
 
-const Twitter = require('twit'),
+let Twitter = require('twit'),
   config = { // Be sure to update the .env file with your API keys 
     twitter: {
       consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -193,11 +193,11 @@ app.post('/', function (req, res) {
     return attachement
   }
   
-  // Find the last 10 recieved and sent DMs and count those without replies (there's no read/unread state via API 
-  // https://twittercommunity.com/t/please-let-me-know-if-we-can-get-unread-messages-id-from-twitter-api-1-1/11745/2 )
-  
-  function onlyUnique(value, index, self) { 
-    console.log("hi");
+  // returns true if indexOf value equals current index, if indexOf returns multiple we know it's not unique
+  function onlyUnique(value, index, self) {
+    console.log("value", value);
+    console.log("index", index);
+    console.log("self", self);
     console.log(self.indexOf(self.sender_id));
     return self.indexOf(value) === index;
   }
