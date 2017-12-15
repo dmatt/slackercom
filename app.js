@@ -195,9 +195,9 @@ app.post('/', function (req, res) {
   
   // does something
   function uniqueMap(a, key) {
-    let keysArray = []
-    a.forEach( obj => keysArray.push(obj.key))
-    console.l
+    let keysArray = [];
+    a.forEach( obj => keysArray.push(obj[key]))
+    console.log(keysArray)
     return a.map( (v, i, a) => keysArray.indexOf(v.key) === -1 ? null : v );
   }
   
@@ -212,7 +212,6 @@ app.post('/', function (req, res) {
             // We have Sent DMs so we can compare and count
             if (dmsSent.length ) {
               const uniqueDms = uniqueMap(dms, "sender_id")
-              console.log(uniqueDms);
               // Search for each DM sender in sent object and increment counter if not found 
               uniqueDms.forEach( function (obj, i) {
                 if (dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length < 1) {
