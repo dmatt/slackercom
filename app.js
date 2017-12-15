@@ -196,7 +196,9 @@ app.post('/', function (req, res) {
   // does something
   function uniqueMap(a, key) {
     let keysArray = [];
+    let uniqueArray = []
     a.forEach( obj => keysArray.push(obj[key]))
+    a.forEach( obj => keysArray.indexOf(a.key) > -1 ? uniqueArray.push(obj))
     console.log(keysArray)
     return a.map( (v, i, a) => keysArray.indexOf(v.key) === -1 ? null : v );
   }
