@@ -193,9 +193,12 @@ app.post('/', function (req, res) {
     return attachement
   }
   
-  // returns true if indexOf value equals current index, if indexOf returns multiple we know it's not unique
+  // does something
   function uniqueMap(a, key) {
-    let uniqueArray = a.map( (v, i, a) => v.key === "2" ? v.key : null );
+    let keysArray = []
+    a.forEach( obj => keysArray.push(obj.key))
+    console.l
+    return a.map( (v, i, a) => keysArray.indexOf(v.key) === -1 ? null : v );
   }
   
   function getDMs() {
@@ -209,6 +212,7 @@ app.post('/', function (req, res) {
             // We have Sent DMs so we can compare and count
             if (dmsSent.length ) {
               const uniqueDms = uniqueMap(dms, "sender_id")
+              console.log(uniqueDms);
               // Search for each DM sender in sent object and increment counter if not found 
               uniqueDms.forEach( function (obj, i) {
                 if (dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length < 1) {
