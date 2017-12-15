@@ -198,18 +198,18 @@ app.post('/', function (req, res) {
     let keysArray = [];
     let uniqueArray = [];
     a.forEach( obj => keysArray.push(obj[key]));
-    a.forEach( obj => keysArray.indexOf(obj.key) === keysArray.lastIndexOf(obj.key) ? uniqueArray.push(obj) : uniqueArray.push({}))
-    console.log(uniqueArray.length)
+    a.forEach( obj => keysArray.indexOf(obj[key]) === keysArray.lastIndexOf(obj[key]) ? uniqueArray.push(obj) : console.log(obj[key] + " not unique. Skipped."))
+    console.log(uniqueArray)
     return uniqueArray;
   }
   
   function getDMs() {
     dmCounter = 0
     return new Promise(function(resolve, reject) {
-      T.get('direct_messages', { count: 30 }, function(err, dms, response) {
+      T.get('direct_messages', { count: 50 }, function(err, dms, response) {
         twitterDMs = dms;
         if (dms.length) {
-          T.get('direct_messages/sent', { count: 30 }, function(err, dmsSent, response) {
+          T.get('direct_messages/sent', { count: 50 }, function(err, dmsSent, response) {
             twitterDMsSent = dmsSent;
             // We have Sent DMs so we can compare and count
             if (dmsSent.length ) {
@@ -221,7 +221,8 @@ app.post('/', function (req, res) {
                 }
               });
               // We got the last DM, so we begin processing DMs from there
-              res.send('Wow, you have '+dmCounter+' DMs on Twitter.');
+              res.send({ "response_type": "in_channel",
+                        "text": 'Wow, you have '+dmCounter+' DMs on Twitter.'});
               resolve(dms);
             } else {
               // We've never received any DMs at all, so we can't do anything yet
