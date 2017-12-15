@@ -198,7 +198,7 @@ app.post('/', function (req, res) {
     console.log("value", value);
     console.log("index", index);
     console.log("self", self);
-    console.log(self.indexOf(self.sender_id));
+    console.log("self.indexOf(sender_id)", self.indexOf(self.sender_id));
     return self.indexOf(value) === index;
   }
   
@@ -212,7 +212,7 @@ app.post('/', function (req, res) {
             twitterDMsSent = dmsSent;
             // We have Sent DMs so we can compare and count
             if (dmsSent.length ) {
-              const uniqueDms = dms.filter( onlyUnique )
+              const uniqueDms = dms.filter( (v, i, a) => a.indexOf(v) === i )
               // Search for each DM sender in sent object and increment counter if not found 
               uniqueDms.forEach( function (obj, i) {
                 if (dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length < 1) {
