@@ -194,12 +194,8 @@ app.post('/', function (req, res) {
   }
   
   // returns true if indexOf value equals current index, if indexOf returns multiple we know it's not unique
-  function onlyUnique(value, index, self) {
-    console.log("value", value);
-    console.log("index", index);
-    console.log("self", self);
-    console.log("self.indexOf(sender_id)", self.indexOf(self.sender_id));
-    return self.indexOf(value) === index;
+  function uniqueMap(a, key) {
+    let uniqueArray = a.map( (v, i, a) => v.key === "2" ? v.key : null );
   }
   
   function getDMs() {
@@ -212,7 +208,7 @@ app.post('/', function (req, res) {
             twitterDMsSent = dmsSent;
             // We have Sent DMs so we can compare and count
             if (dmsSent.length ) {
-              const uniqueDms = dms.filter( (v, i, a) => a.find(v.sender_id) === i )
+              const uniqueDms = uniqueMap(dms, "sender_id")
               // Search for each DM sender in sent object and increment counter if not found 
               uniqueDms.forEach( function (obj, i) {
                 if (dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length < 1) {
