@@ -213,7 +213,7 @@ app.post('/', function (req, res) {
             twitterDMsSent = dmsSent;
             // We have Sent DMs so we can compare and count
             if (dmsSent.length ) {
-              const uniqueDms = uniqueMap(dms, "sender_id")
+              const uniqueDms = unciqueMap(dms, "sender_id")
               // Search for each DM sender in sent object and increment counter if not found 
               uniqueDms.forEach( function (obj, i) {
                 if (dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length < 1) {
