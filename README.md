@@ -1,8 +1,8 @@
-# tickets
-Slash command handler for Disqus slack.
+# slackercom
+A configurable Slack "slash command" for intercom conversation data.
 
 ## Commands:
-- `/support` - default command returns case status of all important Desk filters
+- `/support` - default command returns conversation counts for all teams. ❌ or restrict a list of teams by editing `teamst`
 - `/support https://help.disqus.com/agent/case/347519` - returns case that matches ID provided 0-7 characters in length
 - `/support example@gmail.com` - returns most recent case that matches email provided
 - `/support help` - returns help with commands
