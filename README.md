@@ -1,5 +1,5 @@
 # slackercom
-A configurable Slack "slash command" for intercom conversation data. Remixed from older version that integrated with Desk.com.
+A configurable Slack "slash command" for intercom conversation data.
 
 ## Commands:
 - `/support` - default command returns conversation counts for all teams. ❌ or restrict a list of teams by editing `monitoredTeams`
@@ -12,15 +12,17 @@ A configurable Slack "slash command" for intercom conversation data. Remixed fro
 1. Create your custom [Slack slash command](https://api.slack.com/slash-commands) configuration.
 2. Add the following environment variables from your Intercom and Slack app:
 
-  - subdomain
   - consumer_key
   - consumer_secret
   - token
   - token_secret
   - slack_token
+  - SLACK_WEBHOOK
   
-3. Configure the following variables and functions in `app.js` to GET your desired data from Desk
+3. Configure the following variables and functions in `app.js` to GET your desired data from Intercom
    
   - `statusParams` - Object of criteria for `cases` API call via `deskCall()`, parameters available: http://dev.desk.com/API/cases/#fields
   - `createStats()` - Array.prototype.filter() tests to further segment data from `deskCall()` into specific filters
   - stats - Object of filter names and variables defined in `createStats()` to output up to 20 Slack attachments
+  
+Remixed from [older version[(https://glitch.com/~tickets) that integrated with Desk.com intead of Intercom.
