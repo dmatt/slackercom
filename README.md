@@ -1,16 +1,16 @@
 # slackercom
-A configurable Slack "slash command" for intercom conversation data.
+A configurable Slack "slash command" for intercom conversation data. Remixed from older version that integrated with Desk.com.
 
 ## Commands:
-- `/support` - default command returns conversation counts for all teams. ❌ or restrict a list of teams by editing `teamst`
-- `/support https://help.disqus.com/agent/case/347519` - returns case that matches ID provided 0-7 characters in length
-- `/support example@gmail.com` - returns most recent case that matches email provided
+- `/support` - default command returns conversation counts for all teams. ❌ or restrict a list of teams by editing `monitoredTeams`
+- `/support https://app.intercom.io/a/apps/[app-id-redacted]/inbox/inbox/conversation/15929788631` - returns entire conversation that matches ID, ❌ if `#part_id=user-message-15929788631-202241720` is provided in the URL, just that message will be returned.
+- `/support example@gmail.com` - returns most recent conversation that matches email provided
 - `/support help` - returns help with commands
 
 ## Configuration:
 
 1. Create your custom [Slack slash command](https://api.slack.com/slash-commands) configuration.
-2. Add the following environment variables from your Desk and Slack app:
+2. Add the following environment variables from your Intercom and Slack app:
 
   - subdomain
   - consumer_key
@@ -18,7 +18,6 @@ A configurable Slack "slash command" for intercom conversation data.
   - token
   - token_secret
   - slack_token
-  - sheet_key (optional)
   
 3. Configure the following variables and functions in `app.js` to GET your desired data from Desk
    
