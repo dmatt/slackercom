@@ -1,5 +1,5 @@
 {
-  "name": "tickets",
+  "name": "slackercom",
   "version": "1.0.0",
   "description": "Slash command handler for Disqus slack.",
   "main": "app.js",
@@ -8,8 +8,7 @@
     "oauth": "^0.9.15",
     "body-parser": "^1.17.1",
     "glitchup": "^1.1.0",
-    "request": "^2.81.0",
-		"twit": "*"
+    "request": "^2.81.0"
   },
   "devDependencies": {},
   "scripts": {

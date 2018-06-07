@@ -2,28 +2,6 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const request = require('request');
-const desk = require('./my-desk').createClient({
-  subdomain: 'help',
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  token: process.env.TOKEN,
-  token_secret: process.env.TOKEN_SECRET
-});
-
-let Twitter = require('twit'),
-  config = { // Be sure to update the .env file with your API keys 
-    twitter: {
-      consumer_key: process.env.TWITTER_CONSUMER_KEY,
-      consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-      access_token: process.env.TWITTER_ACCESS_TOKEN,
-      access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
-      //timeout_ms: 60*1000
-    }
-  },
-  T = new Twitter(config.twitter),
-  dmCounter = 0,
-  twitterDMs={},
-  twitterDMsSent={};
 
 // Elements for output message
 const disqusRed = '#e76c35'
@@ -59,8 +37,6 @@ app.post('/', function (req, res) {
       emailSearch(req.body.text)
     } else if (req.body.text === "help") {
       help()
-    } else if (req.body.text === "dms") {
-      getDMs()
     } else if (req.body.text === "csat") {
       csat()
     } else {
@@ -203,38 +179,6 @@ app.post('/', function (req, res) {
     return uniqueArray;
   }
   
-  function getDMs() {
-    dmCounter = 0
-    return new Promise(function(resolve, reject) {
-      T.get('direct_messages', { count: 50 }, function(err, dms, response) {
-        twitterDMs = dms;
-        if (dms.length) {
-          T.get('direct_messages/sent', { count: 50 }, function(err, dmsSent, response) {
-            twitterDMsSent = dmsSent;
-            // We have Sent DMs so we can compare and count
-            if (dmsSent.length ) {
-              const uniqueDms = unciqueMap(dms, "sender_id")
-              // Search for each DM sender in sent object and increment counter if not found 
-              uniqueDms.forEach( function (obj, i) {
-                if (dmsSent.filter(dmSent => (dmSent.recipient.id === obj.sender.id)).length < 1) {
-                  dmCounter++
-                }
-              });
-              // We got the last DM, so we begin processing DMs from there
-              res.send({ "response_type": "in_channel",
-                        "text": 'Wow, you have '+dmCounter+' DMs on Twitter.'});
-              resolve(dms);
-            } else {
-              // We've never received any DMs at all, so we can't do anything yet
-              console.log('This user has no DMs. Send one to it to kick things off!');
-              resolve("This user has no DMs. Send one to it to kick things off.");
-            }
-          });
-        }
-      });
-    });
-  }
-  
   // Return CSAT digest
   function csat() {
     res.send(
@@ -374,7 +318,6 @@ function status(res,type) {
         Community:[communityFilter.length,communityNew.length,communityOpen,30],
         Channel:[channelFilter.length,channelNew.length,channelOpen,30],
         Commenter:[commenterFilter.length,commenterNew.length,commenterOpen,60],
-        // Twitter: [dmCounter, dmCounter, dmCounter, 3],
       }
     }
   // Build and send the message with data from each filter
@@ -417,14 +360,6 @@ function status(res,type) {
     //store(stats);
   }
 }
-
-app.get('/twitter', function (req, res) {
-  res.send(twitterDMs)
-})
-
-app.get('/twitter_sent', function (req, res) {
-  res.send(twitterDMsSent)
-})
 
 function webhook(message) {
   request.post(
