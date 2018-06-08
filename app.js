@@ -1,13 +1,10 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const request = require('request');
+const request = require('request')
+var Intercom = require('intercom-client');
 
-// Elements for output message
-const disqusRed = '#e76c35'
-const disqusGreen = '#7fbd5a'
-let statusIcon
-let stats = ""
+var client = new Intercom.Client({ token: 'my_token' });
 
 // Use glitchup package to prevent server from sleeping
 const glitchup = require('glitchup');
@@ -28,6 +25,13 @@ app.get('/cron-'+process.env.CRON_KEY, function (req, res) {
 // caseAttachment() - case link with ID
 // emailSearch() - email address
 // caseCard() - singe case message to send
+
+
+// Elements for output message
+const disqusRed = '#e76c35'
+const disqusGreen = '#7fbd5a'
+let statusIcon
+let stats = ""
 
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
@@ -362,14 +366,12 @@ function status(res,type) {
       webhook(statusMessage);
     }
     res.send(statusMessage);
-    // TODO Write function that stores this data to database
-    //store(stats);
   }
 }
 
 function webhook(message) {
   request.post(
-    'https://hooks.slack.com/services/T024PTBSY/B5R2C2KDY/'+process.env.SLACK_WEBHOOK,
+    'https://hooks.slack.com/services/T024PTBSY/B7H11E2Q4/'+process.env.SLACK_WEBHOOK,
     { json: message },
     function (error, response, body) {
         if (!error && response.statusCode == 200) {
