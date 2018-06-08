@@ -194,9 +194,9 @@ app.post('/', function (req, res) {
     
     // Find user by email
     client.users.find({ email: 'archon@gmail.com' }, function (err, d) {
-  // err is an error response object, or null
-  // d is a successful response object, or null
-})
+      // err is an error response object, or null
+      // d is a successful response object, or null
+    })
 
     res.send(
       {
@@ -382,14 +382,12 @@ function webhook(message) {
     { json: message },
     function (error, response, body) {
         if (!error && response.statusCode == 200) {
-            console.log(body)
         }
     }
   );
 }
 
-app.listen(process.env.PORT || 3000, function () {
-  var port
-  process.env.PORT ? port = process.env.PORT : port = 3000
-  console.log('disqus-tickets app listening on port ' + port + '!')
-})
+// listen for requests :)
+var listener = app.listen(process.env.PORT, function () {
+  console.log('Your app is listening on port ' + listener.address().port);
+});
