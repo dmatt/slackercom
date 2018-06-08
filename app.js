@@ -189,7 +189,7 @@ app.post('/', function (req, res) {
   
   // Return intercomTest
   function intercomTest() {
-    client.conversations.list({ type: 'team', admin_id: 2081829 }, function (err, d) {
+    client.conversations.list({ type: 'team', per_page: 100, open: true }, function (err, d) {
       console.log(err, d.body)
       res.send(
         {
