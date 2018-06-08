@@ -190,8 +190,8 @@ app.post('/', function (req, res) {
   // Return intercomTest
   function intercomTest() {
     // Find user by email
-    client.counts.conversationCounts(function (err, d) {
-      console.log(err, d.body)
+    client.counts.conversationAdminCounts(function (err, d) {
+      console.log(err, d.body.conversation.admin)
       res.send(
         {
           "response_type": "ephemeral",
