@@ -189,8 +189,8 @@ app.post('/', function (req, res) {
   
   // Return intercomTest
   function intercomTest() {
-    client.conversations.list({ type: 'admin', admin_id: 525444 }, function (err, d) {
-      console.log(err, d)
+    client.counts.conversationAdminCounts(function (err, d) {
+      console.log(err, d.body)
       res.send(
         {
           "response_type": "ephemeral",
