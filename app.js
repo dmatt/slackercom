@@ -50,7 +50,6 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "test") {
       intercomTest()
     } else {
-      console.log(req);
       res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
     }    
   } else {
@@ -184,18 +183,16 @@ app.post('/', function (req, res) {
     let keysArray = [];
     let uniqueArray = [];
     a.forEach( obj => keysArray.push(obj[key]));
-    a.forEach( obj => keysArray.indexOf(obj[key]) === keysArray.lastIndexOf(obj[key]) ? uniqueArray.push(obj) : console.log(obj[key] + " not unique. Skipped."))
-    console.log(uniqueArray)
+    a.forEach( obj => keysArray.indexOf(obj[key]) === keysArray.lastIndexOf(obj[key]) ? uniqueArray.push(obj) : console.log())
     return uniqueArray;
   }
   
   // Return intercomTest
   function intercomTest() {
-    
+    let thisName 
     // Find user by email
-    client.users.find({ email: 'archon@gmail.com' }, function (err, d) {
-      // err is an error response object, or null
-      // d is a successful response object, or null
+    client.users.find({ email: 'dmatt@disqus.com' }, function (err, d) {
+      console.log(err, d.body, )
     })
 
     res.send(
