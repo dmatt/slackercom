@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const request = require('request')
 var Intercom = require('intercom-client');
 
-var client = new Intercom.Client({ token: 'my_token' });
+var client = new Intercom.Client({ token: process.env.INTERCOM_TOKEN });
 
 // Use glitchup package to prevent server from sleeping
 const glitchup = require('glitchup');
@@ -47,8 +47,8 @@ app.post('/', function (req, res) {
       emailSearch(req.body.text)
     } else if (req.body.text === "help") {
       help()
-    } else if (req.body.text === "csat") {
-      csat()
+    } else if (req.body.text === "test") {
+      intercomTest()
     } else {
       console.log(req);
       res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
@@ -189,12 +189,19 @@ app.post('/', function (req, res) {
     return uniqueArray;
   }
   
-  // Return CSAT digest
-  function csat() {
+  // Return intercomTest
+  function intercomTest() {
+    
+    // Find user by email
+    client.users.find({ email: 'archon@gmail.com' }, function (err, d) {
+  // err is an error response object, or null
+  // d is a successful response object, or null
+})
+
     res.send(
       {
         "response_type": "ephemeral",
-        "text": "Type `/support` for status accross all filters. Add a case link `https://help.disqus.com/agent/case/347519` or an email `archon@gmail.com` to get specific.",
+        "text": "Intercom wow",
       }
     )
   }
