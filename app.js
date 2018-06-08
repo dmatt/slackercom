@@ -23,6 +23,11 @@ app.get('/cron-'+process.env.CRON_KEY, function (req, res) {
   status(res,'notification');
 })
 
+// Important functions to re-write
+// status() - default
+// caseAttachment() - case link with ID
+// emailSearch() - email address
+
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
