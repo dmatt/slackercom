@@ -189,9 +189,8 @@ app.post('/', function (req, res) {
   
   // Return intercomTest
   function intercomTest() {
-    // Find user by email
-    client.counts.conversationAdminCounts(function (err, d) {
-      console.log(err, d.body.conversation.admin)
+    client.conversations.list({ type: 'admin', admin_id: 525444 }, function (err, d) {
+      console.log(err, d)
       res.send(
         {
           "response_type": "ephemeral",
