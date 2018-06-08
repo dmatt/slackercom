@@ -189,18 +189,16 @@ app.post('/', function (req, res) {
   
   // Return intercomTest
   function intercomTest() {
-    let thisName 
     // Find user by email
-    client.users.find({ email: 'dmatt@disqus.com' }, function (err, d) {
-      console.log(err, d.body, )
+    client.counts.conversationCounts(function (err, d) {
+      console.log(err, d.body)
+      res.send(
+        {
+          "response_type": "ephemeral",
+          "text": "hello",
+        }
+      )
     })
-
-    res.send(
-      {
-        "response_type": "ephemeral",
-        "text": "Intercom wow",
-      }
-    )
   }
   
   // Return help text with examples
