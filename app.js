@@ -191,8 +191,8 @@ app.post('/', function (req, res) {
   function intercomTest() {
     
     // client.conversations.list({ type: 'team', per_page: 20, open: true }, function (err, d) {
-    client.counts.conversationAdminCounts( function (err, d) {
-      console.log(err, d)
+    client.conversations.list( { open: true, per_page: 100 }, function (err, d) {
+      console.log(err, d, "😸"+d.[0])
       res.send(
         {
           "response_type": "ephemeral",
