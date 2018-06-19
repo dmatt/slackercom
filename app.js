@@ -33,6 +33,12 @@ const disqusGreen = '#7fbd5a'
 let statusIcon
 let stats = ""
 
+function intervalFunc() {
+  console.log('Cant stop me now!');
+}
+
+setInterval(intervalFunc, 15000);
+
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
@@ -187,16 +193,17 @@ app.post('/', function (req, res) {
     return uniqueArray;
   }
   
-  function myFunc(arg) {
-    console.log(`arg was => ${arg}`);
-  }
-
-  setTimeout(myFunc, 1500, 'funky');
-  
   // Return intercomTest
   // TODO: function that periodically grabs all cases (paginates) and concats into a variable
   // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
   // TODO: intercomTest() takes the latest count var and outputs immediately
+  
+  function convoListloop() {
+    client.conversations.list( { open: true, per_page: 50 }, function (err, d) {
+      console.log(err, d, "😸 "+ JSON.stringify(d.body.conversations[0]))
+    })
+  }
+    
   function intercomTest() {
     
     // client.conversations.list({ type: 'team', per_page: 20, open: true }, function (err, d) {
