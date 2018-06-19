@@ -188,6 +188,9 @@ app.post('/', function (req, res) {
   }
   
   // Return intercomTest
+  // TODO: function that periodically grabs all cases (paginates) and concats into a variable
+  // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
+  // TODO: intercomTest() takes the latest count var and outputs immediately
   function intercomTest() {
     
     // client.conversations.list({ type: 'team', per_page: 20, open: true }, function (err, d) {
