@@ -187,6 +187,12 @@ app.post('/', function (req, res) {
     return uniqueArray;
   }
   
+  function myFunc(arg) {
+    console.log(`arg was => ${arg}`);
+  }
+
+  setTimeout(myFunc, 1500, 'funky');
+  
   // Return intercomTest
   // TODO: function that periodically grabs all cases (paginates) and concats into a variable
   // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
