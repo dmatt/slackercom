@@ -191,12 +191,12 @@ app.post('/', function (req, res) {
   function intercomTest() {
     
     // client.conversations.list({ type: 'team', per_page: 20, open: true }, function (err, d) {
-    client.conversations.list( { open: true, per_page: 100 }, function (err, d) {
-      console.log(err, d, "😸"+d.[0])
+    client.conversations.list( { open: true, per_page: 50 }, function (err, d) {
+      console.log(err, d, "😸 "+ JSON.stringify(d.body.conversations[0]))
       res.send(
         {
           "response_type": "ephemeral",
-          "text": "hello",
+          "text": "hello"+Date.now(),
         }
       )
     })
