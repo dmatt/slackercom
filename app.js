@@ -200,8 +200,8 @@ app.post('/', function (req, res) {
   
   function convoList() {
     client.conversations.list( { open: true, per_page: 50 }, function (err, d) {
-      console.log(err, "😸 "+ JSON.stringify(d.body.conversations[0]))
-      client.nextPage(d.pages, convoList);
+      console.log(err,  "😸 "+ JSON.stringify(d.body.conversations[0]))
+      client.nextPage(d.body.pages, console.log("hi"));
     })
   }
     
