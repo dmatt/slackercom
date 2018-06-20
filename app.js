@@ -204,7 +204,9 @@ app.post('/', function (req, res) {
       console.log(err,  "😸 "+ JSON.stringify(d.body.conversations[0]), d.body.pages.next)
       if (d.body.pages.next) {
         let next = client.nextPage(d.body.pages);
-        console.log(next);
+        next.then(function (r) {
+          console.log(JSON.stringify(r.body.conversations[0]));
+        });
       }
     })
   }
