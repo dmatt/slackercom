@@ -212,6 +212,18 @@ app.post('/', function (req, res) {
     // hm, so I would need to use a different function on line 270?
     // no I think you need to use the get funtion when you declare list
     // altho im now relizing that it wouldnt callthe function everytime you wanted a list
+    // just define it the first time
+    // is there a reason you do not want to reference conversationData.fullList ?
+    // hm, sorry I don't think I undersant. I am referencing conversationData.fullList above, empty array: []
+    // right, im asking when you are calling conversationData.list , if you innstead could call conversationData.fullList
+    // what does the list funtion do? Because I can get a "list" on fullList with list(conversationData.fullList) else where right?
+    // so the conversationData.list() function is supposed to make some API calls to go get some data, and put that data into conversationData.fullList
+    // but first, I think I need to call conversationData.list() as my first action to get data
+    //ok i see so what you want to do is have an empty array, then fill it later when you call the list(this.fullList) function right?
+    // yeah exactly
+    // hm ok, give me a second to see if I can find a way to do this
+    // ok thank you so much, I've reviewing it too
+    // so the problem comes when you try to get this.fullList in the list function right?
     list: list(this.fullList),
     count: count(),
     storeStats: storeStats(this.conversationStats, this.timeUpdated),
