@@ -37,7 +37,7 @@ function intervalFunc() {
   console.log('Cant stop me now!');
 }
 
-setInterval(intervalFunc, 15000);
+//setInterval(intervalFunc, 15000);
 
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
@@ -198,7 +198,16 @@ app.post('/', function (req, res) {
   // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
   // TODO: intercomTest() takes the latest count var and outputs immediately
   
-  
+  let conversationData = {    
+    fullList: [],
+    timeUpdated: null,
+    conversationStats: {},
+    getMorePages: getMorePages(),
+    list: list(this.fullList),
+    count: count(),
+    storeStats: storeStats(this.conversationStats, this.timeUpdated),
+    getStats: getStats()
+  }
   
   // Store parts of the conversationData object for cache that slack command can use 
   function storeStats() {
@@ -244,25 +253,15 @@ app.post('/', function (req, res) {
       }
     })
   }
-    
+
   function intercomTest() {
-      let conversationData = {
-          fullList: [],
-          timeUpdated: null,
-          conversationStats: {},
-          getMorePages: getMorePages(),
-          list: list(this.fullList),
-          count: count(),
-          storeStats: storeStats(this.conversationStats, this.timeUpdated),
-          getStats: getStats()
-        }    
-      conversationData.list()
-      res.send(
-        {
-          "response_type": "ephemeral",
-          "text": "hello"+Date.now(),
-        }
-      )
+    conversationData.list()
+    res.send(
+      {
+        "response_type": "ephemeral",
+        "text": "hello"+Date.now(),
+      }
+    )
   }
   
   // Return help text with examples
