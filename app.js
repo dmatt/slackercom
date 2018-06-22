@@ -198,16 +198,7 @@ app.post('/', function (req, res) {
   // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
   // TODO: intercomTest() takes the latest count var and outputs immediately
   
-  let conversationData = {
-    fullList: [],
-    timeUpdated: null,
-    conversationStats: {},
-    getMorePages: getMorePages(),
-    list: list(this.),
-    count: count(),
-    storeStats: storeStats(this.conversationStats, this.timeUpdated),
-    getStats: getStats()
-  }
+  
   
   // Store parts of the conversationData object for cache that slack command can use 
   function storeStats() {
@@ -254,8 +245,18 @@ app.post('/', function (req, res) {
     })
   }
     
-  function intercomTest() {    
-      list()
+  function intercomTest() {
+      let conversationData = {
+          fullList: [],
+          timeUpdated: null,
+          conversationStats: {},
+          getMorePages: getMorePages(),
+          list: list(this.fullList),
+          count: count(),
+          storeStats: storeStats(this.conversationStats, this.timeUpdated),
+          getStats: getStats()
+        }    
+      conversationData.list()
       res.send(
         {
           "response_type": "ephemeral",
