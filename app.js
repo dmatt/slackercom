@@ -198,26 +198,25 @@ app.post('/', function (req, res) {
   // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
   // TODO: intercomTest() takes the latest count var and outputs immediately
   
-  function convoList(conversations, paginationObject) {
-    let allConversations
+  function convoList() {
     client.conversations.list( { open: true, per_page: 50 }, function (err, d) {
       let fullConversationList = []
-      console.log(err,  "😸 "+ JSON.stringify(d.body.conversations[0]), d.body.pages.next)
       fullConversationList.concat(d.body.conversations)
       if (d.body.pages.next) {
+        getNextPage(fullConversationList)
         function getNextPage(fullConversationList) {
           client.nextPage(d.body.pages).then(function (r) {
-            fullConversationList.concat(r)
+            fullConversationList += r.body.
             if (r.body.pages.next) {
               getNextPage(fullConversationList)
             }
+            console.log(fullConversationList)
             return fullConversationList
           })
         }
-        client.nextPage(d.body.pages).then(function (r) {
-          console.log(JSON.stringify(r.body.conversations[0]));
-        });
       }
+      console.log(fullConversationList)
+      return fullConversationList
     })
   }
     
