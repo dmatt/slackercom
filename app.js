@@ -201,10 +201,10 @@ app.post('/', function (req, res) {
   function convoList(conversations, paginationObject) {
     let allConversations
     client.conversations.list( { open: true, per_page: 50 }, function (err, d) {
+      let fullConversationList = []
       console.log(err,  "😸 "+ JSON.stringify(d.body.conversations[0]), d.body.pages.next)
       if (d.body.pages.next) {
-        let next = client.nextPage(d.body.pages);
-        next.then(function (r) {
+        client.nextPage(d.body.pages).then(function (r) {
           console.log(JSON.stringify(r.body.conversations[0]));
         });
       }
