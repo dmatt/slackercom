@@ -254,6 +254,10 @@ app.post('/', function (req, res) {
     })
   }
 
+// hi.
+// conversationData is defined on line 201... can't figure out why I get reference error?
+// maybe a variable scope thing?
+  
   function intercomTest() {
     conversationData.list()
     res.send(
