@@ -198,7 +198,7 @@ app.post('/', function (req, res) {
   // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
   // TODO: intercomTest() takes the latest count var and outputs immediately
   
-  let conversationData = {    
+  var conversationData = {    
     fullList: [],
     timeUpdated: null,
     conversationStats: {},
@@ -224,6 +224,14 @@ app.post('/', function (req, res) {
     // hm ok, give me a second to see if I can find a way to do this
     // ok thank you so much, I've reviewing it too
     // so the problem comes when you try to get this.fullList in the list function right?
+    // I think the problem is happening even before that... but not sure
+    // it seems that when I first call conversationData.list(), I get a reference error
+    // before it even tries to do (this.fullList)
+    // the full errror I'm getting is
+    // `ReferenceError: conversationData is not defined`... but it seems to be defined
+    //hm odd
+    
+    // can you try a request again/what cause the error?
     list: list(this.fullList),
     count: count(),
     storeStats: storeStats(this.conversationStats, this.timeUpdated),
