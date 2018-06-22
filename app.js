@@ -198,14 +198,23 @@ app.post('/', function (req, res) {
   // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
   // TODO: intercomTest() takes the latest count var and outputs immediately
   
+  let conversationData = {
+    fullConversationList: [],
+    timeUpdated: null,
+    conversationStats: {},
+    getMorePages: getMorePages(),
+    list: list(),
+    storeStats: storeStats(this.conversationStats, this.timeUpdated)
+  }
+  
   let fullConversationList = []
   
   // Paginate through all next page objects recursively
-  function getNextPages(lastReq, fullConversationList) {
+  function getMorePages(lastReq, fullConversationList) {
     client.nextPage(lastReq.body.pages).then(function (r) {
       fullConversationList += r.body.conversations
       if (r.body.pages.next) {
-        getNextPages(r, fullConversationList)
+        getMorePages(r, fullConversationList)
       }
       else {
         return fullConversationList
@@ -214,12 +223,12 @@ app.post('/', function (req, res) {
   }
   
   // Get the first page of results and paginate if more results exist
-  function convoList() {
+  function list() {
     client.conversations.list( { open: true, per_page: 10 }, function (err, d) {
       if (d) {
         fullConversationList += d.body.conversations
         if (d.body.pages.next) {
-          getNextPages(d, fullConversationList)
+          getMorePages(d, fullConversationList)
         }
         console.log(fullConversationList)
         return fullConversationList      
@@ -231,7 +240,7 @@ app.post('/', function (req, res) {
   }
     
   function intercomTest() {    
-      convoList()
+      list()
       res.send(
         {
           "response_type": "ephemeral",
