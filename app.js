@@ -203,7 +203,17 @@ app.post('/', function (req, res) {
     client.conversations.list( { open: true, per_page: 50 }, function (err, d) {
       let fullConversationList = []
       console.log(err,  "😸 "+ JSON.stringify(d.body.conversations[0]), d.body.pages.next)
+      fullConversationList.concat(d.body.conversations)
       if (d.body.pages.next) {
+        function getNextPage(fullConversationList) {
+          client.nextPage(d.body.pages).then(function (r) {
+            fullConversationList.concat(r)
+            if (r.body.pages.next) {
+              getNextPage(fullConversationList)
+            }
+            return fullConversationList
+          })
+        }
         client.nextPage(d.body.pages).then(function (r) {
           console.log(JSON.stringify(r.body.conversations[0]));
         });
