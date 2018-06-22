@@ -198,25 +198,35 @@ app.post('/', function (req, res) {
   // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
   // TODO: intercomTest() takes the latest count var and outputs immediately
   
+  let fullConversationList = []
+  
+  // Paginate through all next page objects recursively
+  function getNextPages(lastReq, fullConversationList) {
+    client.nextPage(lastReq.body.pages).then(function (r) {
+      fullConversationList += r.body.conversations
+      if (r.body.pages.next) {
+        getNextPages(r, fullConversationList)
+      }
+      else {
+        return fullConversationList
+      }
+    })
+  }
+  
+  // Get the first page of results and paginate if more results exist
   function convoList() {
     client.conversations.list( { open: true, per_page: 10 }, function (err, d) {
-      let fullConversationList = []
-      fullConversationList += d.body.conversations
-      if (d.body.pages.next) {
-        getNextPage(d, fullConversationList)
-        function getNextPage(lastReq, fullConversationList) {
-          client.nextPage(lastReq.body.pages).then(function (r) {
-            fullConversationList += r.body.conversations
-            if (r.body.pages.next) {
-              getNextPage(r, fullConversationList)
-            }
-            console.log(fullConversationList)
-            return fullConversationList
-          })
+      if (d) {
+        fullConversationList += d.body.conversations
+        if (d.body.pages.next) {
+          getNextPages(d, fullConversationList)
         }
+        console.log(fullConversationList)
+        return fullConversationList      
       }
-      console.log(fullConversationList)
-      return fullConversationList
+      else if (err) {
+        empty()
+      }
     })
   }
     
@@ -244,7 +254,7 @@ app.post('/', function (req, res) {
     res.send(
       {
         "response_type": "ephemeral",
-        "text": "Sorry, Desk give me any results :(",
+        "text": "Sorry, Intercom didn't return any results :(",
       }
     )
   }
