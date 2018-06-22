@@ -203,6 +203,15 @@ app.post('/', function (req, res) {
     timeUpdated: null,
     conversationStats: {},
     getMorePages: getMorePages(),
+    // invited you to help
+    //k hi
+    // thanks!
+    // I think whats happeneing is that you need to use get 
+    //inorder to get the fullList
+    // because otherwise it isnt defined because it hasnt finished defining the list/array yet
+    // hm, so I would need to use a different function on line 270?
+    // no I think you need to use the get funtion when you declare list
+    // altho im now relizing that it wouldnt callthe function everytime you wanted a list
     list: list(this.fullList),
     count: count(),
     storeStats: storeStats(this.conversationStats, this.timeUpdated),
@@ -257,6 +266,7 @@ app.post('/', function (req, res) {
 // hi.
 // conversationData is defined on line 201... can't figure out why I get reference error?
 // maybe a variable scope thing?
+// Hi eternalfrost! Thanks for offering some help... you there? 👋
   
   function intercomTest() {
     conversationData.list()
