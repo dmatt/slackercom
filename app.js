@@ -199,16 +199,16 @@ app.post('/', function (req, res) {
   // TODO: intercomTest() takes the latest count var and outputs immediately
   
   function convoList() {
-    client.conversations.list( { open: true, per_page: 50 }, function (err, d) {
+    client.conversations.list( { open: true, per_page: 10 }, function (err, d) {
       let fullConversationList = []
-      fullConversationList.concat(d.body.conversations)
+      fullConversationList += d.body.conversations
       if (d.body.pages.next) {
-        getNextPage(fullConversationList)
-        function getNextPage(fullConversationList) {
-          client.nextPage(d.body.pages).then(function (r) {
-            fullConversationList += r.body.
+        getNextPage(d, fullConversationList)
+        function getNextPage(lastReq, fullConversationList) {
+          client.nextPage(lastReq.body.pages).then(function (r) {
+            fullConversationList += r.body.conversations
             if (r.body.pages.next) {
-              getNextPage(fullConversationList)
+              getNextPage(r, fullConversationList)
             }
             console.log(fullConversationList)
             return fullConversationList
