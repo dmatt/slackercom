@@ -199,39 +199,54 @@ app.post('/', function (req, res) {
   // TODO: intercomTest() takes the latest count var and outputs immediately
   
   let conversationData = {
-    fullConversationList: [],
+    fullList: [],
     timeUpdated: null,
     conversationStats: {},
     getMorePages: getMorePages(),
-    list: list(),
-    storeStats: storeStats(this.conversationStats, this.timeUpdated)
+    list: list(this.),
+    count: count(),
+    storeStats: storeStats(this.conversationStats, this.timeUpdated),
+    getStats: getStats()
   }
   
-  let fullConversationList = []
+  // Store parts of the conversationData object for cache that slack command can use 
+  function storeStats() {
+    return console.log("5 stats stored in your console lol")
+  }
+  
+  // Get most recent stats from cache
+  function getStats() {
+     return "here are your 5 stats lol"
+  }
+  
+  // Count up all the conversations by team assignee
+  function count() {
+    return {priority: 5}
+  }
   
   // Paginate through all next page objects recursively
-  function getMorePages(lastReq, fullConversationList) {
+  function getMorePages(lastReq, fullList) {
     client.nextPage(lastReq.body.pages).then(function (r) {
-      fullConversationList += r.body.conversations
+      fullList += r.body.conversations
       if (r.body.pages.next) {
-        getMorePages(r, fullConversationList)
+        getMorePages(r, fullList)
       }
       else {
-        return fullConversationList
+        return fullList
       }
     })
   }
   
   // Get the first page of results and paginate if more results exist
-  function list() {
+  function list(fullList) {
     client.conversations.list( { open: true, per_page: 10 }, function (err, d) {
       if (d) {
-        fullConversationList += d.body.conversations
+        fullList += d.body.conversations
         if (d.body.pages.next) {
-          getMorePages(d, fullConversationList)
+          getMorePages(d, fullList)
         }
-        console.log(fullConversationList)
-        return fullConversationList      
+        console.log(fullList)
+        return fullList      
       }
       else if (err) {
         empty()
