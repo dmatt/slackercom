@@ -300,7 +300,7 @@ app.post('/', function (req, res) {
     res.send(
       {
         "response_type": "ephemeral",
-        "text": "hello"+Date.now(),
+        "text": "hello "+Date.now(),
       }
     )
   }
