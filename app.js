@@ -203,35 +203,6 @@ app.post('/', function (req, res) {
     timeUpdated: null,
     conversationStats: {},
     getMorePages: getMorePages(),
-    // invited you to help
-    //k hi
-    // thanks!
-    // I think whats happeneing is that you need to use get 
-    //inorder to get the fullList
-    // because otherwise it isnt defined because it hasnt finished defining the list/array yet
-    // hm, so I would need to use a different function on line 270?
-    // no I think you need to use the get funtion when you declare list
-    // altho im now relizing that it wouldnt callthe function everytime you wanted a list
-    // just define it the first time
-    // is there a reason you do not want to reference conversationData.fullList ?
-    // hm, sorry I don't think I undersant. I am referencing conversationData.fullList above, empty array: []
-    // right, im asking when you are calling conversationData.list , if you innstead could call conversationData.fullList
-    // what does the list funtion do? Because I can get a "list" on fullList with list(conversationData.fullList) else where right?
-    // so the conversationData.list() function is supposed to make some API calls to go get some data, and put that data into conversationData.fullList
-    // but first, I think I need to call conversationData.list() as my first action to get data
-    //ok i see so what you want to do is have an empty array, then fill it later when you call the list(this.fullList) function right?
-    // yeah exactly
-    // hm ok, give me a second to see if I can find a way to do this
-    // ok thank you so much, I've reviewing it too
-    // so the problem comes when you try to get this.fullList in the list function right?
-    // I think the problem is happening even before that... but not sure
-    // it seems that when I first call conversationData.list(), I get a reference error
-    // before it even tries to do (this.fullList)
-    // the full errror I'm getting is
-    // `ReferenceError: conversationData is not defined`... but it seems to be defined
-    //hm odd
-    
-    // can you try a request again/what cause the error?
     list: list(this.fullList),
     count: count(),
     storeStats: storeStats(this.conversationStats, this.timeUpdated),
@@ -287,6 +258,41 @@ app.post('/', function (req, res) {
 // conversationData is defined on line 201... can't figure out why I get reference error?
 // maybe a variable scope thing?
 // Hi eternalfrost! Thanks for offering some help... you there? 👋
+// invited you to help
+//k hi
+// thanks!
+// I think whats happeneing is that you need to use get 
+//inorder to get the fullList
+// because otherwise it isnt defined because it hasnt finished defining the list/array yet
+// hm, so I would need to use a different function on line 270?
+// no I think you need to use the get funtion when you declare list
+// altho im now relizing that it wouldnt callthe function everytime you wanted a list
+// just define it the first time
+// is there a reason you do not want to reference conversationData.fullList ?
+// hm, sorry I don't think I undersant. I am referencing conversationData.fullList above, empty array: []
+// right, im asking when you are calling conversationData.list , if you innstead could call conversationData.fullList
+// what does the list funtion do? Because I can get a "list" on fullList with list(conversationData.fullList) else where right?
+// so the conversationData.list() function is supposed to make some API calls to go get some data, and put that data into conversationData.fullList
+// but first, I think I need to call conversationData.list() as my first action to get data
+//ok i see so what you want to do is have an empty array, then fill it later when you call the list(this.fullList) function right?
+// yeah exactly
+// hm ok, give me a second to see if I can find a way to do this
+// ok thank you so much, I've reviewing it too
+// so the problem comes when you try to get this.fullList in the list function right?
+// I think the problem is happening even before that... but not sure
+// it seems that when I first call conversationData.list(), I get a reference error
+// before it even tries to do (this.fullList)
+// the full errror I'm getting is
+// `ReferenceError: conversationData is not defined`... but it seems to be defined
+//hm odd
+
+// can you try a request again/what cause the error?
+// darn it I have to go, soory I couldnt help
+//            -EternalFrost  
+//
+//
+// Hi there friends, here's the log of my last chat ^
+// if you have any suggestions, I'd love to hear them. Thank you!! 🙏
   
   function intercomTest() {
     conversationData.list()
