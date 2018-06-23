@@ -293,7 +293,7 @@ app.post('/', function (req, res) {
 //
 // Hi there friends, here's the log of my last chat ^
 // if you have any suggestions, I'd love to hear them. Thank you!! 🙏
-// 
+// Edit: https://glitch.com/edit/#!/join/03e3d1aa-45e4-4966-a6d3-9d1079501bcd
   
   function intercomTest() {
     conversationData.list()
