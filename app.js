@@ -288,7 +288,7 @@ app.post('/', function (req, res) {
 
 // can you try a request again/what cause the error?
 // darn it I have to go, soory I couldnt help
-//            -EternalFrost  
+//            -EternalFrost
 //
 //
 
