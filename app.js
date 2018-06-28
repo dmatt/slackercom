@@ -96,7 +96,7 @@ function list(fullList) {
     if (d) {
       fullList += d.body.conversations
       if (d.body.pages.next) {
-        return getMorePages(d, fullList)
+        getMorePages(d, fullList)
       }
       return fullList
     }
