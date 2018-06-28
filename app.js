@@ -78,17 +78,20 @@ function count() {
 }
 
 // Paginate through all next page objects recursively
-let getMorePages = client.nextPage(conversationData.lastReq).then(function (r) {
+let getMorePages = function() {
+  client.nextPage(conversationData.lastReq).then(function (r) {
   conversationData.fullList += r.body.conversations
   conversationData.lastReq = r.body.pages
+  console.log("🌾", conversationData.fullList)
     if (r.body.pages.next) {
       getMorePages()
     }
     else {
       // this returns the final filled up array
-      return fullList
+      return conversationData.fullList
     }
-  });
+  })
+}
 
 // Get the first page of results and paginate if more results exist
 function list(fullList) {
@@ -97,7 +100,7 @@ function list(fullList) {
       conversationData.fullList += d.body.conversations
       if (d.body.pages.next) {
         conversationData.lastReq = d.body.pages
-        getMorePages()
+        getMorePages().then( function() {return } conversationData.fullList )
       }
       return conversationData.fullList
     }
