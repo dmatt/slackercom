@@ -78,8 +78,7 @@ function count() {
 }
 
 // Paginate through all next page objects recursively
-let getMorePages = function() {
-  client.nextPage(conversationData.lastReq).then(function (r) {
+let getMorePages = client.nextPage(conversationData.lastReq).then(function (r) {
   conversationData.fullList += r.body.conversations
   conversationData.lastReq = r.body.pages
   console.log("🌾", conversationData.fullList)
@@ -91,7 +90,6 @@ let getMorePages = function() {
       return conversationData.fullList
     }
   })
-}
 
 // Get the first page of results and paginate if more results exist
 function list(fullList) {
@@ -100,7 +98,7 @@ function list(fullList) {
       conversationData.fullList += d.body.conversations
       if (d.body.pages.next) {
         conversationData.lastReq = d.body.pages
-        getMorePages().then( function() {return } conversationData.fullList )
+        getMorePages.then( function(fromResolve) {return fromResolve} )
       }
       return conversationData.fullList
     }
