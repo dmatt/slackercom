@@ -26,7 +26,6 @@ app.get('/cron-'+process.env.CRON_KEY, function (req, res) {
 // emailSearch() - email address
 // caseCard() - singe case message to send
 
-
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
@@ -55,6 +54,11 @@ let conversationData = {
   getStats: getStats()
 }
 
+function intercomTest() {
+  console.log(conversationData)
+  return conversationData
+}
+
 // Store parts of the conversationData object for cache that slack command can use 
 function storeStats() {
   return console.log("5 stats stored in your console lol")
@@ -72,6 +76,7 @@ function count() {
 
 // Paginate through all next page objects recursively
 function getMorePages(lastReq, fullList) {
+  console.log("🍕", lastReq)
   client.nextPage(lastReq.body.pages).then(function (r) {
     fullList += r.body.conversations
     if (r.body.pages.next) {
@@ -114,7 +119,12 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "help") {
       help()
     } else if (req.body.text === "test") {
-      intercomTest()
+        res.send(
+          {
+            "response_type": "ephemeral",
+            "text": "hello " + Date.now() + intercomTest(),
+          }
+        )
     } else {
       res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
     }    
@@ -197,6 +207,17 @@ app.post('/', function (req, res) {
       }
     });
   }
+  
+  // Return error text when Desk fails
+  function empty() {
+    res.send(
+      {
+        "response_type": "ephemeral",
+        "text": "Sorry, Intercom didn't return any results :(",
+      }
+    )
+  }
+  
   // Returns most recent case ids that matches email
   function emailSearch(email) {
     desk.get('cases/search/',{email: email, sort_field:'created_at', sort_direction: 'desc'}, function(error, data) {
@@ -251,16 +272,6 @@ app.post('/', function (req, res) {
     a.forEach( obj => keysArray.push(obj[key]));
     a.forEach( obj => keysArray.indexOf(obj[key]) === keysArray.lastIndexOf(obj[key]) ? uniqueArray.push(obj) : console.log())
     return uniqueArray;
-  }
-  
-  function intercomTest() {
-    console.log(conversationData)
-    res.send(
-      {
-        "response_type": "ephemeral",
-        "text": "hello "+Date.now(),
-      }
-    )
   }
   
   // Return help text with examples
