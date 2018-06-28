@@ -47,6 +47,7 @@ let conversationData = {
   fullList: [],
   timeUpdated: null,
   conversationStats: {},
+  lastReq: null,
   list: function() {
     list(this.fullList)
   },
@@ -77,28 +78,28 @@ function count() {
 }
 
 // Paginate through all next page objects recursively
-function getMorePages(lastReq, fullList) {
-  client.nextPage(lastReq.body.pages).then(function (r) {
-    fullList += r.body.conversations
+let getMorePages = client.nextPage(conversationData.lastReq).then(function (r) {
+  conversationData.fullList += r.body.conversations
+  conversationData.lastReq = r.body.pages
     if (r.body.pages.next) {
-      getMorePages(r, fullList)
+      getMorePages()
     }
     else {
       // this returns the final filled up array
       return fullList
     }
-  })
-}
+  });
 
 // Get the first page of results and paginate if more results exist
 function list(fullList) {
   client.conversations.list( { open: true, per_page: 10 }, function (err, d) {
     if (d) {
-      fullList += d.body.conversations
+      conversationData.fullList += d.body.conversations
       if (d.body.pages.next) {
-        getMorePages(d, fullList)
+        conversationData.lastReq = d.body.pages
+        getMorePages()
       }
-      return fullList
+      return conversationData.fullList
     }
     else if (err) {
       return err
