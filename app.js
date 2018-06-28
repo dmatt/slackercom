@@ -78,13 +78,13 @@ function count() {
 
 // Paginate through all next page objects recursively
 function getMorePages(lastReq, fullList) {
-  console.log("🍕", lastReq)
   client.nextPage(lastReq.body.pages).then(function (r) {
     fullList += r.body.conversations
     if (r.body.pages.next) {
       getMorePages(r, fullList)
     }
     else {
+      // this returns the final filled up array
       return fullList
     }
   })
@@ -96,7 +96,6 @@ function list(fullList) {
     if (d) {
       fullList += d.body.conversations
       if (d.body.pages.next) {
-        console.log("🌾",d)
         return getMorePages(d, fullList)
       }
       return fullList
@@ -125,7 +124,7 @@ app.post('/', function (req, res) {
         res.send(
           {
             "response_type": "ephemeral",
-            "text": "hello " + Date.now() + conversationData.list,
+            "text": "hello " + Date.now() + conversationData.list(),
           }
         )
     } else {
