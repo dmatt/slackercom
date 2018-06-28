@@ -39,6 +39,66 @@ function intervalFunc() {
 
 //setInterval(intervalFunc, 15000);
 
+// Return intercomTest
+// TODO: function that periodically grabs all cases (paginates) and concats into a variable
+// TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
+// TODO: intercomTest() takes the latest count var and outputs immediately
+
+let conversationData = {  
+  fullList: [],
+  timeUpdated: null,
+  conversationStats: {},
+  getMorePages: getMorePages(),
+  list: list(this.fullList),
+  count: count(),
+  storeStats: storeStats(this.conversationStats, this.timeUpdated),
+  getStats: getStats()
+}
+
+// Store parts of the conversationData object for cache that slack command can use 
+function storeStats() {
+  return console.log("5 stats stored in your console lol")
+}
+
+// Get most recent stats from cache
+function getStats() {
+   return "here are your 5 stats lol"
+}
+
+// Count up all the conversations by team assignee
+function count() {
+  return {priority: 5}
+}
+
+// Paginate through all next page objects recursively
+function getMorePages(lastReq, fullList) {
+  client.nextPage(lastReq.body.pages).then(function (r) {
+    fullList += r.body.conversations
+    if (r.body.pages.next) {
+      getMorePages(r, fullList)
+    }
+    else {
+      return fullList
+    }
+  })
+}
+
+// Get the first page of results and paginate if more results exist
+function list(fullList) {
+  client.conversations.list( { open: true, per_page: 10 }, function (err, d) {
+    if (d) {
+      fullList += d.body.conversations
+      if (d.body.pages.next) {
+        getMorePages(d, fullList)
+      }
+      return fullList      
+    }
+    else if (err) {
+      return err
+    }
+  })
+}
+
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
@@ -193,69 +253,8 @@ app.post('/', function (req, res) {
     return uniqueArray;
   }
   
-  // Return intercomTest
-  // TODO: function that periodically grabs all cases (paginates) and concats into a variable
-  // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
-  // TODO: intercomTest() takes the latest count var and outputs immediately
-  
-  let conversationData = {  
-    fullList: [],
-    timeUpdated: null,
-    conversationStats: {},
-    getMorePages: getMorePages(),
-    list: list(this.fullList),
-    count: count(),
-    storeStats: storeStats(this.conversationStats, this.timeUpdated),
-    getStats: getStats()
-  }
-  
-  // Store parts of the conversationData object for cache that slack command can use 
-  function storeStats() {
-    return console.log("5 stats stored in your console lol")
-  }
-  
-  // Get most recent stats from cache
-  function getStats() {
-     return "here are your 5 stats lol"
-  }
-  
-  // Count up all the conversations by team assignee
-  function count() {
-    return {priority: 5}
-  }
-  
-  // Paginate through all next page objects recursively
-  function getMorePages(lastReq, fullList) {
-    client.nextPage(lastReq.body.pages).then(function (r) {
-      fullList += r.body.conversations
-      if (r.body.pages.next) {
-        getMorePages(r, fullList)
-      }
-      else {
-        return fullList
-      }
-    })
-  }
-  
-  // Get the first page of results and paginate if more results exist
-  function list(fullList) {
-    client.conversations.list( { open: true, per_page: 10 }, function (err, d) {
-      if (d) {
-        fullList += d.body.conversations
-        if (d.body.pages.next) {
-          getMorePages(d, fullList)
-        }
-        console.log(fullList)
-        return fullList      
-      }
-      else if (err) {
-        empty()
-      }
-    })
-  }
-  
   function intercomTest() {
-    conversationData.list()
+    console.log(conversationData)
     res.send(
       {
         "response_type": "ephemeral",
@@ -270,15 +269,6 @@ app.post('/', function (req, res) {
       {
         "response_type": "ephemeral",
         "text": "Type `/support` for status accross all filters. Add a case link `https://help.disqus.com/agent/case/347519` or an email `archon@gmail.com` to get specific.",
-      }
-    )
-  }
-  // Return error text when Desk fails
-  function empty() {
-    res.send(
-      {
-        "response_type": "ephemeral",
-        "text": "Sorry, Intercom didn't return any results :(",
       }
     )
   }
