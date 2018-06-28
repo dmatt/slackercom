@@ -47,16 +47,10 @@ let conversationData = {
   fullList: [],
   timeUpdated: null,
   conversationStats: {},
-  getMorePages: getMorePages(),
-  list: list(this.fullList),
+  list: function() {list(this.fullList)},
   count: count(),
   storeStats: storeStats(this.conversationStats, this.timeUpdated),
   getStats: getStats()
-}
-
-function intercomTest() {
-  console.log(conversationData)
-  return conversationData
 }
 
 // Store parts of the conversationData object for cache that slack command can use 
@@ -94,6 +88,7 @@ function list(fullList) {
     if (d) {
       fullList += d.body.conversations
       if (d.body.pages.next) {
+        console.log("🌾",d)
         getMorePages(d, fullList)
       }
       return fullList      
@@ -122,7 +117,7 @@ app.post('/', function (req, res) {
         res.send(
           {
             "response_type": "ephemeral",
-            "text": "hello " + Date.now() + intercomTest(),
+            "text": "hello " + Date.now() + conversationData.list,
           }
         )
     } else {
