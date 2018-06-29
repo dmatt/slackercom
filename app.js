@@ -77,6 +77,8 @@ function count() {
   return {priority: 5}
 }
 
+// TODO: Try doing this correctly with promises and passed results (no callbacks, and global variable setting/getting)
+
 // Paginate through all next page objects recursively
 let getMorePages = client.nextPage(conversationData.lastReq).then(function (r) {
   conversationData.fullList += r.body.conversations
