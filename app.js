@@ -80,7 +80,8 @@ function count() {
 // TODO: Try doing this correctly with promises and passed results (no callbacks, and global variable setting/getting)
 
 // Paginate through all next page objects recursively
-let getMorePages = client.nextPage(conversationData.lastReq).then(function (r) {
+let getMorePages = new Promise(function(resolve, reject) {
+  client.nextPage(conversationData.lastReq).then(function (r) {
   conversationData.fullList += r.body.conversations
   conversationData.lastReq = r.body.pages
   console.log("🌾", conversationData.fullList)
@@ -89,17 +90,18 @@ let getMorePages = client.nextPage(conversationData.lastReq).then(function (r) {
     }
     else {
       // this returns the final filled up array
-      return conversationData.fullList
+      resolve(conversationData.fullList)
     }
   })
+}
 
 // Get the first page of results and paginate if more results exist
 function list(fullList) {
   client.conversations.list( { open: true, per_page: 10 }, function (err, d) {
     if (d) {
+      conversationData.lastReq = d.body.pages
       conversationData.fullList += d.body.conversations
       if (d.body.pages.next) {
-        conversationData.lastReq = d.body.pages
         getMorePages.then( function(fromResolve) {return fromResolve} )
       }
       return conversationData.fullList
