@@ -81,19 +81,23 @@ function count() {
 
 // Paginate through all next page objects recursively
 let getMorePages = new Promise(function(resolve, reject) {
-  client.nextPage(conversationData.lastReq).then(function (r) {
-  conversationData.fullList += r.body.conversations
-  conversationData.lastReq = r.body.pages
-  console.log("🌾", conversationData.fullList)
-    if (r.body.pages.next) {
-      getMorePages()
-    }
-    else {
-      // this returns the final filled up array
-      resolve(conversationData.fullList)
-    }
-  })
-}
+  if (!conversationData.lastReq) {
+    reject(console.log("rejection: no lastReq"))
+  }
+  else {
+    client.nextPage(conversationData.lastReq).then(function (r) {
+    conversationData.fullList += r.body.conversations
+    conversationData.lastReq = r.body.pages
+      if (r.body.pages.next) {
+        getMorePages()
+      }
+      else {
+        // this returns the final filled up array
+        return conversationData.fullList
+      }
+    })
+  }
+})
 
 // Get the first page of results and paginate if more results exist
 function list(fullList) {
