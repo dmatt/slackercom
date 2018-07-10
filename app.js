@@ -44,7 +44,7 @@ function intervalFunc() {
 // TODO: intercomTest() takes the latest count var and outputs immediately
 
 let conversationData = {  
-  fullList: [{hi:1},{hey:2}],
+  fullList: [],
   timeUpdated: null,
   conversationStats: {},
   lastReq: null,
@@ -63,7 +63,9 @@ let conversationData = {
 }
 
 // Store parts of the conversationData object for cache that slack command can use 
-function storeStats() {
+function storeStats(fullList) {
+  conversationData.fullList = fullList
+  conversationData.timeUpdated = Date.now()
   return console.log("5 stats stored in your console lol")
 }
 
@@ -90,6 +92,7 @@ function getMorePages(page, acc) {
     }
     else {
       console.log("done")
+      storeStats(acc)
       return acc
     }
   })
@@ -97,7 +100,7 @@ function getMorePages(page, acc) {
 
 // Get the first page of results and paginate if more results exist
 function list() {
-  client.conversations.list( { open: true, per_page: 0.5 }).then(
+  client.conversations.list( { open: true, per_page: 30 }).then(
     function (firstPage, acc = []) {
       console.log("1",acc)
       acc += firstPage.body.conversations
@@ -107,7 +110,6 @@ function list() {
       // Log the rejection reason
       (reason) => {
         console.log('Handle rejected promise ('+reason+')');
-        empty(reason)
       })
 }
 
@@ -126,6 +128,7 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "help") {
       help()
     } else if (req.body.text === "test") {
+      list()
         res.send(
           {
             "response_type": "ephemeral",
