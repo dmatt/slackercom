@@ -104,12 +104,12 @@ function list() {
       acc += firstPage.body.conversations
       console.log("2",acc)
       getMorePages(firstPage.body.pages, acc)
-  },
-    // .then() reject parameter callback
-    function () {
-      console.log("Promise rejected")
-    }
-  )
+  }).catch(
+        // Log the rejection reason
+       (reason) => {
+         console.log('Handle rejected promise ('+reason+')');
+         return `Sorry, I ran into this problem: ${reason}`;
+        })
 }
 
 app.post('/', function (req, res) {
@@ -214,16 +214,6 @@ app.post('/', function (req, res) {
         help()
       }
     });
-  }
-  
-  // Return error text when Desk fails
-  function empty() {
-    res.send(
-      {
-        "response_type": "ephemeral",
-        "text": "Sorry, Intercom didn't return any results :(",
-      }
-    )
   }
   
   // Returns most recent case ids that matches email
