@@ -81,13 +81,12 @@ function count() {
 
 // Paginate through all next page objects recursively
 function getMorePages() {
-  client.nextPage(conversationData.lastReq).then(function (r)
-
+  client.nextPage().then()
 }
 
 // Get the first page of results and paginate if more results exist
 function list(fullList) {
-  client.conversations.list( { open: true, per_page: 10 }).then(getMorePages())
+  client.conversations.list( { open: true, per_page: 10 }).then(getMorePages(r))
 }
 
 app.post('/', function (req, res) {
