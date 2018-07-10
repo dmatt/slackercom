@@ -96,8 +96,8 @@ function getMorePages(page, acc) {
 }
 
 // Get the first page of results and paginate if more results exist
-function list(fullList) {
-  client.conversations.list( { open: true, per_page: 10 }).then(function (firstPage, acc = []) {
+function list() {
+  client.conversations.list( { open: true, per_page: 50 }).then(function (firstPage, acc = []) {
     console.log("1",acc)
     acc += firstPage.body.conversations
     console.log("2",acc)
