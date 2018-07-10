@@ -49,7 +49,7 @@ let conversationData = {
   conversationStats: {},
   lastReq: null,
   list: function() {
-    list(this.fullList)
+    list()
   },
   count: function() {
     count()
@@ -81,39 +81,13 @@ function count() {
 
 // Paginate through all next page objects recursively
 function getMorePages() {
-  if (!conversationData.lastReq) {
-    console.log("no more pages because 1st page hasn't been called")
-    return "no more pages because 1st page hasn't been called"
-  }
-  else {
-    client.nextPage(conversationData.lastReq).then(function (r) {
-    conversationData.fullList += r.body.conversations
-    conversationData.lastReq = r.body.pages
-      if (r.body.pages.next) {
-        getMorePages()
-      }
-      else {
-        // this returns the final filled up array
-        return conversationData.fullList
-      }
-    })
-  }
+  client.nextPage(conversationData.lastReq).then(function (r)
+
 }
 
 // Get the first page of results and paginate if more results exist
 function list(fullList) {
-  client.conversations.list( { open: true, per_page: 10 }, function (err, d) {
-    if (d) {
-      conversationData.lastReq = d.body.pages
-      conversationData.fullList += d.body.conversations
-      if (d.body.pages.next) {
-        getMorePages()
-      }
-    }
-    else if (err) {
-      return err
-    }
-  })
+  client.conversations.list( { open: true, per_page: 10 }).then(getMorePages())
 }
 
 app.post('/', function (req, res) {
