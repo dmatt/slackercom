@@ -97,12 +97,19 @@ function getMorePages(page, acc) {
 
 // Get the first page of results and paginate if more results exist
 function list() {
-  client.conversations.list( { open: true, per_page: 50 }).then(function (firstPage, acc = []) {
-    console.log("1",acc)
-    acc += firstPage.body.conversations
-    console.log("2",acc)
-    getMorePages(firstPage.body.pages, acc)
-  })
+  client.conversations.list( { open: true, per_page: 0.5 }).then(
+    // .then() resolve parameter callback
+    function (firstPage, acc = []) {
+      console.log("1",acc)
+      acc += firstPage.body.conversations
+      console.log("2",acc)
+      getMorePages(firstPage.body.pages, acc)
+  },
+    // .then() reject parameter callback
+    function () {
+      console.log("Promise rejected")
+    }
+  )
 }
 
 app.post('/', function (req, res) {
