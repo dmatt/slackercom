@@ -44,7 +44,7 @@ function intervalFunc() {
 // TODO: intercomTest() takes the latest count var and outputs immediately
 
 let conversationData = {  
-  fullList: [],
+  fullList: [{hi:1},{hey:2}],
   timeUpdated: null,
   conversationStats: {},
   lastReq: null,
@@ -98,18 +98,17 @@ function getMorePages(page, acc) {
 // Get the first page of results and paginate if more results exist
 function list() {
   client.conversations.list( { open: true, per_page: 0.5 }).then(
-    // .then() resolve parameter callback
     function (firstPage, acc = []) {
       console.log("1",acc)
       acc += firstPage.body.conversations
       console.log("2",acc)
       getMorePages(firstPage.body.pages, acc)
-  }).catch(
-        // Log the rejection reason
-       (reason) => {
-         console.log('Handle rejected promise ('+reason+')');
-         return `Sorry, I ran into this problem: ${reason}`;
-        })
+    }).catch(
+      // Log the rejection reason
+      (reason) => {
+        console.log('Handle rejected promise ('+reason+')');
+        empty(reason)
+      })
 }
 
 app.post('/', function (req, res) {
@@ -130,7 +129,7 @@ app.post('/', function (req, res) {
         res.send(
           {
             "response_type": "ephemeral",
-            "text": "hello " + Date.now() + conversationData.list(),
+            "text": `hello ` + Date.now() + ` ${ conversationData.fullList.length }` ,
           }
         )
     } else {
