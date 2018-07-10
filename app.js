@@ -82,11 +82,10 @@ function count() {
 // Paginate through all next page objects recursively
 function getMorePages(page, acc) {
   client.nextPage(page).then(function (nextPage) {
-    console.log("3",acc)
-    console.log("3.5",nextPage)
     acc += nextPage.body.conversations
-    console.log("4",acc)
+    console.log("3",acc)
     if (nextPage.body.pages.next) {
+      console.log("4"," there's more, get more!")
       getMorePages(nextPage.body.pages, acc)
     }
     else {
