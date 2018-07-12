@@ -5,11 +5,11 @@ const request = require('request')
 const Intercom = require('intercom-client');
 const mongojs = require('mongojs')
 
-var ip = require("ip");
-console.dir ( ip.address() );
+//var ip = require("ip");
+//console.dir ( ip.address() );
 
 const client = new Intercom.Client({ token: process.env.INTERCOM_TOKEN });
-db = mongojs(`#{process.env.DB_USER}:#{process.env.DB_PASS}@#{process.env.DB_URL}`)
+let db = mongojs(`${ process.env.DB_USER }:${ process.env.DB_PASS }@${ process.env.DB_URL }`, ['slackercom'])
 
 // Use glitchup package to prevent server from sleeping
 const glitchup = require('glitchup');
