@@ -33,10 +33,10 @@ let statusIcon
 let stats = ""
 
 function intervalFunc() {
-  console.log('Cant stop me now!');
+  console.log(conversationData.fullList);
 }
 
-//setInterval(intervalFunc, 15000);
+//setInterval(intervalFunc, 150);
 
 // Return intercomTest
 // TODO: function that periodically grabs all cases (paginates) and concats into a variable
@@ -59,7 +59,7 @@ let conversationData = {
   },
   getStats: function() {
     getStats()
-  } 
+  }
 }
 
 // Store parts of the conversationData object for cache that slack command can use 
