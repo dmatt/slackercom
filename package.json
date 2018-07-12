@@ -9,8 +9,7 @@
     "body-parser": "^1.17.1",
     "glitchup": "^1.1.0",
     "request": "^2.81.0",
-    "intercom-client": "^2.10.1",
-    "mongojs": "^2.6.0"
+    "intercom-client": "^2.10.1"
   },
   "devDependencies": {},
   "scripts": {

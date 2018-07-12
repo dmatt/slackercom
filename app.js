@@ -3,13 +3,9 @@ const app = express()
 const bodyParser = require('body-parser')
 const request = require('request')
 const Intercom = require('intercom-client');
-const mongojs = require('mongojs')
-
-//var ip = require("ip");
-//console.dir ( ip.address() );
 
 const client = new Intercom.Client({ token: process.env.INTERCOM_TOKEN });
-var db = mongojs('iamfrancisyo:'+ process.env.DB_PASS +'@glitch-noqhh.mongodb.net/test?retryWrites=true', ['mycollection'])
+
 // Use glitchup package to prevent server from sleeping
 const glitchup = require('glitchup');
 glitchup();
@@ -47,7 +43,7 @@ function intervalFunc() {
 // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
 // TODO: intercomTest() takes the latest count var and outputs immediately
 
-let conversationData = {  
+let conversationData = {
   fullList: [],
   timeUpdated: null,
   conversationStats: {},
@@ -66,17 +62,10 @@ let conversationData = {
   } 
 }
 
-console.log(conversationData.fullList)
-list()
-
 // Store parts of the conversationData object for cache that slack command can use 
 function storeStats(fullList) {
-  console.log(fullList)
   conversationData.fullList = fullList
   conversationData.timeUpdated = Date.now()
-  db.mycollection.save({fullList: conversationData.fullList, timeUpdated: conversationData.timeUpdated}, function () {
-      // the save is complete
-  })
   return console.log(`Saved local variable fullList: ${fullList}`)
 }
 
@@ -111,7 +100,7 @@ function getMorePages(page, acc) {
 
 // Get the first page of results and paginate if more results exist
 function list() {
-  client.conversations.list( { open: true, per_page: 30 }).then(
+  client.conversations.list( { open: true, per_page: 60 }).then(
     function (firstPage, acc = []) {
       console.log("1",acc)
       acc += firstPage.body.conversations
@@ -146,6 +135,7 @@ app.post('/', function (req, res) {
             "text": `hello ` + Date.now() + ` ${ conversationData.fullList.length }` ,
           }
         )
+      
       
     } else {
       res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
