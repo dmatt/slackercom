@@ -66,7 +66,7 @@ let conversationData = {
 function storeStats(fullList) {
   conversationData.fullList = fullList
   conversationData.timeUpdated = Date.now()
-  return console.log("5 stats stored in your console lol")
+  return console.log(`Saved local variable fullList: ${fullList}`)
 }
 
 // Get most recent stats from cache
