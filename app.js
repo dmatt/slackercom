@@ -33,15 +33,19 @@ let statusIcon
 let stats = ""
 
 function intervalFunc() {
-  console.log(conversationData.fullList);
+  list();
 }
 
-//setInterval(intervalFunc, 150);
+list();
+
+setInterval(intervalFunc, 1000 * 60 * 30 );
 
 // Return intercomTest
 // TODO: function that periodically grabs all cases (paginates) and concats into a variable
 // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
 // TODO: intercomTest() takes the latest count var and outputs immediately
+
+// For some reason this is sometimes resetting to an empty array for fullList
 
 let conversationData = {
   fullList: [],
@@ -128,7 +132,6 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "help") {
       help()
     } else if (req.body.text === "test") {
-      console.log(conversationData)
         res.send(
           {
             "response_type": "ephemeral",
