@@ -9,8 +9,7 @@ const mongojs = require('mongojs')
 //console.dir ( ip.address() );
 
 const client = new Intercom.Client({ token: process.env.INTERCOM_TOKEN });
-let db = mongojs(`${ process.env.DB_USER }:${ process.env.DB_PASS }@${ process.env.DB_URL }`, ['slackercom'])
-
+var db = mongojs('iamfrancisyo:'+ process.env.DB_PASS +'@glitch-noqhh.mongodb.net/test?retryWrites=true', ['mycollection'])
 // Use glitchup package to prevent server from sleeping
 const glitchup = require('glitchup');
 glitchup();
@@ -71,8 +70,7 @@ let conversationData = {
 function storeStats(fullList) {
   conversationData.fullList = fullList
   conversationData.timeUpdated = Date.now()
-    // find all named 'mathias' and increment their level
-  db.slackercom.save({fullList: conversationData.fullList, timeUpdated: conversationData.timeUpdated}, function (a,b) {
+  db.mycollection.save({fullList: conversationData.fullList, timeUpdated: conversationData.timeUpdated}, function (a,b) {
       // the save is complete
     console.log(a,b)
   })
