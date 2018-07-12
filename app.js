@@ -59,20 +59,23 @@ let conversationData = {
     count()
   },
   storeStats: function() {
-    storeStats(this.conversationStats, this.timeUpdated)
+    storeStats()
   },
   getStats: function() {
     getStats()
   } 
 }
 
+console.log(conversationData.fullList)
+list()
+
 // Store parts of the conversationData object for cache that slack command can use 
 function storeStats(fullList) {
+  console.log(fullList)
   conversationData.fullList = fullList
   conversationData.timeUpdated = Date.now()
-  db.mycollection.save({fullList: conversationData.fullList, timeUpdated: conversationData.timeUpdated}, function (a,b) {
+  db.mycollection.save({fullList: conversationData.fullList, timeUpdated: conversationData.timeUpdated}, function () {
       // the save is complete
-    console.log(a,b)
   })
   return console.log(`Saved local variable fullList: ${fullList}`)
 }
@@ -136,13 +139,14 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "help") {
       help()
     } else if (req.body.text === "test") {
-      list()
+      console.log(conversationData)
         res.send(
           {
             "response_type": "ephemeral",
             "text": `hello ` + Date.now() + ` ${ conversationData.fullList.length }` ,
           }
         )
+      
     } else {
       res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
     }    
