@@ -71,6 +71,11 @@ let conversationData = {
 function storeStats(fullList) {
   conversationData.fullList = fullList
   conversationData.timeUpdated = Date.now()
+    // find all named 'mathias' and increment their level
+  db.slackercom.save({fullList: conversationData.fullList, timeUpdated: conversationData.timeUpdated}, function (a,b) {
+      // the save is complete
+    console.log(a,b)
+  })
   return console.log(`Saved local variable fullList: ${fullList}`)
 }
 
