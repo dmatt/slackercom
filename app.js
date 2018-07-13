@@ -20,32 +20,28 @@ app.get('/cron-'+process.env.CRON_KEY, function (req, res) {
   status(res,'notification');
 })
 
-// Important functions to re-write
-// status() - default
-// caseAttachment() - case link with ID
-// emailSearch() - email address
-// caseCard() - singe case message to send
-
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
 let statusIcon
 let stats = ""
 
+// Run the list API call to Intercom every 30 min. so it can be cached
 function intervalFunc() {
   list();
 }
 
-list();
-
 setInterval(intervalFunc, 1000 * 60 * 30 );
 
-// Return intercomTest
-// TODO: function that periodically grabs all cases (paginates) and concats into a variable
-// TODO: function that iterates or filters and counts based on team assignment, new count variable JSON, stores to DB?
-// TODO: intercomTest() takes the latest count var and outputs immediately
+// Important functions to re-write
+// status() - default
+// caseAttachment() - case link with ID
+// emailSearch() - email address
+// caseCard() - singe case message to send
 
-// For some reason this is sometimes resetting to an empty array for fullList
+
+// TODO: function that iterates or filters and counts based on team assignment, new count variable JSON
+// Everytime the app restarts this data gets initialized and reset, need to store somewhere
 
 let conversationData = {
   fullList: [],
