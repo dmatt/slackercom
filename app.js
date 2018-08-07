@@ -30,7 +30,7 @@ var db = new sqlite3.Database(dbFile);
 // if ./.data/sqlite.db does not exist, create it, otherwise print records to console
 db.serialize(function(){
   if (!exists) {
-    db.run('CREATE TABLE Conversations (UPDATED DATE, ');
+    db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB');
     console.log('New table Conversations created!');
     
     // insert default dreams
@@ -60,9 +60,7 @@ function intervalFunc() {
   list();
 }
 
-list()
-
-setInterval(intervalFunc, 1000 * 60 * 30 );
+// setInterval(intervalFunc, 1000 * 60 * 30 );
 
 // endpoint to get all the dreams in the database
 // https://www.npmjs.com/package/sqlite3
@@ -90,19 +88,16 @@ let conversationData = {
 // Store parts of the conversationData object for cache that slack command can use 
 function storeStats(fullList) {
   // insert one row into the Conversations table
-  db.run(`INSERT INTO Conversations VALUES(${Date.now()}, ${fullList})`, function(err) {
+  db.run(`INSERT INTO Conversations VALUES(${Date.now()}, ${fullList})`), function(err) {
     if (err) {
       return console.log(err.message);
     }
     // get the last insert id
     console.log(`A row has been inserted with rowid ${this.lastID}`);
-  });
+  }
  
   // close the database connection
   db.close();
-  
-  conversationData.fullList = fullList
-  conversationData.timeUpdated = Date.now()
   return console.log(`Saved local variable fullList: ${fullList}`)
 }
 
