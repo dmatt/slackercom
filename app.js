@@ -36,7 +36,7 @@ db.serialize(function(){
     // insert default dreams
     db.serialize(function() {
       let now = Date.now()
-      db.run(`INSERT INTO Conversations VALUES ("Find and count some sheep")`);
+      db.run(`INSERT INTO Conversations VALUES (${ now })`);
     });
   }
   else {
@@ -60,12 +60,14 @@ function intervalFunc() {
   list();
 }
 
+list()
+
 setInterval(intervalFunc, 1000 * 60 * 30 );
 
 // endpoint to get all the dreams in the database
 // https://www.npmjs.com/package/sqlite3
-function getConversation() {
-  db.all('SELECT * from Conversations Order by asc Limit 1', function(err, rows) {
+function getLastStat() {
+  db.all('SELECT * from Conversations Order by UPDATED asc Limit 1', function(err, rows) {
     return JSON.stringify(rows);
   });
 }
@@ -87,6 +89,18 @@ let conversationData = {
 
 // Store parts of the conversationData object for cache that slack command can use 
 function storeStats(fullList) {
+  // insert one row into the Conversations table
+  db.run(`INSERT INTO Conversations VALUES(${Date.now()}, ${fullList})`, function(err) {
+    if (err) {
+      return console.log(err.message);
+    }
+    // get the last insert id
+    console.log(`A row has been inserted with rowid ${this.lastID}`);
+  });
+ 
+  // close the database connection
+  db.close();
+  
   conversationData.fullList = fullList
   conversationData.timeUpdated = Date.now()
   return console.log(`Saved local variable fullList: ${fullList}`)
