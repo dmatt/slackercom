@@ -20,6 +20,35 @@ app.get('/cron-'+process.env.CRON_KEY, function (req, res) {
   status(res,'notification');
 })
 
+// init sqlite db
+var fs = require('fs');
+var dbFile = './.data/sqlite.db';
+var exists = fs.existsSync(dbFile);
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database(dbFile);
+
+// if ./.data/sqlite.db does not exist, create it, otherwise print records to console
+db.serialize(function(){
+  if (!exists) {
+    db.run('CREATE TABLE Conversations (UPDATED DATE, ');
+    console.log('New table Conversations created!');
+    
+    // insert default dreams
+    db.serialize(function() {
+      let now = Date.now()
+      db.run(`INSERT INTO Conversations VALUES ("Find and count some sheep")`);
+    });
+  }
+  else {
+    console.log('Database "Conversations" ready to go!');
+    db.each('SELECT * from Conversations', function(err, row) {
+      if ( row ) {
+        console.log('record:', row);
+      }
+    });
+  }
+});
+
 // Elements for output message
 const disqusRed = '#e76c35'
 const disqusGreen = '#7fbd5a'
@@ -34,13 +63,12 @@ function intervalFunc() {
 setInterval(intervalFunc, 1000 * 60 * 30 );
 
 // endpoint to get all the dreams in the database
-// currently this is the only endpoint, ie. adding dreams won't update the database
-// read the sqlite3 module docs and try to add your own! https://www.npmjs.com/package/sqlite3
-app.get('/getDreams', function(request, response) {
-  db.all('SELECT * from Dreams', function(err, rows) {
-    response.send(JSON.stringify(rows));
+// https://www.npmjs.com/package/sqlite3
+function getConversation() {
+  db.all('SELECT * from Conversations Order by asc Limit 1', function(err, rows) {
+    return JSON.stringify(rows);
   });
-});
+}
 
 // Important functions to re-write
 // status() - default
@@ -55,20 +83,6 @@ app.get('/getDreams', function(request, response) {
 let conversationData = {
   fullList: [],
   timeUpdated: null,
-  conversationStats: {},
-  lastReq: null,
-  list: function() {
-    list()
-  },
-  count: function() {
-    count()
-  },
-  storeStats: function() {
-    storeStats()
-  },
-  getStats: function() {
-    getStats()
-  }
 }
 
 // Store parts of the conversationData object for cache that slack command can use 
