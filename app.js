@@ -93,18 +93,23 @@ function count() {
 
 // Paginate through all next page objects recursively
 function getMorePages(page, acc) {
-  client.nextPage(page).then(function (nextPage) {
-    acc += nextPage.body.conversations
-    console.log("3",acc)
-    if (nextPage.body.pages.next) {
-      console.log("4"," there's more, get more!")
-      getMorePages(nextPage.body.pages, acc)
-    }
-    else {
-      storeStats(acc)
-      return acc
-    }
-  })
+  client.nextPage(page).then(
+    function (nextPage) {
+      acc += nextPage.body.conversations
+      console.log("3",acc)
+      if (nextPage.body.pages.next) {
+        console.log("4"," there's more, get more!")
+        getMorePages(nextPage.body.pages, acc)
+      }
+      else {
+        storeStats(acc)
+        return acc
+      }
+  }).catch(
+      // Log the rejection reason
+      (reason) => {
+        console.log('Handle rejected promise ('+reason+')');
+      })
 }
 
 // Get the first page of results and paginate if more results exist
@@ -141,7 +146,7 @@ app.post('/', function (req, res) {
         res.send(
           {
             "response_type": "ephemeral",
-            "text": `hello ` + getLastStat(),
+            "text": `hello ${ lastStat }`,
           }
         );
       
