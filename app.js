@@ -64,7 +64,7 @@ let getLastStat = new Promise( function(resolve, reject) {
     }
     resolve(rows[0].UPDATED);
   });
-}
+});
 
 let conversationData = {
   fullList: [],
@@ -144,13 +144,14 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "test") {
       // Why is lastStat undefined?
       // getLastStat() should just return a timestamp from the sqlite database table
-      let lastStat = getLastStat();
-      res.send(
-        {
-          "response_type": "ephemeral",
-          "text": `hello ${ lastStat }`,
-        }
-      );
+      getLastStat().then( function(lastStat) {
+        res.send(
+          {
+            "response_type": "ephemeral",
+            "text": `hello ${ lastStat }`,
+          }
+        )
+      });
     } else {
       res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
     }    
