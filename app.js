@@ -13,6 +13,12 @@ glitchup();
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
 
+// Important functions to re-write
+// status() - default
+// caseAttachment() - case link with ID
+// emailSearch() - email address
+// caseCard() - singe case message to send
+
 // init sqlite db
 var fs = require('fs');
 var dbFile = './.data/sqlite.db';
@@ -42,20 +48,12 @@ db.serialize(function(){
   }
 });
 
-// Elements for output message
-const disqusRed = '#e76c35'
-const disqusGreen = '#7fbd5a'
-let statusIcon
-let stats = ""
-
-// Run the list API call to Intercom every 30 min. so it can be cached
+// Run the list API call to Intercom every 10 min. so it can be cached
 function intervalFunc() {
   list();
 }
 
-// setInterval(intervalFunc, 1000 * 60 * 30 );
-
-getLastStat()
+// setInterval(intervalFunc, 1000 * 60 * 10 );
 
 // endpoint to get all the dreams in the database
 // https://www.npmjs.com/package/sqlite3
@@ -65,15 +63,7 @@ function getLastStat() {
   });
 }
 
-// Important functions to re-write
-// status() - default
-// caseAttachment() - case link with ID
-// emailSearch() - email address
-// caseCard() - singe case message to send
-
-
 // TODO: function that iterates or filters and counts based on team assignment, new count variable JSON
-// Everytime the app restarts this data gets initialized and reset, need to store somewhere
 
 let conversationData = {
   fullList: [],
@@ -424,6 +414,13 @@ function status(res,type) {
         Commenter:[commenterFilter.length,commenterNew.length,commenterOpen,60],
       }
     }
+
+  // Elements for output message
+  const disqusRed = '#e76c35'
+  const disqusGreen = '#7fbd5a'
+  let statusIcon
+  let stats = ""
+  
   // Build and send the message with data from each filter
   function slackSend() {
     var total = 0
