@@ -144,7 +144,7 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "test") {
       // Why is lastStat undefined?
       // getLastStat() should just return a timestamp from the sqlite database table
-      getLastStat().then( function(lastStat) {
+      getLastStat.then(function(lastStat) {
         res.send(
           {
             "response_type": "ephemeral",
