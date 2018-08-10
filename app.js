@@ -30,13 +30,13 @@ var db = new sqlite3.Database(dbFile);
 // if ./.data/sqlite.db does not exist, create it, otherwise print records to console
 db.serialize(function(){
   if (!exists) {
-    db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB');
+    db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB)');
     console.log('New table Conversations created!');
     
-    // insert default dreams
+    // insert default conversations
     db.serialize(function() {
       let now = Date.now()
-      db.run(`INSERT INTO Conversations VALUES (${ now })`);
+      db.run(`INSERT INTO Conversations VALUES (${ now }, "[test]")`);
     });
   }
   else {
@@ -61,6 +61,8 @@ function intervalFunc() {
 }
 
 // setInterval(intervalFunc, 1000 * 60 * 30 );
+
+c
 
 // endpoint to get all the dreams in the database
 // https://www.npmjs.com/package/sqlite3
