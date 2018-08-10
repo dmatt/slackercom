@@ -10,15 +10,8 @@ const client = new Intercom.Client({ token: process.env.INTERCOM_TOKEN });
 const glitchup = require('glitchup');
 glitchup();
 
-// use a web cron service, like https://cron-job.org or other, to hit an endpoint you define
-// yep, that's it - so it'd be https://tickets.glitch.me/your-endpoint and it'd call that function.
-
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
-
-app.get('/cron-'+process.env.CRON_KEY, function (req, res) {
-  status(res,'notification');
-})
 
 // init sqlite db
 var fs = require('fs');
@@ -62,13 +55,13 @@ function intervalFunc() {
 
 // setInterval(intervalFunc, 1000 * 60 * 30 );
 
-c
+getLastStat()
 
 // endpoint to get all the dreams in the database
 // https://www.npmjs.com/package/sqlite3
 function getLastStat() {
-  db.all('SELECT * from Conversations Order by UPDATED asc Limit 1', function(err, rows) {
-    return JSON.stringify(rows);
+  db.all('SELECT * from Conversations Limit 1', function(err, rows) {
+    console.log( rows[0].UPDATED );
   });
 }
 
