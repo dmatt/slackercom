@@ -59,11 +59,12 @@ function intervalFunc() {
 // https://www.npmjs.com/package/sqlite3
 function getLastStat() {
   db.all('SELECT * from Conversations Limit 1', function(err, rows) {
-    console.log( rows[0].UPDATED );
+    if (err) {
+      return err
+    }
+    return rows[0].UPDATED;
   });
 }
-
-// TODO: function that iterates or filters and counts based on team assignment, new count variable JSON
 
 let conversationData = {
   fullList: [],
@@ -73,7 +74,7 @@ let conversationData = {
 // Store parts of the conversationData object for cache that slack command can use 
 function storeStats(fullList) {
   // insert one row into the Conversations table
-  db.run(`INSERT INTO Conversations VALUES(${Date.now()}, ${fullList})`), function(err) {
+  db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, ${fullList})`), function(err) {
     if (err) {
       return console.log(err.message);
     }
@@ -83,20 +84,12 @@ function storeStats(fullList) {
  
   // close the database connection
   db.close();
-  return console.log(`Saved local variable fullList: ${fullList}`)
 }
 
-// Get most recent stats from cache
-function getStats() {
-   return "here are your 5 stats lol"
-}
-
-// Count up all the conversations by team assignee
+// TODO Count up all the conversations by team assignee
 function count() {
   return {priority: 5}
 }
-
-// TODO: Try doing this correctly with promises and passed results (no callbacks, and global variable setting/getting)
 
 // Paginate through all next page objects recursively
 function getMorePages(page, acc) {
@@ -108,7 +101,6 @@ function getMorePages(page, acc) {
       getMorePages(nextPage.body.pages, acc)
     }
     else {
-      console.log("done")
       storeStats(acc)
       return acc
     }
@@ -145,12 +137,13 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "help") {
       help()
     } else if (req.body.text === "test") {
+        let lastStat = getLastStat();
         res.send(
           {
             "response_type": "ephemeral",
-            "text": `hello ` + Date.now() + ` ${ conversationData.fullList.length }` ,
+            "text": `hello ` + getLastStat(),
           }
-        )
+        );
       
       
     } else {
