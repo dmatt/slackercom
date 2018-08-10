@@ -57,12 +57,12 @@ function intervalFunc() {
 
 // endpoint to get all the dreams in the database
 // https://www.npmjs.com/package/sqlite3
-function getLastStat() {
+let getLastStat = new Promise( function(resolve, reject) {
   db.all('SELECT * from Conversations Limit 1', function(err, rows) {
     if (err) {
-      return err
+      reject(err)
     }
-    return rows[0].UPDATED;
+    resolve(rows[0].UPDATED);
   });
 }
 
@@ -142,15 +142,15 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "help") {
       help()
     } else if (req.body.text === "test") {
-        let lastStat = getLastStat();
-        res.send(
-          {
-            "response_type": "ephemeral",
-            "text": `hello ${ lastStat }`,
-          }
-        );
-      
-      
+      // Why is lastStat undefined?
+      // getLastStat() should just return a timestamp from the sqlite database table
+      let lastStat = getLastStat();
+      res.send(
+        {
+          "response_type": "ephemeral",
+          "text": `hello ${ lastStat }`,
+        }
+      );
     } else {
       res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
     }    
