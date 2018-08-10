@@ -24,12 +24,12 @@ var db = new sqlite3.Database(dbFile);
 db.serialize(function(){
   if (!exists) {
     db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB)');
+    // db.run('DROP TABLE Conversations');
     console.log('New table Conversations created!');
     
     // insert default conversations
     db.serialize(function() {
-      let now = Date.now()
-      db.run(`INSERT INTO Conversations VALUES (${ now }, "[test]")`);
+      db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[test2]")`);
     });
   }
   else {
