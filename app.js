@@ -142,7 +142,6 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "help") {
       help()
     } else if (req.body.text === "test") {
-      // Why is lastStat undefined?
       // getLastStat() should just return a timestamp from the sqlite database table
       getLastStat.then(function(lastStat) {
         res.send(
@@ -166,22 +165,15 @@ app.post('/', function (req, res) {
   
   // When given case ID, get and send all case, customer, and assigned user details to slack
   function caseAttachment(id) {
-    //https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699
-    //desk.case(id, {}, function(error, data) {
-    //});
+    // https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699
+    // desk.case(id, {}, function(error, data) {
+    // });
   }
   
   // Returns most recent case ids that matches email
   function emailSearch(email) {
-    desk.get('cases/search/',{email: email, sort_field:'created_at', sort_direction: 'desc'}, function(error, data) {
-      if (data._embedded.entries.length > 0) {
-        caseAttachment(data._embedded.entries[0].id)
-      } else if (data._embedded.entries.length < 1) {
-        empty()
-      } else {
-        help()
-      }
-    });
+    // desk.get('cases/search/',{email: email, sort_field:'created_at', sort_direction: 'desc'}, function(error, data) {
+    // });
   }
   
   // Returns a single case attachment using data from 
@@ -232,7 +224,7 @@ app.post('/', function (req, res) {
     res.send(
       {
         "response_type": "ephemeral",
-        "text": "Type `/support` for status accross all filters. Add a case link `https://help.disqus.com/agent/case/347519` or an email `archon@gmail.com` to get specific.",
+        "text": "Type `/support` for status accross all filters. Add a case link `https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699` or an email `hello@gmail.com` to get specific.",
       }
     )
   }
