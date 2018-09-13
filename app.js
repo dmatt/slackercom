@@ -132,7 +132,7 @@ app.post('/', function (req, res) {
     // Detect which command was entered in slack and call the correct function
     if (req.body.text.length === 0) {
       //
-    // validates a full Desk link
+    // validates a full Intercom link
     } else if (/^[0-9]{1,7}$/.test(req.body.text.split('conversations/')[1])) {
       caseAttachment(req.body.text.split('conversations/')[1])
     // validates email
