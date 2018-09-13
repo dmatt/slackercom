@@ -34,6 +34,7 @@ function intervalFunc() {
 
 // 
 // setInterval(intervalFunc, 1000 * 60 * 10 );
+// setInterval(intervalFunc, 1000 );
 
 // Create DB and popular with default data.
 db.serialize( function() {
@@ -86,11 +87,6 @@ function storeStats(fullList) {
   db.close();
 }
 
-// TODO Count up all the conversations by team assignee
-function count() {
-  return {priority: 5}
-}
-
 // Call intercom for first page converations and paginate if more results exist
 function list() {
   client.conversations.list( { open: true, per_page: 60 }).then(
@@ -117,7 +113,7 @@ function getMorePages(page, acc) {
         getMorePages(nextPage.body.pages, acc)
       }
       else {
-        storeStats(acc)
+        mapConvoStats(acc)
         return acc
       }
   }).catch(
@@ -125,6 +121,12 @@ function getMorePages(page, acc) {
       (reason) => {
         console.log('Handle rejected promise ('+reason+')');
       })
+}
+
+// Maps converstation data to simple stats for each team
+function mapConvoStats(data) {
+  console.log("data before mapConvoStats", data)
+  // callback to storeStats()
 }
 
 // Handler of post requests to server, checks request text to trigger different functions
