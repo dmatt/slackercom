@@ -26,7 +26,7 @@ var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database(dbFile);
 
 // if ./.data/sqlite.db does not exist, create it, otherwise print records to console
-db.serialize(function(){
+db.serialize( function() {
   if (!exists) {
     db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB)');
     // db.run('DROP TABLE Conversations');
@@ -65,12 +65,7 @@ let getLastStat = new Promise( function(resolve, reject) {
   });
 });
 
-let conversationData = {
-  fullList: [],
-  timeUpdated: null,
-}
-
-// Store parts of the conversationData object for cache that slack command can use 
+// Store fullList object in DB so slack command can use intermittently
 function storeStats(fullList) {
   // insert one row into the Conversations table
   db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, ${fullList})`), function(err) {
@@ -131,12 +126,13 @@ app.post('/', function (req, res) {
   if (req.body.token === process.env.SLACK_TOKEN) {
     // Detect which command was entered in slack and call the correct function
     if (req.body.text.length === 0) {
-      //
+    
+    }
     // validates a full Intercom link
-    } else if (/^[0-9]{1,7}$/.test(req.body.text.split('conversations/')[1])) {
+    else if (/^[0-9]{1,7}$/.test(req.body.text.split('conversations/')[1])) {
       caseAttachment(req.body.text.split('conversations/')[1])
-    // validates email
-    } else if (/([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)) {
+    } // validates email
+    else if (/([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)) {
       emailSearch(req.body.text)
     } else if (req.body.text === "help") {
       help()
@@ -182,10 +178,11 @@ app.post('/', function (req, res) {
   
   // Return help text with examples
   function help() {
+    const helpText = "Type `/support` for status accross all filters. Add a case link `https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699` or an email `hello@gmail.com` to get specific."
     res.send(
       {
         "response_type": "ephemeral",
-        "text": "Type `/support` for status accross all filters. Add a case link `https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699` or an email `hello@gmail.com` to get specific.",
+        "text": helpText,
       }
     )
   }
