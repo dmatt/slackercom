@@ -24,6 +24,8 @@ var exists = fs.existsSync(dbFile);
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database(dbFile);
 
+// Array of team name strings to monitor, default is all teams
+let monitoredTeams = []
 
 // Callback for running the list() function to get Intercom data
 function intervalFunc() {
@@ -37,12 +39,12 @@ function intervalFunc() {
 db.serialize( function() {
   if (!exists) {
     db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB)');
-    // db.run('DROP TABLE Conversations');
+    //db.run('DROP TABLE Conversations');
     console.log('New table Conversations created!');
     
     // insert default conversations
     db.serialize(function() {
-      db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[test2]")`);
+      db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[{test2foo: "foo", test2bar: "bar"},{test3foo: "foo", test3bar: "bar"}]")`);
     });
   }
   // Log out all rows for console
@@ -62,7 +64,7 @@ let getLastStat = new Promise( function(resolve, reject) {
     if (err) {
       reject(err)
     }
-    resolve(rows[0].UPDATED);
+    resolve(rows[0]);
   });
 });
 

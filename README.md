@@ -19,10 +19,4 @@ A configurable Slack "slash command" for intercom conversation data.
   - slack_token
   - SLACK_WEBHOOK
   
-3. Configure the following variables and functions in `app.js` to GET your desired data from Intercom
-   
-  - `statusParams` - Object of criteria for `cases` API call via `deskCall()`, parameters available: http://dev.desk.com/API/cases/#fields
-  - `createStats()` - Array.prototype.filter() tests to further segment data from `deskCall()` into specific filters
-  - stats - Object of filter names and variables defined in `createStats()` to output up to 20 Slack attachments
-  
 Remixed from [older version[(https://glitch.com/~tickets) that integrated with Desk.com intead of Intercom.
