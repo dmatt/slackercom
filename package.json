@@ -5,10 +5,8 @@
   "main": "app.js",
   "dependencies": {
     "express": "^4.15.2",
-    "oauth": "^0.9.15",
-    "body-parser": "^1.17.1",
+    "body-parser": "^1.18.3",
     "glitchup": "^1.1.0",
-    "request": "^2.81.0",
     "intercom-client": "^2.10.1",
     "sqlite3": "^4.0.0"
   },

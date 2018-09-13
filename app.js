@@ -1,7 +1,6 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const request = require('request')
 const Intercom = require('intercom-client');
 const client = new Intercom.Client({ token: process.env.INTERCOM_TOKEN });
 const glitchup = require('glitchup');
@@ -57,7 +56,7 @@ db.serialize( function() {
   }
 });
 
-// Promise to get all the conversations in the database https://www.npmjs.com/package/sqlite3
+// Get all conversations from DB https://www.npmjs.com/package/sqlite3
 let getLastStat = new Promise( function(resolve, reject) {
   db.all('SELECT * from Conversations Limit 1', function(err, rows) {
     if (err) {
@@ -71,13 +70,13 @@ let getLastStat = new Promise( function(resolve, reject) {
 function storeStats(fullList) {
   // insert one row into the Conversations table
   db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, ${fullList})`), function(err) {
+    // Log error
     if (err) {
       return console.log(err.message);
     }
-    // get the last insert id
+    // Log the last inserted id if no errors
     console.log(`A row has been inserted with rowid ${this.lastID}`);
   }
- 
   // close the database connection
   db.close();
 }
@@ -87,7 +86,22 @@ function count() {
   return {priority: 5}
 }
 
-// Paginate through all next page objects recursively
+// Call intercom for first page converations and paginate if more results exist
+function list() {
+  client.conversations.list( { open: true, per_page: 60 }).then(
+    function (firstPage, acc = []) {
+      console.log("1",acc)
+      acc += firstPage.body.conversations
+      console.log("2",acc)
+      getMorePages(firstPage.body.pages, acc)
+    }).catch(
+      // Log the rejection reason
+      (reason) => {
+        console.log('Handle rejected promise ('+reason+')');
+      })
+}
+
+// Paginate through Intercom nextPage objects recursively
 function getMorePages(page, acc) {
   client.nextPage(page).then(
     function (nextPage) {
@@ -108,21 +122,7 @@ function getMorePages(page, acc) {
       })
 }
 
-// Get the first page of results and paginate if more results exist
-function list() {
-  client.conversations.list( { open: true, per_page: 60 }).then(
-    function (firstPage, acc = []) {
-      console.log("1",acc)
-      acc += firstPage.body.conversations
-      console.log("2",acc)
-      getMorePages(firstPage.body.pages, acc)
-    }).catch(
-      // Log the rejection reason
-      (reason) => {
-        console.log('Handle rejected promise ('+reason+')');
-      })
-}
-
+// Handler of post requests to server, checks request text to trigger different functions
 app.post('/', function (req, res) {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
@@ -189,17 +189,6 @@ app.post('/', function (req, res) {
     )
   }
 })
-
-function webhook(message) {
-  request.post(
-    'https://hooks.slack.com/services/T024PTBSY/B7H11E2Q4/'+process.env.SLACK_WEBHOOK,
-    { json: message },
-    function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-        }
-    }
-  );
-}
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
