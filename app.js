@@ -3,12 +3,8 @@ const app = express()
 const bodyParser = require('body-parser')
 const request = require('request')
 const Intercom = require('intercom-client');
-
 const client = new Intercom.Client({ token: process.env.INTERCOM_TOKEN });
-
-// Use glitchup package to prevent server from sleeping
 const glitchup = require('glitchup');
-glitchup();
 
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({extended: false}));
@@ -18,6 +14,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 // caseAttachment() - case link with ID
 // emailSearch() - email address
 // caseCard() - singe case message to send
+
+// prevent server from sleeping
+glitchup();
 
 // init sqlite db
 var fs = require('fs');
@@ -177,46 +176,8 @@ app.post('/', function (req, res) {
   }
   
   // Returns a single case attachment using data from 
-  function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, customerGrav, assigned) {
-    if (company) {
-      company = "("+company+")"
-    }
-    if (!assigned) {
-      assigned = "Nobody"
-    }
-    let attachement = {
-      "pretext": status + " case from " + customer + " " + company,
-      "fallback": status + " case from " + customer + " " + company + "- #" + id + ": "+ subject,
-      "author_icon": customerGrav,
-      "author_name":  customer + " " + company,
-      "title": "#" + id + ": "+ subject,
-      "title_link": "https://help.disqus.com/agent/case/"+id,
-      "text": blurb,
-      "fields": [
-        {
-          "title": "Assigned",
-          "value": assigned,
-          "short": true
-        },
-        {
-          "title": "Labels",
-          "value": labels,
-          "short": true
-        }
-      ],
-      "color": "#7CD197",
-      "ts": ts
-    }
-    return attachement
-  }
-  
-  // does something
-  function uniqueMap(a, key) {
-    let keysArray = [];
-    let uniqueArray = [];
-    a.forEach( obj => keysArray.push(obj[key]));
-    a.forEach( obj => keysArray.indexOf(obj[key]) === keysArray.lastIndexOf(obj[key]) ? uniqueArray.push(obj) : console.log())
-    return uniqueArray;
+  function caseCard(text, subject, company, etc) {
+    // return `attachement` obect for slack message from data
   }
   
   // Return help text with examples
