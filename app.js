@@ -25,7 +25,16 @@ var exists = fs.existsSync(dbFile);
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database(dbFile);
 
-// if ./.data/sqlite.db does not exist, create it, otherwise print records to console
+
+// Callback for running the list() function to get Intercom data
+function intervalFunc() {
+  list();
+}
+
+// 
+// setInterval(intervalFunc, 1000 * 60 * 10 );
+
+// Create DB and popular with default data.
 db.serialize( function() {
   if (!exists) {
     db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB)');
@@ -37,6 +46,7 @@ db.serialize( function() {
       db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[test2]")`);
     });
   }
+  // Log out all rows for console
   else {
     console.log('Database "Conversations" ready to go!');
     db.each('SELECT * from Conversations', function(err, row) {
@@ -47,15 +57,7 @@ db.serialize( function() {
   }
 });
 
-// Run the list API call to Intercom every 10 min. so it can be cached
-function intervalFunc() {
-  list();
-}
-
-// setInterval(intervalFunc, 1000 * 60 * 10 );
-
-// endpoint to get all the dreams in the database
-// https://www.npmjs.com/package/sqlite3
+// Promise to get all the conversations in the database https://www.npmjs.com/package/sqlite3
 let getLastStat = new Promise( function(resolve, reject) {
   db.all('SELECT * from Conversations Limit 1', function(err, rows) {
     if (err) {
