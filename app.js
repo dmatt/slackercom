@@ -132,10 +132,10 @@ app.post('/', function (req, res) {
   if (req.body.token === process.env.SLACK_TOKEN) {
     // Detect which command was entered in slack and call the correct function
     if (req.body.text.length === 0) {
-      status(res,'commandResponse')
+      //
     // validates a full Desk link
-    } else if (/^[0-9]{1,7}$/.test(req.body.text.split('case/')[1])) {
-      caseAttachment(req.body.text.split('case/')[1])
+    } else if (/^[0-9]{1,7}$/.test(req.body.text.split('conversations/')[1])) {
+      caseAttachment(req.body.text.split('conversations/')[1])
     // validates email
     } else if (/([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)) {
       emailSearch(req.body.text)
@@ -166,73 +166,9 @@ app.post('/', function (req, res) {
   
   // When given case ID, get and send all case, customer, and assigned user details to slack
   function caseAttachment(id) {
-    desk.case(id, {}, function(error, data) {
-      if (data !== null) {
-        let caseData = data
-        desk.customer(caseData._links.customer.href.split("customers/")[1], {}, function(error, data) {
-          if (data !== null) {
-            let customerData = data
-            if (data !== null) {
-              let assignedName = 'Nobody'
-              if (caseData._links.assigned_user) {
-                desk.user(caseData._links.assigned_user.href.split("users/")[1], {}, function(error, data) {
-                  if (data) {
-                    let attachment = caseCard(
-                      null,
-                      caseData.status,
-                      caseData.id,
-                      caseData.subject,
-                      caseData.blurb,
-                      caseData.labels.toString(),
-                      Date.parse(caseData.received_at)/1000,
-                      customerData.display_name,
-                      customerData.company,
-                      customerData.avatar,
-                      data.public_name
-                    )
-                    res.send(
-                      {
-                        "response_type": "in_channel",
-                        "attachments": [attachment],
-                      }
-                    )
-                  }
-                })
-              } else {
-                // function caseCard(text, status, id, subject, blurb, labels, ts, customer, company, customerGrav, assigned)
-                let attachment = caseCard(
-                  null,
-                  caseData.status,
-                  caseData.id,
-                  caseData.subject,
-                  caseData.blurb,
-                  caseData.labels.toString(),
-                  Date.parse(caseData.received_at)/1000,
-                  customerData.display_name,
-                  customerData.company,
-                  customerData.avatar,
-                  null
-                )
-                res.send(
-                  {
-                    "response_type": "in_channel",
-                    "attachments": [attachment],
-                  }
-                );
-              }
-            } else {
-              help()
-            }
-          } else {
-            help()
-          }
-        })
-      } else if (data._embedded.entries.length < 1) {
-        empty()
-      } else {
-        help()
-      }
-    });
+    //https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699
+    //desk.case(id, {}, function(error, data) {
+    //});
   }
   
   // Returns most recent case ids that matches email
@@ -301,163 +237,6 @@ app.post('/', function (req, res) {
     )
   }
 })
-
-// Handle each command, and return relevant information to slack
-// Return stats on all case filters from Desk
-function status(res,type) {
-    let dataEntries = []
-    // Recursively call Desk until there are no more pages of results
-    let i = 1
-    function getOpenCases() {
-      desk.cases({
-        labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], 
-        status:['new,open'], 
-        sort_field:'created_at', 
-        sort_direction: 'asc',
-        per_page:100, 
-        page:i
-      }, function(error, data) {
-        if (i <= Math.ceil(data.total_entries/100)) {
-          dataEntries = dataEntries.concat(data._embedded.entries)           
-          i++
-          getOpenCases()
-        } else if (!data) {
-          error()
-        } else {
-          filterSend(dataEntries)
-        }
-      });
-    }
-    getOpenCases()
-  
-    function getResolvedCases() {
-          desk.get('cases',{
-            labels:['Priority publisher,SaaS Ads,Direct publisher,Community publisher,Home,Community commenter'], 
-            status:['resolved'], 
-            sort_field:'created_at', 
-            sort_direction: 'asc',
-            per_page:100
-          }, function(error, data) {
-            if (!data) {
-              error()
-            } else {
-            }
-          });
-        }
-    
-  //getResolvedCases()
-
-    function filterSend(dataEntries) {
-      createStats(dataEntries)
-      slackSend()
-    }
-
-    // Filter the data into seprate objects that correspond to each Desk filter
-    function createStats(dataEntries) {
-      var priorityFilter = dataEntries.filter(function(caseObj){
-        return caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
-      })
-      var saasFilter = dataEntries.filter(function(caseObj){
-        return caseObj.labels.includes('SaaS Ads') && !caseObj.labels.includes('Ad Content Report')
-      })
-      var directFilter = dataEntries.filter(function(caseObj){
-        return caseObj.labels.includes('Direct publisher') && !caseObj.labels.includes('Channel commenter') && !caseObj.labels.includes('SaaS Ads')
-      })
-      var communityFilter = dataEntries.filter(function(caseObj){
-        return caseObj.labels.includes('Community publisher') && !caseObj.labels.includes('Priority publisher') && !caseObj.labels.includes('SaaS Ads')
-      })
-      var channelFilter = dataEntries.filter(function(caseObj){
-        return caseObj.labels.includes('Home')
-      })
-      var commenterFilter = dataEntries.filter(function(caseObj){
-        return caseObj.labels.includes('Community commenter')
-      })
-
-      // New cases stats only for further segments
-      var priorityNew = priorityFilter.filter(function(caseObj){
-        return caseObj.status.includes('new')
-      })
-      var saasNew = saasFilter
-      .filter(function(caseObj){
-        return caseObj.status.includes('new')
-      })
-      var directNew = directFilter.filter(function(caseObj){
-        return caseObj.status.includes('new')
-      })
-      var communityNew = communityFilter.filter(function(caseObj){
-        return caseObj.status.includes('new')
-      })
-      var channelNew = channelFilter.filter(function(caseObj){
-        return caseObj.status.includes('new')
-      })
-      var commenterNew = commenterFilter.filter(function(caseObj){
-        return caseObj.status.includes('new')
-      })
-
-      // Open cases stats using complicated maths
-      var priorityOpen = priorityFilter.length - priorityNew.length
-      var saasOpen = saasFilter.length - saasNew.length
-      var directOpen = directFilter.length - directNew.length
-      var communityOpen = communityFilter.length - communityNew.length
-      var channelOpen = channelFilter.length - channelNew.length
-      var commenterOpen = commenterFilter.length - commenterNew.length
-
-      // Object so we can easily build the slack message
-      // Format: {"Filter Name": All cases, New cases, Open cases, "Needs attention" threshold for each filter}
-      stats = {
-        Priority:[priorityFilter.length,priorityNew.length,priorityOpen,10],
-        "Saas & Ads":[saasFilter.length,saasNew.length,saasOpen,30],
-        Direct:[directFilter.length,directNew.length,directOpen,30],
-        Community:[communityFilter.length,communityNew.length,communityOpen,30],
-        Channel:[channelFilter.length,channelNew.length,channelOpen,30],
-        Commenter:[commenterFilter.length,commenterNew.length,commenterOpen,60],
-      }
-    }
-
-  // Elements for output message
-  const disqusRed = '#e76c35'
-  const disqusGreen = '#7fbd5a'
-  let statusIcon
-  let stats = ""
-  
-  // Build and send the message with data from each filter
-  function slackSend() {
-    var total = 0
-    var attachments = []
-    var statusColor
-    Object.keys(stats).map(function(objectKey, i) {
-      total += stats[objectKey][0]
-      if (stats[objectKey][0] > stats[objectKey][3]) {
-        statusColor = disqusRed
-        statusIcon = "🔥"
-      } else if (stats[objectKey][0] <= 5) {
-        statusColor = disqusGreen
-        statusIcon = ":partyporkchop:"
-      } else {
-        statusColor = disqusGreen
-        statusIcon = "🆒"
-      }
-      attachments.push({
-        "fallback": stats[objectKey][0] + " total" + stats[objectKey][1] + " new" + stats[objectKey][2] + " open",
-        "color": statusColor,       
-        "title": statusIcon + " " + objectKey + ": " + stats[objectKey][0],
-        "text": stats[objectKey][1] + " new, " + stats[objectKey][2] + " open"
-      })
-    });
-    
-    let statusMessage = {
-          "response_type": "in_channel",
-          "text": total + " total cases right now.",
-          "attachments": attachments
-        }
-    // depending on request origin, also send the response as webhook for daily notifications
-    if (type === 'notification') {
-      webhook({text:"Morning report incoming!"});
-      webhook(statusMessage);
-    }
-    res.send(statusMessage);
-  }
-}
 
 function webhook(message) {
   request.post(
