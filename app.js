@@ -38,13 +38,13 @@ function intervalFunc() {
 // Create DB and popular with default data.
 db.serialize( function() {
   if (!exists) {
+    db.run('DROP TABLE Conversations');
     db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB)');
-    //db.run('DROP TABLE Conversations');
     console.log('New table Conversations created!');
     
     // insert default conversations
     db.serialize(function() {
-      db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[{test2foo: "foo", test2bar: "bar"},{test3foo: "foo", test3bar: "bar"}]")`);
+      db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[{'test2foo': 'foo', 'test2bar': 'bar'},{'test3foo': 'foo', 'test3bar': 'bar'}]")`);
     });
   }
   // Log out all rows for console
@@ -53,6 +53,9 @@ db.serialize( function() {
     db.each('SELECT * from Conversations', function(err, row) {
       if ( row ) {
         console.log('record:', row);
+      }
+      else if ( err ) {
+        console.log('error:', err);
       }
     });
   }
@@ -143,6 +146,7 @@ app.post('/', function (req, res) {
     } else if (req.body.text === "test") {
       // getLastStat() should just return a timestamp from the sqlite database table
       getLastStat.then(function(lastStat) {
+        console.log()
         res.send(
           {
             "response_type": "ephemeral",
