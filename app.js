@@ -27,14 +27,9 @@ var db = new sqlite3.Database(dbFile);
 // Array of team name strings to monitor, default is all teams
 let monitoredTeams = []
 
-// Callback for running the list() function to get Intercom data
-function intervalFunc() {
-  list();
-}
-
-// 
-// setInterval(intervalFunc, 1000 * 60 * 10 );
-// setInterval(intervalFunc, 1000 );
+// Callback to list() on interval get Intercom data
+// setInterval(list, 1000 * 60 * 10 );
+ setInterval(list, 10000 );
 
 // Create DB and popular with default data.
 db.serialize( function() {
@@ -89,16 +84,22 @@ function storeStats(fullList) {
 
 // Call intercom for first page converations and paginate if more results exist
 function list() {
-  client.conversations.list( { open: true, per_page: 60 }).then(
+  client.conversations.list( { open: true, per_page: 20 }).then(
     function (firstPage, acc = []) {
       console.log("1",acc)
       acc += firstPage.body.conversations
       console.log("2",acc)
-      getMorePages(firstPage.body.pages, acc)
+      if (firstPage.body.pages.next) {
+        getMorePages(firstPage.body.pages, acc)
+      }
+      else {
+        mapConvoStats(acc)
+        return acc
+      }
     }).catch(
       // Log the rejection reason
       (reason) => {
-        console.log('Handle rejected promise ('+reason+')');
+        console.log('Handle rejected promise in list() ('+reason+')');
       })
 }
 
@@ -119,7 +120,7 @@ function getMorePages(page, acc) {
   }).catch(
       // Log the rejection reason
       (reason) => {
-        console.log('Handle rejected promise ('+reason+')');
+        console.log('Handle rejected promise in getMorePages() ('+reason+')');
       })
 }
 
