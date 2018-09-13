@@ -1,3 +1,5 @@
+// 👀 Current status: working on mapStats function, trying look at format, figure out best manipulation
+
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
@@ -88,7 +90,8 @@ function list() {
     function (firstPage, acc = []) {
       console.log("1",acc)
       acc += firstPage.body.conversations
-      console.log("2",acc)
+      
+      console.log("2",JSON.stringify(firstPage.body.conversations))
       if (firstPage.body.pages.next) {
         getMorePages(firstPage.body.pages, acc)
       }
@@ -126,9 +129,7 @@ function getMorePages(page, acc) {
 
 // Maps converstation data to simple stats for each team
 function mapConvoStats(data) {
-  data.forEach(function(conversation, i) {
-  console.log(conversation);
-})
+  console.log("𝕾",JSON.stringify(data))
   // callback to storeStats()
 }
 
