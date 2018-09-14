@@ -59,15 +59,6 @@ db.serialize( function() {
   }
 });
 
-if (false) {
-  var stmt = db.prepare("INSERT INTO Conversations VALUES (?)");
-  for (var i = 0; i < 10; i++) {
-      stmt.run("Ipsum " + i);
-  }
-  stmt.finalize();
-
-}
-
 // Get all conversations from DB https://www.npmjs.com/package/sqlite3
 let getLastStat = new Promise( function(resolve, reject) {
   db.all('SELECT * from Conversations Limit 1', function(err, rows) {
@@ -140,6 +131,7 @@ function mapConvoStats(data) {
     return obj.assignee;
   });
   console.log("🤔", assignees);
+  console.log("🤔", assignees.length);
   storeStats(assignees, assignees.length)
 }
 
