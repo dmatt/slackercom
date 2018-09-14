@@ -1,4 +1,4 @@
-// 👀 Current status: working on mapStats function, trying look at format, figure out best manipulation
+// 👀 Current status: mapStats gets total count but having trouble storing to DB
 
 const express = require('express')
 const app = express()
