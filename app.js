@@ -126,9 +126,12 @@ function getMorePages(page, acc) {
       })
 }
 
+//setInterval(list, 3000 );
+
 // Maps converstation data to simple stats for each team
 function mapConvoStats(data) {
-  console.log("𝕾", JSON.stringify(data, undefined, 2))
+  const data2 = data.map(obj => obj[0]);
+  console.log("🤔", data2);
   // callback to storeStats()
 }
 
