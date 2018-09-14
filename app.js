@@ -89,7 +89,7 @@ function list() {
   client.conversations.list( { open: true, per_page: 20 }).then(
     function (firstPage, acc = []) {
       console.log("1",acc)
-      acc += firstPage.body.conversations
+      acc.push(firstPage.body.conversations)
       
       console.log("2",acc)
       if (firstPage.body.pages.next) {
@@ -110,12 +110,13 @@ function list() {
 function getMorePages(page, acc) {
   client.nextPage(page).then(
     function (nextPage) {
-      acc += nextPage.body.conversations
+      acc.push(nextPage.body.conversations)
       console.log("3",acc)
       if (nextPage.body.pages.next) {
         console.log("4"," there's more, get more!")
         getMorePages(nextPage.body.pages, acc)
       } else {
+        console.log("acc type: ", typeof acc)
         mapConvoStats(acc)
         return acc
       }
@@ -130,8 +131,11 @@ function getMorePages(page, acc) {
 
 // Maps converstation data to simple stats for each team
 function mapConvoStats(data) {
-  const data2 = data.map(obj => obj[0]);
-  console.log("🤔", data2);
+  const assignees = data.map(function(obj, i) {
+    console.log(i, " mapped");
+    return obj.assignee;
+  });
+  console.log("🤔", assignees);
   // callback to storeStats()
 }
 
