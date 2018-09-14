@@ -37,12 +37,12 @@ let monitoredTeams = []
 db.serialize( function() {
   if (!exists) {
     db.run('DROP TABLE Conversations');
-    db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB)');
+    db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB, TOTAL_OPEN INT)');
     console.log('New table Conversations created!');
     
     // insert default conversations
     db.serialize(function() {
-      db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[{'test2foo': 'foo', 'test2bar': 'bar'},{'test3foo': 'foo', 'test3bar': 'bar'}]")`);
+      db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[{},{}]"), 0`);
     });
   }
   // Log out all rows for console
@@ -70,9 +70,9 @@ let getLastStat = new Promise( function(resolve, reject) {
 });
 
 // Store fullList object in DB so slack command can use intermittently
-function storeStats(fullList) {
+function storeStats(fullList, totalOpen) {
   // insert one row into the Conversations table
-  db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, ${fullList})`), function(err) {
+  db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, ${fullList}, totalOpen)`), function(err) {
     // Log error
     if (err) {
       return console.log(err.message);
@@ -122,16 +122,16 @@ function getMorePages(page, acc) {
 }
 
 //setInterval(list, 3000 );
-list()
+//list()
 
 // Maps converstation data to simple stats for each team
 function mapConvoStats(data) {
   const assignees = data.map(function(obj, i) {
     console.log(i, " mapped");
-    return obj.assignees;
+    return obj.assignee;
   });
   console.log("🤔", assignees);
-  // callback to storeStats()
+  storeStats(assignees, assignees.length)
 }
 
 // Handler of post requests to server, checks request text to trigger different functions
