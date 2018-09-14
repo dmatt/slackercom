@@ -1,4 +1,4 @@
-// 👀 Current status: mapStats gets total count but having trouble storing to DB
+// 👀 Current status: mapStats gets total count, ripping out sqlite3 and putting in ne-db
 
 const express = require('express')
 const app = express()
@@ -19,12 +19,29 @@ app.use(bodyParser.urlencoded({extended: false}));
 // prevent server from sleeping
 glitchup();
 
-// init sqlite db
-var fs = require('fs');
-var dbFile = './.data/sqlite.db';
-var exists = fs.existsSync(dbFile);
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database(dbFile);
+// default conversations status data
+var conversations = [
+      {"timestamp":"yesterday", "fulllist": [{},{}], "total": 0 },
+      {"timestamp":"today", "fulllist": [{},{}], "total": 0 },
+    ];
+
+// setup a new database
+var Datastore = require('nedb'),
+    // Security note: the database is saved to the file `datafile` on the local filesystem. It's deliberately placed in the `.data` directory
+    // which doesn't get copied if someone remixes the project.
+    db = new Datastore({ filename: '.data/datafile', autoload: true });
+
+db.count({}, function (err, count) {
+  console.log("There are " + count + " conversation rows in the database");
+  if(err) console.log("There's a problem with the database: ", err);
+  else if(count<=0){ // empty database so needs populating
+    // default users inserted in the database
+    db.insert(conversations, function (err, conversationsAdded) {
+      if(err) console.log("There's a problem with the database: ", err);
+      else if(conversationsAdded) console.log("Default conversationsAdded inserted in the database");
+    });
+  }
+});
 
 // Array of team name strings to monitor, default is all teams
 let monitoredTeams = []
@@ -32,57 +49,6 @@ let monitoredTeams = []
 // Callback to list() on interval get Intercom data
 // setInterval(list, 1000 * 60 * 10 );
 //setInterval(list, 3000 );
-
-// Create DB and popular with default data.
-db.serialize( function() {
-  if (!exists) {
-    db.run('DROP TABLE Conversations');
-    db.run('CREATE TABLE Conversations (UPDATED DATE, FULLLIST BLOB, TOTAL_OPEN INT)');
-    console.log('New table Conversations created!');
-    
-    // insert default conversations
-    db.serialize(function() {
-      db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[{},{}]", 2)`);
-    });
-  }
-  // Log out all rows for console
-  else {
-    console.log('Database "Conversations" ready to go!');
-    db.each('SELECT * from Conversations', function(err, row) {
-      if ( row ) {
-        console.log('record:', row);
-      }
-      else if ( err ) {
-        console.log('error:', err);
-      }
-    });
-  }
-});
-
-// Get all conversations from DB https://www.npmjs.com/package/sqlite3
-let getLastStat = new Promise( function(resolve, reject) {
-  db.all('SELECT * from Conversations Limit 1', function(err, rows) {
-    if (err) {
-      reject(err)
-    }
-    resolve(rows[0]);
-  });
-});
-
-// Store fullList object in DB so slack command can use intermittently
-function storeStats(fullList, totalOpen) {
-  // insert one row into the Conversations table
-  db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, ${fullList}, ${totalOpen})`), function(err) {
-    // Log error
-    if (err) {
-      return console.log(err.message);
-    }
-    // Log the last inserted id if no errors
-    console.log(`A row has been inserted with rowid ${this.lastID}`);
-  }
-  // close the database connection
-  db.close();
-}
 
 // Call intercom for first page converations and paginate if more results exist
 function list() {
