@@ -42,7 +42,7 @@ db.serialize( function() {
     
     // insert default conversations
     db.serialize(function() {
-      db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[{},{}]"), 0`);
+      db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, "[{},{}]", 2)`);
     });
   }
   // Log out all rows for console
@@ -59,6 +59,15 @@ db.serialize( function() {
   }
 });
 
+if (false) {
+  var stmt = db.prepare("INSERT INTO Conversations VALUES (?)");
+  for (var i = 0; i < 10; i++) {
+      stmt.run("Ipsum " + i);
+  }
+  stmt.finalize();
+
+}
+
 // Get all conversations from DB https://www.npmjs.com/package/sqlite3
 let getLastStat = new Promise( function(resolve, reject) {
   db.all('SELECT * from Conversations Limit 1', function(err, rows) {
@@ -72,7 +81,7 @@ let getLastStat = new Promise( function(resolve, reject) {
 // Store fullList object in DB so slack command can use intermittently
 function storeStats(fullList, totalOpen) {
   // insert one row into the Conversations table
-  db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, ${fullList}, totalOpen)`), function(err) {
+  db.run(`INSERT INTO Conversations VALUES (CURRENT_TIMESTAMP, ${fullList}, ${totalOpen})`), function(err) {
     // Log error
     if (err) {
       return console.log(err.message);
