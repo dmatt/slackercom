@@ -31,7 +31,7 @@ let monitoredTeams = []
 
 // Callback to list() on interval get Intercom data
 // setInterval(list, 1000 * 60 * 10 );
-// setInterval(list, 3000 );
+//setInterval(list, 3000 );
 
 // Create DB and popular with default data.
 db.serialize( function() {
@@ -91,7 +91,7 @@ function list() {
       console.log("1",acc)
       acc += firstPage.body.conversations
       
-      console.log("2",JSON.stringify(firstPage.body.conversations))
+      console.log("2",acc)
       if (firstPage.body.pages.next) {
         getMorePages(firstPage.body.pages, acc)
       }
@@ -115,8 +115,7 @@ function getMorePages(page, acc) {
       if (nextPage.body.pages.next) {
         console.log("4"," there's more, get more!")
         getMorePages(nextPage.body.pages, acc)
-      }
-      else {
+      } else {
         mapConvoStats(acc)
         return acc
       }
@@ -129,7 +128,7 @@ function getMorePages(page, acc) {
 
 // Maps converstation data to simple stats for each team
 function mapConvoStats(data) {
-  console.log("𝕾",JSON.stringify(data))
+  console.log("𝕾", JSON.stringify(data, undefined, 2))
   // callback to storeStats()
 }
 
