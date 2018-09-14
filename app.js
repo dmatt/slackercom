@@ -84,6 +84,17 @@ function storeStats(fullList) {
   db.close();
 }
 
+function paginate (firstPage, acc = []) {
+      acc.push(firstPage.body.conversations)
+      if (firstPage.body.pages.next) {
+        getMorePages(firstPage.body.pages, acc)
+      }
+      else {
+        mapConvoStats(acc)
+        return acc
+      }
+}
+
 // Call intercom for first page converations and paginate if more results exist
 function list() {
   client.conversations.list( { open: true, per_page: 20 }).then(
