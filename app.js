@@ -88,7 +88,7 @@ function storeStats(fullList) {
 function list() {
   client.conversations.list( { open: true, per_page: 20 }).then(
     function (firstPage, acc = []) {
-      acc.push(firstPage.body.conversations)
+      acc = acc.concat(firstPage.body.conversations)
       if (firstPage.body.pages.next) {
         getMorePages(firstPage.body.pages, acc)
       }
@@ -107,7 +107,7 @@ function list() {
 function getMorePages(page, acc) {
   client.nextPage(page).then(
     function (nextPage) {
-      acc.push(nextPage.body.conversations)     
+      acc = acc.concat(nextPage.body.conversations)
       if (nextPage.body.pages.next) {
         getMorePages(nextPage.body.pages, acc)
       } else {
@@ -128,7 +128,7 @@ list()
 function mapConvoStats(data) {
   const assignees = data.map(function(obj, i) {
     console.log(i, " mapped");
-    return obj;
+    return obj.assignees;
   });
   console.log("🤔", assignees);
   // callback to storeStats()
