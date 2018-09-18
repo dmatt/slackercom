@@ -87,7 +87,7 @@ function getMorePages(page, acc) {
       })
 }
 
-list()
+// list()
 
 // Maps converstation data to simple stats for each team
 function mapConvoStats(data) {
@@ -97,11 +97,6 @@ function mapConvoStats(data) {
   console.log("🤔", assignees.length);
   storeStats(assignees, assignees.length)
 }
-
-app.get('/test', function (req, res) {
-  console.log("Get request: ", req)
-  res.send("hello world 5")
-})
 
 // Handler of post requests to server, checks request text to trigger different functions
 app.post('/', function (req, res) {
