@@ -48,7 +48,7 @@ let monitoredTeams = []
 
 // Callback to list() on interval get Intercom data
 // setInterval(list, 1000 * 60 * 10 );
-//setInterval(list, 3000 );
+// setInterval(list, 3000 );
 
 // Call intercom for first page converations and paginate if more results exist
 function list() {
@@ -87,19 +87,21 @@ function getMorePages(page, acc) {
       })
 }
 
-//setInterval(list, 3000 );
-//list()
+list()
 
 // Maps converstation data to simple stats for each team
 function mapConvoStats(data) {
   const assignees = data.map(function(obj, i) {
-    console.log(i, " mapped");
     return obj.assignee;
   });
-  console.log("🤔", assignees);
   console.log("🤔", assignees.length);
   storeStats(assignees, assignees.length)
 }
+
+app.get('/test', function (req, res) {
+  console.log("Get request: ", req)
+  res.send("hello world 5")
+})
 
 // Handler of post requests to server, checks request text to trigger different functions
 app.post('/', function (req, res) {
@@ -171,6 +173,6 @@ app.post('/', function (req, res) {
 })
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(57312, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });

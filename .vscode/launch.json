@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Node: Nodemon",
+            "restart": true,
+            "runtimeExecutable": "nodemon",
+            "protocol": "inspector",
+            "envFile": "${workspaceFolder}/.env",
+        },
+    ]
+}
