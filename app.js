@@ -1,4 +1,4 @@
-// 👀 Current status: mapStats gets total count, ripping out sqlite3 and putting in ne-db
+// 👀 Current status: ne-db is working, need to design the records, mapStats gets total count
 
 const express = require('express')
 const app = express()
@@ -19,11 +19,20 @@ app.use(bodyParser.urlencoded({extended: false}));
 // prevent server from sleeping
 glitchup();
 
+function StatusRecord(timestamp, data, total) {
+  this.timestamp = timestamp;
+  this.data = data;
+  this.total = total;
+}
+
+let statusRecord1 = new StatusRecord("today", {"convo": "1"}, 1);
+let statusRecord2 = new StatusRecord("yesterday", {"convo": "2"}, 2);
+
 // default conversations status data
 var conversations = [
-      {"timestamp":"yesterday", "fulllist": [{},{}], "total": 0 },
-      {"timestamp":"today", "fulllist": [{},{}], "total": 0 },
-    ];
+  statusRecord1,
+  statusRecord2
+];
 
 // setup a new database
 var Datastore = require('nedb'),
@@ -168,6 +177,6 @@ app.post('/', function (req, res) {
 })
 
 // listen for requests :)
-var listener = app.listen(57312, function () {
+var listener = app.listen(53923, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });

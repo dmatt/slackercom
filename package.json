@@ -4,11 +4,10 @@
   "description": "Slash command handler for Disqus slack.",
   "main": "app.js",
   "dependencies": {
-    "express": "^4.15.2",
     "body-parser": "^1.18.3",
+    "express": "^4.15.2",
     "glitchup": "^1.1.0",
     "intercom-client": "^2.10.1",
-    "sqlite3": "^4.0.0",
     "nedb": "^1.8.0"
   },
   "devDependencies": {},
