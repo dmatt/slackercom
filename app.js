@@ -1,5 +1,4 @@
-// 👀 Current status: properly store status rows on interval (per team monitored) and output
-// last row with slash command
+// 👀 Current status: mapConvoStats() https://github.com/louischatriot/nedb. mapConvoStats doesn't reduce and collect increments
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -38,7 +37,7 @@ const defaultStatusRecords = [
   new StatusRecord('status', 'yesterday', { convo: '2' }, 2),
 ];
 
-// Initialize database with Teams
+// Initialize database with Teams. TODO: check if teams have changed and update
 db.count({ type: 'team' }, (countErr, count) => {
   console.log(`There are ${count} team rows in the database`);
   if (countErr) console.log('There\'s a problem with the database: ', countErr);
@@ -92,11 +91,24 @@ function storeTeams() {
       ).catch(failureCallback);
     }
 
+// Call intercom for all admins, which includes teams
+function storeStatus(statusRecord) {
+  db.insert(statusRecord, (insertErr, recordsAdded) => {
+    if (insertErr) console.log('There\'s a problem with the database: ', insertErr);
+    else if (recordsAdded) console.log('Team inserted in the database');
+  });
+}
+
 // Maps converstation data to simple stats for each team
 function mapConvoStats(data) {
-  const assignees = data.map(obj => obj.assignee);
-  console.log('🤔', assignees.length);
-  // storeStats(assignees, assignees.length);
+  let statusRecord = new StatusRecord('status', Date.now(), {}, 0);
+  const reducedData = data.reduce((acc, convo) => {
+    let incrementKey = [convo.assignee.id || convo.assignee.type];
+    typeof acc.data[incrementKey] === 'undefined' ? acc.data[incrementKey] = 1 : acc.data[incrementKey]++;
+    return acc;
+  }, statusRecord);
+  console.log('🤔', reducedData);
+  storeStatus(statusRecord);
 }
 
 // Paginate through Intercom nextPage objects recursively
@@ -129,7 +141,7 @@ function listConversations() {
     ).catch(failureCallback);
 }
 
-// listConversations();
+listConversations();
 
 // When given case ID, get and send all case, customer, and assigned user details to slack
 function caseAttachment(id) {
