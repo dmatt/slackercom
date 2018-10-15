@@ -1,10 +1,11 @@
-// 👀 Current status: mapConvoStats() https://github.com/louischatriot/nedb. mapConvoStats doesn't reduce and collect increments
+// 👀 Current status: now storing a pretty status row for team counts, work on other funtions now
 
 const express = require('express');
 const bodyParser = require('body-parser');
 const Intercom = require('intercom-client');
 const glitchup = require('glitchup');
 const Datastore = require('nedb'); // setup a new database
+const unescape = require('unescape');
 
 const app = express();
 const client = new Intercom.Client({ token: process.env.INTERCOM_TOKEN });
@@ -33,8 +34,8 @@ class StatusRecord {
 
 // default conversations status data
 const defaultStatusRecords = [
-  new StatusRecord('status', 'today', { convo: '1' }, 1),
-  new StatusRecord('status', 'yesterday', { convo: '2' }, 2),
+  new StatusRecord('status', 1439640522522, { convo: '1' }, 1),
+  new StatusRecord('status', 1439640522521, { convo: '2' }, 2),
 ];
 
 // Initialize database with Teams. TODO: check if teams have changed and update
@@ -68,7 +69,7 @@ let monitoredTeams = [];
 // setInterval(list, 3000 );
 
 function failureCallback(result) {
-  console.log(`Handle rejected promise in listTeams() (${result})`);
+  console.log(`Handle rejected promise (${result})`);
 }
 
 // Call intercom for all admins, which includes teams
@@ -91,37 +92,56 @@ function storeTeams() {
       ).catch(failureCallback);
     }
 
-// Call intercom for all admins, which includes teams
+// Store status record
 function storeStatus(statusRecord) {
   db.insert(statusRecord, (insertErr, recordsAdded) => {
     if (insertErr) console.log('There\'s a problem with the database: ', insertErr);
-    else if (recordsAdded) console.log('Team inserted in the database');
+    else if (recordsAdded) console.log('Status inserted in the database');
   });
 }
 
-// Maps converstation data to simple stats for each team
-function mapConvoStats(data) {
-  let statusRecord = new StatusRecord('status', Date.now(), {}, 0);
-  const reducedData = data.reduce((acc, convo) => {
-    let incrementKey = [convo.assignee.id || convo.assignee.type];
-    typeof acc.data[incrementKey] === 'undefined' ? acc.data[incrementKey] = 1 : acc.data[incrementKey]++;
-    return acc;
-  }, statusRecord);
-  console.log('🤔', reducedData);
-  storeStatus(statusRecord);
-}
+// Maps converstation data to simple counts for each team name
+const mapConvoStats = (data) => {
+  // First, finding all teams in database
+  db.find({ type: 'team' }, (findErr, docsFound) => {
+    if (findErr) console.log('There\'s a problem with the database: ', findErr);
+    else if (docsFound) {
+      // Reduce all conversation data down to counts per team ID
+      const reducedData = data.reduce((acc, convo) => {
+        const incrementKey = [convo.assignee.id || convo.assignee.type];
+        typeof acc[incrementKey] === 'undefined' ? acc[incrementKey] = 1 : acc[incrementKey]++
+        return acc;
+      }, {});
+      // Create a new pretty count object to store
+      const statusRecord = new StatusRecord('status', Date.now(), {}, 0);
+      // Format team names and collate with team id convo counts
+      docsFound.forEach((doc) => {
+        statusRecord.data[unescape(doc.name)] = reducedData[doc.id] ? reducedData[doc.id] : 0;
+      });
+      // Reduce all team count values to total
+      statusRecord.total = Object.values(statusRecord.data).reduce((acc, count) => acc + count);
+      storeStatus(statusRecord);
+    }
+  });
+};
+
+const getLastStatus = () => new Promise((resolve, reject) => {
+  db.findOne({ type: 'status' }).sort({ timestamp: -1 }).exec((findErr, docsFound) => {
+    findErr ? reject(`Problem with the database: ${findErr}`) : docsFound ? resolve(docsFound) : null
+  });
+});
 
 // Paginate through Intercom nextPage objects recursively
 function getMorePages(page, conversationData) {
   client.nextPage(page).then(
     (nextPage) => {
-      const conversationDataMultiple = conversationData.concat(nextPage.body.conversations);
+      const converationCollection = conversationData.concat(nextPage.body.conversations);
       if (nextPage.body.pages.next) {
-        getMorePages(nextPage.body.pages, conversationDataMultiple);
+        getMorePages(nextPage.body.pages, converationCollection);
       } else {
-        mapConvoStats(conversationDataMultiple);
+        mapConvoStats(converationCollection);
       }
-      return conversationDataMultiple;
+      return converationCollection;
   },
   ).catch(failureCallback);
 }
@@ -142,8 +162,9 @@ function listConversations() {
 }
 
 listConversations();
+getLastStatus().then((lastStat) => { console.log('💓', lastStat); });
 
-// When given case ID, get and send all case, customer, and assigned user details to slack
+/* // When given case ID, get and send all case, customer, and assigned user details to slack
 function caseAttachment(id) {
   // https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699
   // desk.case(id, {}, function(error, data) {
@@ -160,7 +181,7 @@ function emailSearch(email) {
 // Returns a single case attachment using data from
 function caseCard(text, subject, company, etc) {
   // return `attachement` obect for slack message from data
-}
+} */
 
 // Return help text to client with examples of proper usage
 function help(res) {
@@ -179,22 +200,22 @@ app.post('/', (req, res) => {
   if (req.body.token === process.env.SLACK_TOKEN) {
     // Detect which command was entered in slack and call the correct function
     if (req.body.text.length === 0) {
-      // getLastStat() should just return a timestamp from the sqlite database table
-      getLastStat.then((lastStat) => {
-        console.log();
+      // get last status from database
+      getLastStatus().then((lastStat) => {
+        console.log("🐒", lastStat);
         res.send(
           {
             response_type: 'ephemeral',
             text: `hello ${lastStat}`,
           },
         );
-      });
+      }).catch(failureCallback);
     // validates a full Intercom link exists in command text
     } else if (/^[0-9]{1,7}$/.test(req.body.text.split('conversations/')[1])) {
-      caseAttachment(req.body.text.split('conversations/')[1]);
+      // caseAttachment(req.body.text.split('conversations/')[1]);
       // validates email
     } else if (/([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)) {
-      emailSearch(req.body.text);
+      // emailSearch(req.body.text);
     } else if (req.body.text === 'help') {
       help(res);
     } else {
