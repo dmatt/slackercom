@@ -199,14 +199,14 @@ app.post('/', (req, res) => {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
     // Detect which command was entered in slack and call the correct function
-    if (req.body.text.length === 0) {
+    if (req.body.text === 'test') {
       // get last status from database
       getLastStatus().then((lastStat) => {
         console.log("🐒", lastStat);
         res.send(
           {
             response_type: 'ephemeral',
-            text: `hello ${lastStat}`,
+            text: `counts: ${JSON.stringify(lastStat.data)} total: ${lastStat.total} `,
           },
         );
       }).catch(failureCallback);
@@ -231,7 +231,7 @@ app.post('/', (req, res) => {
   }
 });
 
-// listen for requests :)
-const listener = app.listen(53923, () => {
+// Local debug listen for requests :)
+const listener = app.listen(process.env.PORT || 53923, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });
