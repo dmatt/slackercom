@@ -1,4 +1,4 @@
-// 👀 Current status: now storing a pretty status row for team counts, work on other funtions now
+// 👀 Current status: runs on interval, working on better message format, then add other functions
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -61,16 +61,21 @@ db.count({type: 'status'}, (countErr, count) => {
   }
 });
 
-// Array of team name strings to monitor, default is all teams
-let monitoredTeams = [];
+// Array of team name strings to monitor, if empty formatForSlack() will return all
+const monitoredTeams = [
+  'Commenters',
+  'DMCA',
+  'Publisher Success',
+  'Priority Support',
+  'Community Publishers',
+  'Payments',
+  'Direct Support',
+  'Delete & Access',
+];
 
-// Callback to listConversations() on interval to periodically store new Intercom data
-// setInterval(listConversations, 1000 * 60 * 10 );
-// setInterval(listConversations, 3000 );
-
-function failureCallback(result) {
+const failureCallback = (result) => {
   console.log(`Handle rejected promise (${result})`);
-}
+};
 
 // Call intercom for all admins, which includes teams
 function storeTeams() {
@@ -109,7 +114,7 @@ const mapConvoStats = (data) => {
       // Reduce all conversation data down to counts per team ID
       const reducedData = data.reduce((acc, convo) => {
         const incrementKey = [convo.assignee.id || convo.assignee.type];
-        typeof acc[incrementKey] === 'undefined' ? acc[incrementKey] = 1 : acc[incrementKey]++
+        typeof acc[incrementKey] === 'undefined' ? acc[incrementKey] = 1 : acc[incrementKey]++;
         return acc;
       }, {});
       // Create a new pretty count object to store
@@ -161,6 +166,9 @@ function listConversations() {
     ).catch(failureCallback);
 }
 
+// Callback to listConversations() every 10 min. to store new Intercom data
+// setInterval(listConversations, 1000 * 60 * 10 );
+
 // listConversations();
 getLastStatus().then((lastStat) => { console.log('💓', lastStat); });
 
@@ -199,15 +207,18 @@ function formatForSlack(statusRecord) {
   const attachments = [];
   const filterTotals = statusRecord.data;
   Object.keys(filterTotals).map((objectKey) => {
-     attachments.push({
-      fallback: `${objectKey}: ${filterTotals[objectKey]}`,
-      color: '#7fbd5a',
-      title: `${objectKey}: ${filterTotals[objectKey]}`,
-      // 'text': stats[objectKey][1] + ' new, ' + stats[objectKey][2] + ' open'
-    });
-    return objectKey;
+    const addAttachment = () => {
+      attachments.push({
+        fallback: `${objectKey}: ${filterTotals[objectKey]}`,
+        color: '#7fbd5a',
+        title: `${objectKey}: ${filterTotals[objectKey]}`,
+        // 'text': stats[objectKey][1] + ' new, ' + stats[objectKey][2] + ' open'
+      });
+    };
+    // Add the team stats to message only if actively monitoring
+    return monitoredTeams.length && !monitoredTeams.includes(objectKey) ? false : addAttachment();
   });
-  let message = {
+  const message = {
     response_type: 'in_channel',
     text: `${statusRecord.total} total open coversations right now.`,
     attachments,
