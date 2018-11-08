@@ -64,9 +64,9 @@ db.count({type: 'status'}, (countErr, count) => {
 // Array of team name strings to monitor, default is all teams
 let monitoredTeams = [];
 
-// Callback to list() on interval get Intercom data
-// setInterval(list, 1000 * 60 * 10 );
-// setInterval(list, 3000 );
+// Callback to listConversations() on interval to periodically store new Intercom data
+// setInterval(listConversations, 1000 * 60 * 10 );
+// setInterval(listConversations, 3000 );
 
 function failureCallback(result) {
   console.log(`Handle rejected promise (${result})`);
@@ -161,7 +161,7 @@ function listConversations() {
     ).catch(failureCallback);
 }
 
-listConversations();
+// listConversations();
 getLastStatus().then((lastStat) => { console.log('💓', lastStat); });
 
 /* // When given case ID, get and send all case, customer, and assigned user details to slack
@@ -194,6 +194,27 @@ function help(res) {
   );
 }
 
+// TODO: create a better message structure: monitored teams, on-fire, last touched
+function formatForSlack(statusRecord) {
+  const attachments = [];
+  const filterTotals = statusRecord.data;
+  Object.keys(filterTotals).map((objectKey) => {
+     attachments.push({
+      fallback: `${objectKey}: ${filterTotals[objectKey]}`,
+      color: '#7fbd5a',
+      title: `${objectKey}: ${filterTotals[objectKey]}`,
+      // 'text': stats[objectKey][1] + ' new, ' + stats[objectKey][2] + ' open'
+    });
+    return objectKey;
+  });
+  let message = {
+    response_type: 'in_channel',
+    text: `${statusRecord.total} total open coversations right now.`,
+    attachments,
+  };
+  return message;
+}
+
 // Handler of post requests to server, checks request text to trigger different functions
 app.post('/', (req, res) => {
   // Check the slack token so that this request is authenticated
@@ -202,13 +223,8 @@ app.post('/', (req, res) => {
     if (req.body.text === 'test') {
       // get last status from database
       getLastStatus().then((lastStat) => {
-        console.log("🐒", lastStat);
-        res.send(
-          {
-            response_type: 'ephemeral',
-            text: `counts: ${JSON.stringify(lastStat.data)} total: ${lastStat.total} `,
-          },
-        );
+        const lastStatFormatted = formatForSlack(lastStat);
+        res.send(lastStatFormatted);
       }).catch(failureCallback);
     // validates a full Intercom link exists in command text
     } else if (/^[0-9]{1,7}$/.test(req.body.text.split('conversations/')[1])) {
