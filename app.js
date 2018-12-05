@@ -1,4 +1,7 @@
-// 👀 Current status: now storing a pretty status row for team counts, work on other funtions now
+// 👀 Current status: reducedData is inaccurate for some teams :(
+// working on better message format (monitorConfig -> mapConvoStats()
+// don't do the status calculations in format, that should only pull static data that is stored
+// then add caseAttachment()
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -15,10 +18,7 @@ const db = new Datastore({ filename: '.data/datafile', autoload: true });
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Important functions to re-write
-// status() - default
 // caseAttachment() - case link with ID
-// emailSearch() - email address
-// caseCard() - singe case message to send
 
 // prevent server from sleeping
 glitchup();
@@ -31,6 +31,10 @@ class StatusRecord {
     this.total = total;
   }
 }
+
+db.ensureIndex({ fieldName: 'type', expireAfterSeconds: 300000 }, (err) => {
+  if (err) console.log('There\'s a problem with the database: ', err);
+});
 
 // default conversations status data
 const defaultStatusRecords = [
@@ -61,16 +65,21 @@ db.count({type: 'status'}, (countErr, count) => {
   }
 });
 
-// Array of team name strings to monitor, default is all teams
-let monitoredTeams = [];
+// Array of team name strings to monitor, if empty formatForSlack() will return all
+const monitoredTeams = [
+  'Commenters',
+  'DMCA',
+  'Publisher Success',
+  'Priority Support',
+  'Community Publishers',
+  'Payments',
+  'Direct Support',
+  'Delete & Access',
+];
 
-// Callback to list() on interval get Intercom data
-// setInterval(list, 1000 * 60 * 10 );
-// setInterval(list, 3000 );
-
-function failureCallback(result) {
+const failureCallback = (result) => {
   console.log(`Handle rejected promise (${result})`);
-}
+};
 
 // Call intercom for all admins, which includes teams
 function storeTeams() {
@@ -100,6 +109,8 @@ function storeStatus(statusRecord) {
   });
 }
 
+// remove oldest status record
+
 // Maps converstation data to simple counts for each team name
 const mapConvoStats = (data) => {
   // First, finding all teams in database
@@ -108,17 +119,18 @@ const mapConvoStats = (data) => {
     else if (docsFound) {
       // Reduce all conversation data down to counts per team ID
       const reducedData = data.reduce((acc, convo) => {
-        const incrementKey = [convo.assignee.id || convo.assignee.type];
-        typeof acc[incrementKey] === 'undefined' ? acc[incrementKey] = 1 : acc[incrementKey]++
+        // make the assignedTo key either the assignee or "nobody_admin" if no id exists (unassigned)
+        const assignedTo = convo.assignee.id || convo.assignee.type;
+        typeof acc[assignedTo] === 'undefined' ? acc[assignedTo] = 1 : acc[assignedTo]++;
         return acc;
       }, {});
       // Create a new pretty count object to store
       const statusRecord = new StatusRecord('status', Date.now(), {}, 0);
-      // Format team names and collate with team id convo counts
-      docsFound.forEach((doc) => {
-        statusRecord.data[unescape(doc.name)] = reducedData[doc.id] ? reducedData[doc.id] : 0;
+      // Format team/assignee names and if the assignee id is present in reduced convo counts set to that count, else set to 0 (no open cases)
+      docsFound.forEach((assignee) => {
+        statusRecord.data[unescape(assignee.name)] = reducedData[assignee.id] ? reducedData[assignee.id] : 0;
       });
-      // Reduce all team count values to total
+      // Reduce all team count values for a total specific to monitored teams
       statusRecord.total = Object.values(statusRecord.data).reduce((acc, count) => acc + count);
       storeStatus(statusRecord);
     }
@@ -161,6 +173,11 @@ function listConversations() {
     ).catch(failureCallback);
 }
 
+// Callback to listConversations() every 10 min. to store new Intercom data
+setInterval(listConversations, 300000 );
+// Callback to removeOldRecords() every 10 min. so Glitch 512MB memory doesn't max out
+// setInterval(removeOldRecords, 300000 );
+
 listConversations();
 getLastStatus().then((lastStat) => { console.log('💓', lastStat); });
 
@@ -194,21 +211,40 @@ function help(res) {
   );
 }
 
+// TODO: create a better message structure: monitored teams, on-fire, last touched
+function formatForSlack(statusRecord) {
+  const attachments = [];
+  const filterTotals = statusRecord.data;
+  Object.keys(filterTotals).map((objectKey) => {
+    const addAttachment = () => {
+      attachments.push({
+        fallback: `${objectKey}: ${filterTotals[objectKey]}`,
+        color: '#7fbd5a',
+        title: `${objectKey}: ${filterTotals[objectKey]}`,
+        // 'text': stats[objectKey][1] + ' new, ' + stats[objectKey][2] + ' open'
+      });
+    };
+    // Add the team stats to message only if actively monitoring
+    return monitoredTeams.length && !monitoredTeams.includes(objectKey) ? false : addAttachment();
+  });
+  const message = {
+    response_type: 'in_channel',
+    text: `${statusRecord.total} total open coversations right now.`,
+    attachments,
+  };
+  return message;
+}
+
 // Handler of post requests to server, checks request text to trigger different functions
 app.post('/', (req, res) => {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
     // Detect which command was entered in slack and call the correct function
-    if (req.body.text.length === 0) {
+    if (req.body.text === 'test') {
       // get last status from database
       getLastStatus().then((lastStat) => {
-        console.log("🐒", lastStat);
-        res.send(
-          {
-            response_type: 'ephemeral',
-            text: `hello ${lastStat}`,
-          },
-        );
+        const lastStatFormatted = formatForSlack(lastStat);
+        res.send(lastStatFormatted);
       }).catch(failureCallback);
     // validates a full Intercom link exists in command text
     } else if (/^[0-9]{1,7}$/.test(req.body.text.split('conversations/')[1])) {
@@ -231,7 +267,7 @@ app.post('/', (req, res) => {
   }
 });
 
-// listen for requests :)
-const listener = app.listen(53923, () => {
+// Local debug listen for requests :)
+const listener = app.listen(process.env.PORT || 53923, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });
