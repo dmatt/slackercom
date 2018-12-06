@@ -1,6 +1,5 @@
-// 👀 Current status: reducedData is inaccurate for some teams :(
+// 👀 Current status: fixed intercom api call, accidentally returning snoozed cases
 // working on better message format (monitorConfig -> mapConvoStats()
-// don't do the status calculations in format, that should only pull static data that is stored
 // then add caseAttachment()
 
 const express = require('express');
@@ -121,7 +120,7 @@ const mapConvoStats = (data) => {
       const reducedData = data.reduce((acc, convo) => {
         // make the assignedTo key either the assignee or "nobody_admin" if no id exists (unassigned)
         const assignedTo = convo.assignee.id || convo.assignee.type;
-        typeof acc[assignedTo] === 'undefined' ? acc[assignedTo] = 1 : acc[assignedTo]++;
+        acc[assignedTo] == undefined ? acc[assignedTo] = 1 : acc[assignedTo]++;
         return acc;
       }, {});
       // Create a new pretty count object to store
@@ -160,7 +159,7 @@ function getMorePages(page, conversationData) {
 
 // Call intercom for first page converations and paginate if more results exist
 function listConversations() {
-  client.conversations.list({ open: true, per_page: 20 }).then(
+  client.conversations.list({ state: "open", per_page: 20 }).then(
     (firstPage, conversationData = []) => {
       const conversationDataSingle = conversationData.concat(firstPage.body.conversations);
       if (firstPage.body.pages.next) {
