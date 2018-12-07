@@ -1,6 +1,4 @@
-// 👀 Current status: fixed intercom api call, accidentally returning snoozed cases
-// working on better message format (monitorConfig -> mapConvoStats()
-// then add caseAttachment()
+// 👀 Current status: working on getting single convo
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -108,8 +106,6 @@ function storeStatus(statusRecord) {
   });
 }
 
-// remove oldest status record
-
 // Maps converstation data to simple counts for each team name
 const mapConvoStats = (data) => {
   // First, finding all teams in database
@@ -129,7 +125,7 @@ const mapConvoStats = (data) => {
       docsFound.forEach((assignee) => {
         statusRecord.data[unescape(assignee.name)] = reducedData[assignee.id] ? reducedData[assignee.id] : 0;
       });
-      // Reduce all team count values for a total specific to monitored teams
+      // Reduce all team count values for a total 
       statusRecord.total = Object.values(statusRecord.data).reduce((acc, count) => acc + count);
       storeStatus(statusRecord);
     }
@@ -177,15 +173,22 @@ setInterval(listConversations, 300000 );
 // Callback to removeOldRecords() every 10 min. so Glitch 512MB memory doesn't max out
 // setInterval(removeOldRecords, 300000 );
 
-listConversations();
+// listConversations();
 getLastStatus().then((lastStat) => { console.log('💓', lastStat); });
 
-/* // When given case ID, get and send all case, customer, and assigned user details to slack
-function caseAttachment(id) {
+// When given conversation ID, get and send all case, customer, and assigned user details to slack
+const getConversation = (id) => new Promise((resolve, reject) => {
+  // ignore the conversation part id if that exists
+  let conversationId = id.split('#') ? id.split('#')[0] : id;
   // https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699
-  // desk.case(id, {}, function(error, data) {
-  // });
-}
+  client.conversations.find({ id: conversationId }).then(
+    (conversation) => {
+      resolve(conversation.body.conversation_message.body)
+    },
+    ).catch(failureCallback);
+});
+
+/* 
 
 // Returns most recent case ids that matches email
 function emailSearch(email) {
@@ -210,25 +213,50 @@ function help(res) {
   );
 }
 
+// return true if team name is in the monitored list, default is true if there are no teams to monitor
+const isMonitoredTeam = (team) => {
+  return monitoredTeams.length && !monitoredTeams.includes(team) ? false : true;
+}
+
 // TODO: create a better message structure: monitored teams, on-fire, last touched
 function formatForSlack(statusRecord) {
   const attachments = [];
-  const filterTotals = statusRecord.data;
-  Object.keys(filterTotals).map((objectKey) => {
+  const teamConvoCounts = statusRecord.data;
+  let monitoredTeamsTotal = 0;
+  Object.keys(teamConvoCounts).map((objectKey) => {
     const addAttachment = () => {
+      monitoredTeamsTotal += teamConvoCounts[objectKey]
       attachments.push({
-        fallback: `${objectKey}: ${filterTotals[objectKey]}`,
+        fallback: `${objectKey}: ${teamConvoCounts[objectKey]}`,
         color: '#7fbd5a',
-        title: `${objectKey}: ${filterTotals[objectKey]}`,
+        title: `${objectKey}: ${teamConvoCounts[objectKey]}`,
         // 'text': stats[objectKey][1] + ' new, ' + stats[objectKey][2] + ' open'
       });
     };
     // Add the team stats to message only if actively monitoring
-    return monitoredTeams.length && !monitoredTeams.includes(objectKey) ? false : addAttachment();
+    if (isMonitoredTeam(objectKey)) {
+      addAttachment()
+    }
   });
   const message = {
     response_type: 'in_channel',
-    text: `${statusRecord.total} total open coversations right now.`,
+    text: `${monitoredTeamsTotal} open coversations right now.`,
+    attachments,
+  };
+  return message;
+}
+
+function formatSingleConvoForSlack(conversation) {
+  const attachments = [];
+      attachments.push({
+        fallback: `${conversation}`,
+        color: '#7fbd5a',
+        title: `${conversation}`,
+        // 'text': stats[objectKey][1] + ' new, ' + stats[objectKey][2] + ' open'
+      });
+  const message = {
+    response_type: 'in_channel',
+    text: `hi`,
     attachments,
   };
   return message;
@@ -239,15 +267,18 @@ app.post('/', (req, res) => {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
     // Detect which command was entered in slack and call the correct function
-    if (req.body.text === 'test') {
+    if (req.body.text.length < 1) {
       // get last status from database
       getLastStatus().then((lastStat) => {
         const lastStatFormatted = formatForSlack(lastStat);
         res.send(lastStatFormatted);
       }).catch(failureCallback);
     // validates a full Intercom link exists in command text
-    } else if (/^[0-9]{1,7}$/.test(req.body.text.split('conversations/')[1])) {
-      // caseAttachment(req.body.text.split('conversations/')[1]);
+    } else if (req.body.text.split('conversation/')[1] > 1) {
+      // get last status from database
+      getConversation(req.body.text.split('conversation/')[1]).then((conversation) => {
+        res.send(formatSingleConvoForSlack(conversation));
+      }).catch(failureCallback);
       // validates email
     } else if (/([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)) {
       // emailSearch(req.body.text);
