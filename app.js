@@ -6,10 +6,13 @@ const Intercom = require('intercom-client');
 const glitchup = require('glitchup');
 const Datastore = require('nedb'); // setup a new database
 const unescape = require('unescape');
+const TurndownService = require('turndown');
 
 const app = express();
 const client = new Intercom.Client({ token: process.env.INTERCOM_TOKEN });
 const db = new Datastore({ filename: '.data/datafile', autoload: true });
+
+const turndownService = new TurndownService()
 
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -29,9 +32,19 @@ class StatusRecord {
   }
 }
 
+// Sets a TTL for all rows to expire so that oldest rows are flushed out to save space
 db.ensureIndex({ fieldName: 'type', expireAfterSeconds: 300000 }, (err) => {
   if (err) console.log('There\'s a problem with the database: ', err);
 });
+
+// Manually remove all team data if you need to refresh your team list (i.e. after adding a new team) 
+function removeTeams() { 
+  db.remove({ type: { $in: ['team'] }}, { multi: true }, function (err, numRemoved) {
+  console.log(numRemoved)
+});
+}
+
+// removeTeams()
 
 // default conversations status data
 const defaultStatusRecords = [
@@ -83,12 +96,12 @@ function storeTeams() {
   client.admins.list().then(
     (firstPage) => {
       const teams = firstPage.body.admins.filter(admin => admin.type === 'team');
-      console.log(teams);
       return teams;
     },
     ).then(
       (teams) => {
         teams.forEach((team) => {
+          console.log(team)
           db.insert(team, (insertErr, recordsAdded) => {
             if (insertErr) console.log('There\'s a problem with the database: ', insertErr);
             else if (recordsAdded) console.log('Team inserted in the database');
@@ -105,6 +118,18 @@ function storeStatus(statusRecord) {
     else if (recordsAdded) console.log('Status inserted in the database');
   });
 }
+
+/* Example of how to log the last 10 status
+const logLastTenStatus = () => {
+  // First, finding all teams in database
+  db.find({ type: 'status' }).sort({ timestamp: -1 }).limit(10).exec(function (findErr, docsFound) {
+    if (findErr) console.log('There\'s a problem with the database: ', findErr);
+    else if (docsFound) {
+      console.log(docsFound)
+    }
+  });
+};
+*/
 
 // Maps converstation data to simple counts for each team name
 const mapConvoStats = (data) => {
@@ -170,20 +195,19 @@ function listConversations() {
 
 // Callback to listConversations() every 10 min. to store new Intercom data
 setInterval(listConversations, 300000 );
-// Callback to removeOldRecords() every 10 min. so Glitch 512MB memory doesn't max out
-// setInterval(removeOldRecords, 300000 );
 
 // listConversations();
-getLastStatus().then((lastStat) => { console.log('💓', lastStat); });
 
 // When given conversation ID, get and send all case, customer, and assigned user details to slack
 const getConversation = (id) => new Promise((resolve, reject) => {
-  // ignore the conversation part id if that exists
-  let conversationId = id.split('#') ? id.split('#')[0] : id;
-  // https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699
-  client.conversations.find({ id: conversationId }).then(
+  let conversationId = id.split('#part_id=')[0];
+  let partId = id.includes('#part_id=') ? id.split('#part_id=')[1].split(`${conversationId}-`)[1] : null;
+  client.conversations.find({ 'id': conversationId }).then(
     (conversation) => {
-      resolve(conversation.body.conversation_message.body)
+      if (partId) {
+        conversation.body.chosen_conversation_part = conversation.body.conversation_parts.conversation_parts.filter(part => part.id === partId);
+      }
+      resolve(conversation.body)
     },
     ).catch(failureCallback);
 });
@@ -228,9 +252,8 @@ function formatForSlack(statusRecord) {
       monitoredTeamsTotal += teamConvoCounts[objectKey]
       attachments.push({
         fallback: `${objectKey}: ${teamConvoCounts[objectKey]}`,
-        color: '#7fbd5a',
+        color: teamConvoCounts[objectKey] < 10 ? '#7fbd5a' : '#e76c35' ,
         title: `${objectKey}: ${teamConvoCounts[objectKey]}`,
-        // 'text': stats[objectKey][1] + ' new, ' + stats[objectKey][2] + ' open'
       });
     };
     // Add the team stats to message only if actively monitoring
@@ -246,17 +269,40 @@ function formatForSlack(statusRecord) {
   return message;
 }
 
+// storeTeams();
+
 function formatSingleConvoForSlack(conversation) {
-  const attachments = [];
-      attachments.push({
-        fallback: `${conversation}`,
-        color: '#7fbd5a',
-        title: `${conversation}`,
-        // 'text': stats[objectKey][1] + ' new, ' + stats[objectKey][2] + ' open'
-      });
+  let conversationBodyHTML = conversation.chosen_conversation_part ? conversation.chosen_conversation_part[0].body : conversation.conversation_message.body;
+  let conversationBody = turndownService.turndown(conversationBodyHTML)
+  let conversationSubject = turndownService.turndown(conversation.conversation_message.subject)
+  let conversationTimestamp = conversation.chosen_conversation_part ? conversation.chosen_conversation_part[0].created_at : conversation.created_at;
+  const attachments = [
+        {
+            "fallback": `${conversationBody}`,
+            "color": "#36a64f",
+            // "author_name": `${conversation.user.id}`,
+            "title": `${conversationSubject}`,
+            "title_link": "https://api.slack.com/",
+            "text": `${conversationBody}`,
+            "fields": [
+                {
+                    "title": "Status",
+                    "value": `${conversation.state}`,
+                    "short": true
+                },
+                {
+                    "title": "Rating",
+                    "value": `${conversation.conversation_rating.rating || "None"}`,
+                    "short": true
+                }
+            ],
+            "footer": "Slackercom",
+            "footer_icon": "https://cdn.glitch.com/project-avatar/e899f9c6-39d0-4acf-abe0-e0d88c21c524.png?1524523219471",
+            "ts": conversationTimestamp
+        }
+    ];
   const message = {
     response_type: 'in_channel',
-    text: `hi`,
     attachments,
   };
   return message;
@@ -266,27 +312,33 @@ function formatSingleConvoForSlack(conversation) {
 app.post('/', (req, res) => {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
-    // Detect which command was entered in slack and call the correct function
-    if (req.body.text.length < 1) {
+    // Different commands that can be attached to `/support`
+    let isConversationId = req.body.text.split('conversation/')[1];
+    let isEmptyCommand = (req.body.text.length < 1);
+    let isEmail = /([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)
+    let isHelp = (req.body.text === 'help')
+    // call the correct function for each command
+    if (isEmptyCommand) {
       // get last status from database
       getLastStatus().then((lastStat) => {
         const lastStatFormatted = formatForSlack(lastStat);
         res.send(lastStatFormatted);
       }).catch(failureCallback);
     // validates a full Intercom link exists in command text
-    } else if (req.body.text.split('conversation/')[1] > 1) {
+    } else if (isConversationId) {
       // get last status from database
-      getConversation(req.body.text.split('conversation/')[1]).then((conversation) => {
+      getConversation(isConversationId).then((conversation) => {
         res.send(formatSingleConvoForSlack(conversation));
       }).catch(failureCallback);
       // validates email
-    } else if (/([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)) {
+    } else if (isEmail) {
       // emailSearch(req.body.text);
-    } else if (req.body.text === 'help') {
+    } else if (isHelp) {
       help(res);
     } else {
       res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
     }
+  // Request does not have token so it is not authenticated
   } else {
     res.send(
       {
