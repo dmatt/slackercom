@@ -18,8 +18,8 @@ Instructions at [https://developers.intercom.com/building-apps/docs/authorizatio
 `INTERCOM_TOKEN=`
 
 ### Slack
-Go to [https://disqus.slack.com/apps/manage/custom-integrations](https://disqus.slack.com/apps/manage/custom-integrations) > Slash Commands > Token
+Go to [https://disqus.slack.com/apps/manage/custom-integrations](https://disqus.slack.com/apps/manage/custom-integrations) > Slash Commands > Edit > Token
 
 `SLACK_TOKEN=`
 
-Remixed from [older version[(https://glitch.com/~tickets) that integrated with Desk.com intead of Intercom.
+Remixed from [older version](https://glitch.com/~tickets) that integrated with Desk.com intead of Intercom.

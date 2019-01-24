@@ -1,4 +1,4 @@
-// 👀 Current status: removed email lookup, adding link to case in slack message output
+// 👀 Current status: removed email lookup
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -188,10 +188,10 @@ setInterval(listConversations, 300000 );
 const getConversationById = (id) => new Promise((resolve, reject) => {
   let conversationId = id.split('#part_id=')[0];
   let partId = id.includes('#part_id=') ? id.split('#part_id=')[1].split(`${conversationId}-`)[1] : null;
-  client.conversations.find({ 'id': conversationId }).then(
+  client.conversations.find({ 'id': conversationId, 'display_as': 'plaintext' }).then(
     (conversation) => {
       if (partId) {
-        conversation.body.chosen_conversation_part = conversation.body.conversation_parts.conversation_parts.filter(part => part.id === partId);
+        conversation.body.chosen_conversation_part = partId;
       }
       resolve(conversation.body)
     },
@@ -241,20 +241,32 @@ function formatForSlack(statusRecord) {
   return message;
 }
 
+// grab the first conversation part where the author is the customer
+const getSpecificMessage = (body) => {
+  let customerIndicator = ['lead','user']
+  if (body.chosen_conversation_part) {
+    return body.conversation_parts.conversation_parts.filter(part => part.id === body.chosen_conversation_part)[0];
+  } else if (customerIndicator.includes(body.conversation_message.author.type)) {
+    return body.conversation_message
+  }
+  return body.conversation_parts.conversation_parts.filter(part => customerIndicator.includes(part.author.type))[0]
+}
+
 function formatSingleConvoForSlack(conversation) {
-  let conversationBodyHTML = conversation.chosen_conversation_part ? conversation.chosen_conversation_part[0].body : conversation.conversation_message.body;
-  let conversationBody = turndownService.turndown(conversationBodyHTML)
-  let conversationSubject = turndownService.turndown(conversation.conversation_message.subject)
-  let conversationTimestamp = conversation.chosen_conversation_part ? conversation.chosen_conversation_part[0].created_at : conversation.created_at;
-  let conversationRating = conversation.conversation_rating ? conversation.conversation_rating.rating : 'Not yet rated';
+  let specificMessage = getSpecificMessage(conversation)
+  let body = specificMessage.body
+  let subject = conversation.conversation_message.subject
+  let timestamp = specificMessage.created_at
+  let ratingMap = ['😠','🙁','😐','😃','🤩']
+  let rating = (conversation.conversation_rating.rating !== null) ? ratingMap[conversation.conversation_rating.rating - 1] : 'Not yet rated';
   const attachments = [
         {
-            "fallback": `${conversationBody}`,
+            "fallback": `${body}`,
             "color": "#36a64f",
             // "author_name": `${conversation.user.id}`,
-            "title": `${conversationSubject}`,
-            "title_link": "https://api.slack.com/",
-            "text": `${conversationBody}`,
+            "title": `${subject}`,
+            "title_link": `${'https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/conversation/' + conversation.id}`,
+            "text": `${body}`,
             "fields": [
                 {
                     "title": "Status",
@@ -263,13 +275,13 @@ function formatSingleConvoForSlack(conversation) {
                 },
                 {
                     "title": "Rating",
-                    "value": `${conversationRating}`,
+                    "value": `${rating}`,
                     "short": true
                 }
             ],
             "footer": "Slackercom",
             "footer_icon": "https://cdn.glitch.com/project-avatar/e899f9c6-39d0-4acf-abe0-e0d88c21c524.png?1524523219471",
-            "ts": conversationTimestamp
+            "ts": timestamp
         }
     ];
   const message = {
