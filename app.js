@@ -313,7 +313,7 @@ app.post('/', (req, res) => {
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
     // Different commands that can be attached to `/support`
-    let isConversationId = req.body.text.split('conversation/')[1];
+    let conversationId = req.body.text.split(/conversations\/|conversation\//)[1];
     let isEmptyCommand = (req.body.text.length < 1);
     let isEmail = /([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)
     let isHelp = (req.body.text === 'help')
@@ -325,9 +325,9 @@ app.post('/', (req, res) => {
         res.send(lastStatFormatted);
       }).catch(failureCallback);
     // validates a full Intercom link exists in command text
-    } else if (isConversationId) {
+    } else if (conversationId) {
       // get last status from database
-      getConversation(isConversationId).then((conversation) => {
+      getConversation(conversationId).then((conversation) => {
         res.send(formatSingleConvoForSlack(conversation));
       }).catch(failureCallback);
       // validates email
