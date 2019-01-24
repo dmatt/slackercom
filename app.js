@@ -1,4 +1,4 @@
-// 👀 Current status: working on getting single convo
+// 👀 Current status: removed email lookup, adding link to case in slack message output
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -17,12 +17,10 @@ const turndownService = new TurndownService()
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Important functions to re-write
-// caseAttachment() - case link with ID
-
 // prevent server from sleeping
 glitchup();
 
+// the "model" for team status data record
 class StatusRecord {
   constructor(type, timestamp, data, total) {
     this.type = type;
@@ -32,7 +30,7 @@ class StatusRecord {
   }
 }
 
-// Sets a TTL for all rows to expire so that oldest rows are flushed out to save space
+// Sets a TTL for all rows to expire so that oldest rows are flushed out after 300000 seconds
 db.ensureIndex({ fieldName: 'type', expireAfterSeconds: 300000 }, (err) => {
   if (err) console.log('There\'s a problem with the database: ', err);
 });
@@ -119,18 +117,6 @@ function storeStatus(statusRecord) {
   });
 }
 
-/* Example of how to log the last 10 status
-const logLastTenStatus = () => {
-  // First, finding all teams in database
-  db.find({ type: 'status' }).sort({ timestamp: -1 }).limit(10).exec(function (findErr, docsFound) {
-    if (findErr) console.log('There\'s a problem with the database: ', findErr);
-    else if (docsFound) {
-      console.log(docsFound)
-    }
-  });
-};
-*/
-
 // Maps converstation data to simple counts for each team name
 const mapConvoStats = (data) => {
   // First, finding all teams in database
@@ -157,6 +143,7 @@ const mapConvoStats = (data) => {
   });
 };
 
+// Get the most recent status record from database, used by slash command for quick responses
 const getLastStatus = () => new Promise((resolve, reject) => {
   db.findOne({ type: 'status' }).sort({ timestamp: -1 }).exec((findErr, docsFound) => {
     findErr ? reject(`Problem with the database: ${findErr}`) : docsFound ? resolve(docsFound) : null
@@ -194,12 +181,11 @@ function listConversations() {
 }
 
 // Callback to listConversations() every 10 min. to store new Intercom data
+// listConversations();
 setInterval(listConversations, 300000 );
 
-// listConversations();
-
 // When given conversation ID, get and send all case, customer, and assigned user details to slack
-const getConversation = (id) => new Promise((resolve, reject) => {
+const getConversationById = (id) => new Promise((resolve, reject) => {
   let conversationId = id.split('#part_id=')[0];
   let partId = id.includes('#part_id=') ? id.split('#part_id=')[1].split(`${conversationId}-`)[1] : null;
   client.conversations.find({ 'id': conversationId }).then(
@@ -211,20 +197,6 @@ const getConversation = (id) => new Promise((resolve, reject) => {
     },
     ).catch(failureCallback);
 });
-
-/* 
-
-// Returns most recent case ids that matches email
-function emailSearch(email) {
-  // desk.get('cases/search/',
-  // {email: email, sort_field:'created_at', sort_direction: 'desc'}, function(error, data) {
-  // });
-}
-
-// Returns a single case attachment using data from
-function caseCard(text, subject, company, etc) {
-  // return `attachement` obect for slack message from data
-} */
 
 // Return help text to client with examples of proper usage
 function help(res) {
@@ -269,13 +241,12 @@ function formatForSlack(statusRecord) {
   return message;
 }
 
-// storeTeams();
-
 function formatSingleConvoForSlack(conversation) {
   let conversationBodyHTML = conversation.chosen_conversation_part ? conversation.chosen_conversation_part[0].body : conversation.conversation_message.body;
   let conversationBody = turndownService.turndown(conversationBodyHTML)
   let conversationSubject = turndownService.turndown(conversation.conversation_message.subject)
   let conversationTimestamp = conversation.chosen_conversation_part ? conversation.chosen_conversation_part[0].created_at : conversation.created_at;
+  let conversationRating = conversation.conversation_rating ? conversation.conversation_rating.rating : 'Not yet rated';
   const attachments = [
         {
             "fallback": `${conversationBody}`,
@@ -292,7 +263,7 @@ function formatSingleConvoForSlack(conversation) {
                 },
                 {
                     "title": "Rating",
-                    "value": `${conversation.conversation_rating.rating || "None"}`,
+                    "value": `${conversationRating}`,
                     "short": true
                 }
             ],
@@ -315,7 +286,6 @@ app.post('/', (req, res) => {
     // Different commands that can be attached to `/support`
     let conversationId = req.body.text.split(/conversations\/|conversation\//)[1];
     let isEmptyCommand = (req.body.text.length < 1);
-    let isEmail = /([\w\.]+)@([\w\.]+)\.(\w+)/.test(req.body.text)
     let isHelp = (req.body.text === 'help')
     // call the correct function for each command
     if (isEmptyCommand) {
@@ -326,13 +296,11 @@ app.post('/', (req, res) => {
       }).catch(failureCallback);
     // validates a full Intercom link exists in command text
     } else if (conversationId) {
-      // get last status from database
-      getConversation(conversationId).then((conversation) => {
+      // search the conversation ID in Intercom API
+      getConversationById(conversationId).then((conversation) => {
         res.send(formatSingleConvoForSlack(conversation));
       }).catch(failureCallback);
       // validates email
-    } else if (isEmail) {
-      // emailSearch(req.body.text);
     } else if (isHelp) {
       help(res);
     } else {
@@ -348,6 +316,18 @@ app.post('/', (req, res) => {
     );
   }
 });
+
+/* Example of how to log the last 10 status
+const logLastTenStatus = () => {
+  // First, finding all teams in database
+  db.find({ type: 'status' }).sort({ timestamp: -1 }).limit(10).exec(function (findErr, docsFound) {
+    if (findErr) console.log('There\'s a problem with the database: ', findErr);
+    else if (docsFound) {
+      console.log(docsFound)
+    }
+  });
+};
+*/
 
 // Local debug listen for requests :)
 const listener = app.listen(process.env.PORT || 53923, () => {
