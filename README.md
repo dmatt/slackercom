@@ -1,6 +1,8 @@
 # slackercom
 A configurable Slack "slash command" to retrieve intercom team status and conversations.
 
+![slackercom command gif](https://cdn.glitch.com/e899f9c6-39d0-4acf-abe0-e0d88c21c524%2FJan-24-2019%2016-21-33.gif?1548375781814)
+
 ## Commands:
 - `/support` - default command returns conversation counts for all teams. You can also restrict to a chosen list of teams by editing `monitoredTeams`
 - `/support https://app.intercom.io/a/apps/[app-id-redacted]/inbox/inbox/conversation/15929788631` - returns entire conversation that matches ID, if `#part_id=user-message-15929788631-202241720` is provided in the URL, just that message will be returned.
@@ -10,7 +12,7 @@ A configurable Slack "slash command" to retrieve intercom team status and conver
 ## Configuration:
 
 1. Create your custom [Slack slash command](https://api.slack.com/slash-commands) configuration.
-2. Add the following environment variables from your Intercom and Slack app:
+2. Add the following environment variables (in Glitch, `🗝.env`) from your Intercom and Slack app:
 
 ### Intercom
 Instructions at [https://developers.intercom.com/building-apps/docs/authorization#section-access-tokens](https://developers.intercom.com/building-apps/docs/authorization#section-access-tokens), you can adjust the app to only use Read permissions
