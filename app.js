@@ -7,6 +7,7 @@ const glitchup = require('glitchup');
 const Datastore = require('nedb'); // setup a new database
 const unescape = require('unescape');
 const TurndownService = require('turndown');
+const request = require('request');
 
 const app = express();
 const client = new Intercom.Client({ token: process.env.INTERCOM_TOKEN });
@@ -44,7 +45,7 @@ function removeTeams() {
 
 // removeTeams()
 
-// default conversations status data
+// default conversations status data with some placeholder data
 const defaultStatusRecords = [
   new StatusRecord('status', 1439640522522, { convo: '1' }, 1),
   new StatusRecord('status', 1439640522521, { convo: '2' }, 2),
@@ -74,19 +75,34 @@ db.count({type: 'status'}, (countErr, count) => {
 });
 
 // Array of team name strings to monitor, if empty formatForSlack() will return all
-const monitoredTeams = [
-  'Commenters',
-  'DMCA',
-  'Publisher Success',
-  'Priority Support',
-  'Community Publishers',
-  'Payments',
-  'Direct Support',
-  'Delete & Access',
+let monitoredTeams = [
+  // Example:
+  // 'Priority',
+  // 'Partners',
+  // 'Paid customers',
 ];
 
+// This reassignment should be intentionally ignored if you leave DISQUS_TOKEN blank
+if (process.env.DISQUS_TOKEN == 'hellofromdisqus') {
+  monitoredTeams = [
+    'Commenters',
+    'DMCA',
+    'Publisher Success',
+    'Priority Support',
+    'Community Publishers',
+    'Payments',
+    'Direct Support',
+    'Delete & Access',
+  ];
+}
+
 const failureCallback = (result) => {
+  let failureMessage = {
+    response_type: 'ephemeral',
+    text: `Sorry, something didn't work right: ${result}`,
+  };
   console.log(`Handle rejected promise (${result})`);
+  postToSlack(failureMessage, response_url);
 };
 
 // Call intercom for all admins, which includes teams
@@ -199,14 +215,21 @@ const getConversationById = (id) => new Promise((resolve, reject) => {
 });
 
 // Return help text to client with examples of proper usage
-function help(res) {
-  const helpText = 'Type `/support` for status accross all filters. Add a case link `https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699` or an email `hello@gmail.com` to get specific.';
-  res.send(
-    {
-      response_type: 'ephemeral',
-      text: helpText,
-    },
-  );
+function help() {
+  let helpMessage = {
+    response_type: 'ephemeral',
+    text: 'Type `/support` for the status of all monitored teams. Add a conversation link `https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699` to return the message.',
+  };
+  return helpMessage
+}
+
+// Return help text to client with examples of proper usage
+function badCommand() {
+  let badCommandMessage = {
+    response_type: 'ephemeral',
+    text: 'Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.',
+  };
+  return badCommandMessage
 }
 
 // return true if team name is in the monitored list, default is true if there are no teams to monitor
@@ -291,10 +314,28 @@ function formatSingleConvoForSlack(conversation) {
   return message;
 }
 
+// Handles async requests back to slack after a command is handled and completed
+let postToSlack = (message, response_url ) => {
+  request.post({
+    url: response_url,
+    json: message
+  }, function(err,httpResponse,body) {
+    if (err) {
+      failureCallback(err);
+    }
+  })
+}
+
+// global response_url to use in failure callbacks
+let response_url
+
 // Handler of post requests to server, checks request text to trigger different functions
 app.post('/', (req, res) => {
+  response_url = req.body.response_url;
   // Check the slack token so that this request is authenticated
   if (req.body.token === process.env.SLACK_TOKEN) {
+    // Send an acknowledgement immediately, then finish async command and POST to `response_url`
+    res.send({response_type: 'ephemeral', text: '🤔'});
     // Different commands that can be attached to `/support`
     let conversationId = req.body.text.split(/conversations\/|conversation\//)[1];
     let isEmptyCommand = (req.body.text.length < 1);
@@ -304,26 +345,26 @@ app.post('/', (req, res) => {
       // get last status from database
       getLastStatus().then((lastStat) => {
         const lastStatFormatted = formatForSlack(lastStat);
-        res.send(lastStatFormatted);
+        postToSlack(lastStatFormatted, req.body.response_url);
       }).catch(failureCallback);
     // validates a full Intercom link exists in command text
     } else if (conversationId) {
       // search the conversation ID in Intercom API
       getConversationById(conversationId).then((conversation) => {
-        res.send(formatSingleConvoForSlack(conversation));
+        postToSlack(formatSingleConvoForSlack(conversation), req.body.response_url);
       }).catch(failureCallback);
       // validates email
     } else if (isHelp) {
-      help(res);
+      postToSlack(help(res), req.body.response_url);
     } else {
-      res.send('Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.');
+      postToSlack(badCommand(), req.body.response_url);
     }
   // Request does not have token so it is not authenticated
   } else {
     res.send(
       {
         response_type: 'ephemeral',
-        text: 'Wow, such unauthorized',
+        text: 'Wow, such unauthorized. Make sure your secret Slack token is correctly set.',
       },
     );
   }

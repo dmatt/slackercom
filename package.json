@@ -10,7 +10,8 @@
     "intercom-client": "^2.10.1",
     "nedb": "^1.8.0",
     "unescape": "^1.0.1",
-    "turndown": "^5.0.1"
+    "turndown": "^5.0.1",
+    "request": "^2.88.0"
   },
   "scripts": {
     "start": "node app.js"
