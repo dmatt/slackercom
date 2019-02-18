@@ -1,4 +1,4 @@
-// 👀 Current status: removed email lookup
+// 👀 Current status: going to add a dashboard.html with d3.j visualization of status data
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -17,6 +17,7 @@ const turndownService = new TurndownService()
 
 // Express middleware for parsing request/resonse bodies
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(__dirname + '/public/'))
 
 // prevent server from sleeping
 glitchup();
@@ -115,7 +116,6 @@ function storeTeams() {
     ).then(
       (teams) => {
         teams.forEach((team) => {
-          console.log(team)
           db.insert(team, (insertErr, recordsAdded) => {
             if (insertErr) console.log('There\'s a problem with the database: ', insertErr);
             else if (recordsAdded) console.log('Team inserted in the database');
@@ -329,6 +329,41 @@ let postToSlack = (message, response_url ) => {
 // global response_url to use in failure callbacks
 let response_url
 
+app.get('/wakeup', (req, res) => {
+  console.log('Ok, I\'ll try to wake up');
+  res.status(200).send('Ok, I\'ll try to wake up');
+});
+
+app.get('/dashboard', function(req, res){
+    let trustedKey = process.env.TRUSTED_KEY;
+    let requestKey = req.query.key;
+    console.log(requestKey, trustedKey);
+    if (trustedKey === requestKey) {
+        res.status(200).sendFile(__dirname + '/dashboard.html');
+    } else {
+        res.status(403).send('Your IP is not allowed to see this dashboard.');
+    }
+})
+
+// endpoint to get all status records in database
+app.get('/getStatus', function(req, res) {
+  // First, finding all teams in database
+  db.find({ type: 'status' }).sort({ timestamp: -1 }).limit(1000).exec(function (findErr, docsFound) {
+    if (findErr) console.log('There\'s a problem with the database: ', findErr);
+    else if (docsFound) {
+      let refererIndex = req.rawHeaders.indexOf('referer');
+      let referrer = req.rawHeaders[refererIndex+1];
+      let trustedKey = process.env.TRUSTED_KEY;
+      let requestKey = referrer.split("=")[1];
+      if (trustedKey === requestKey) {
+        res.status(200).send(JSON.stringify(docsFound));
+      } else {
+          res.status(403).send('Your IP is not allowed to see this dashboard.');
+      }
+    }
+  });
+});
+
 // Handler of post requests to server, checks request text to trigger different functions
 app.post('/', (req, res) => {
   response_url = req.body.response_url;
@@ -370,7 +405,7 @@ app.post('/', (req, res) => {
   }
 });
 
-/* Example of how to log the last 10 status
+// Example of how to log the last 10 status
 const logLastTenStatus = () => {
   // First, finding all teams in database
   db.find({ type: 'status' }).sort({ timestamp: -1 }).limit(10).exec(function (findErr, docsFound) {
@@ -380,7 +415,8 @@ const logLastTenStatus = () => {
     }
   });
 };
-*/
+
+// logLastTenStatus()
 
 // Local debug listen for requests :)
 const listener = app.listen(process.env.PORT || 53923, () => {
