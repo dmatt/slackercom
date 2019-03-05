@@ -10,5 +10,12 @@
             "protocol": "inspector",
             "envFile": "${workspaceFolder}/.env",
         },
+        {
+            "name": "Launch Dashboard",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:53923/dashboard/?key=eW91$shR*lpO%",
+            "webRoot": "${workspaceFolder}/public"
+        }
     ]
 }
