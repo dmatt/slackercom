@@ -47,8 +47,8 @@ function removeTeams() {
 
 // default conversations status data with some placeholder data
 const defaultStatusRecords = [
-  new StatusRecord('status', 1439640522522, { convo: '1' }, 1),
-  new StatusRecord('status', 1439640522521, { convo: '2' }, 2),
+  new StatusRecord('status', 1439640522522, { test: '1' }, 1),
+  new StatusRecord('status', 1439640522521, { test: '2' }, 2),
 ];
 
 // global response_url to use in failure callbacks
@@ -341,28 +341,29 @@ app.get('/wakeup', (req, res) => {
   res.status(200).send('Ok, I\'ll try to wake up');
 });
 
-app.get('/dashboard', function(req, res){
-    let trustedKey = process.env.TRUSTED_KEY;
-    let requestKey = req.query.key;
+app.get('/dashboard', (req, res) => {
+    const trustedKey = process.env.TRUSTED_KEY;
+    const requestKey = req.query.key;
     console.log(requestKey, trustedKey);
     if (trustedKey === requestKey) {
         res.status(200).sendFile(__dirname + '/dashboard.html');
     } else {
         res.status(403).send('Your IP is not allowed to see this dashboard.');
     }
-})
+});
 
 // endpoint to get all status records in database
-app.get('/getStatus', function(req, res) {
+app.get('/getStatus', (req, res) => {
+  console.log('server hit')
   // First, finding all teams in database
-  db.find({ type: 'status' }).sort({ timestamp: -1 }).limit(1000).exec(function (findErr, docsFound) {
+  db.find({ type: 'status' }, { $not: { team: 'convo' } }).sort({ timestamp: -1 }).limit(70).exec((findErr, docsFound) => {
     if (findErr) console.log('There\'s a problem with the database: ', findErr);
     else if (docsFound) {
       // check for both cases, headers are case-insensitive
-      let refererIndex = req.rawHeaders.indexOf('referer') < 0 ? req.rawHeaders.indexOf('Referer') : req.rawHeaders.indexOf('referer');
-      let referrer = req.rawHeaders[refererIndex+1];
-      let trustedKey = process.env.TRUSTED_KEY;
-      let requestKey = referrer.split('=')[1];
+      const refererIndex = req.rawHeaders.indexOf('referer') < 0 ? req.rawHeaders.indexOf('Referer') : req.rawHeaders.indexOf('referer');
+      const referrer = req.rawHeaders[refererIndex + 1];
+      const trustedKey = process.env.TRUSTED_KEY;
+      const requestKey = referrer.split('=')[1];
       if (trustedKey === requestKey) {
         res.status(200).send(JSON.stringify(docsFound));
       } else {
