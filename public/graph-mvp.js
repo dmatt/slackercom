@@ -39,7 +39,7 @@ const makeGraph = (dataSet) => {
             const svg = d3.select('svg');
 
             const width = +svg.attr('width');
-            const height = +svg.attr('height');
+            const height = +svg.attr('height') - 50;
 
             const render = (data) => {
                 // data.columns = ["count", "team", "timestamp", "type"]
@@ -95,7 +95,12 @@ const makeGraph = (dataSet) => {
                     .text(yAxisLabel);
 
                 const xAxisG = g.append('g').call(xAxis)
-                    .attr('transform', `translate(0, ${innerHeight})`);
+                    .attr('transform', `translate(0, ${innerHeight})`)
+                    .selectAll("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -10)
+                    .attr("y", -5)
+                    .style("text-anchor", "end");
 
                 xAxisG.select('.domain').remove();
 
@@ -167,10 +172,9 @@ const makeGraph = (dataSet) => {
         let data = explodeByTeam(dataSet);
         data = data.flat();
 
-        const newData = data.forEach((d) => {
-            const newD = d;
-            newD.count = +d.count;
-            newD.timestamp = new Date(d.timestamp);
+        data.forEach((d) => {
+            d.count = +d.count;
+            d.timestamp = new Date(d.timestamp);
         });
-        render(newData);
+        render(data);
     };

@@ -356,7 +356,7 @@ app.get('/dashboard', (req, res) => {
 // endpoint to get all status records in database
 app.get('/getStatus', (req, res) => {
   // First, finding all teams in database
-  db.find({ type: 'status' }, { $not: { team: 'convo' } }).sort({ timestamp: -1 }).limit(70).exec((findErr, docsFound) => {
+  db.find({ type: 'status' }, { $not: { team: 'convo' } }).sort({ timestamp: -1 }).limit(1440).exec((findErr, docsFound) => {
     if (findErr) console.log('There\'s a problem with the database: ', findErr);
     else if (docsFound) {
       // check for both cases, headers are case-insensitive
