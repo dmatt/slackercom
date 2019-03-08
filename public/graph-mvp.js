@@ -38,7 +38,7 @@ const makeGraph = (dataSet) => {
         };
             const svg = d3.select('svg');
 
-            const width = +svg.attr('width');
+            const width = +svg.attr('width') - 140;
             const height = +svg.attr('height') - 50;
 
             const render = (data) => {
@@ -140,7 +140,7 @@ const makeGraph = (dataSet) => {
                     .text(title);
 
                 svg.append('g')
-                    .attr('transform', 'translate(790,121)')
+                    .attr('transform', 'translate(825,70)')
                     .call(colorLegend, {
                       colorScale,
                       circleRadius: 13,
