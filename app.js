@@ -223,38 +223,39 @@ function listConversations() {
 setInterval(listConversations, 300000 );
 
 // When given conversation ID, get and send all case, customer, and assigned user details to slack
-const getConversationById = (id) => new Promise((resolve, reject) => {
-  let conversationId = id.split('#part_id=')[0];
-  let partId = id.includes('#part_id=') ? id.split('#part_id=')[1].split(`${conversationId}-`)[1] : null;
-  client.conversations.find({ 'id': conversationId, 'display_as': 'plaintext' }).then(
+const getConversationById = id => new Promise((resolve) => {
+  const conversationId = id.split('#part_id=')[0];
+  const partId = id.includes('#part_id=') ? id.split('#part_id=')[1].split(`${conversationId}-`)[1] : null;
+  client.conversations.find({ id: conversationId, display_as: 'plaintext' }).then(
     (conversation) => {
+      const conversationWithPart = conversation;
       if (partId) {
-        conversation.body.chosen_conversation_part = partId;
+        conversationWithPart.body.chosen_conversation_part = partId;
       }
-      resolve(conversation.body)
+      resolve(conversationWithPart.body);
     },
     ).catch(failureCallback);
 });
 
 // Return help text to client with examples of proper usage
 function help() {
-  let helpMessage = {
+  const helpMessage = {
     response_type: 'ephemeral',
     text: 'Type `/support` for the status of all monitored teams. Add a conversation link `https://app.intercom.io/a/apps/x2byp8hg/inbox/inbox/1935680/conversations/18437669699` to return the message.',
   };
-  return helpMessage
+  return helpMessage;
 }
 
 // Return help text to client with examples of proper usage
 function badCommand() {
-  let badCommandMessage = {
+  const badCommandMessage = {
     response_type: 'ephemeral',
     text: 'Sorry bub, I\'m not quite following. Type `/support help` to see what I can understand.',
   };
-  return badCommandMessage
+  return badCommandMessage;
 }
 
-// return true if team name is in the monitored list, default is true if there are no teams to monitor
+// return true if team name is in the monitored list, default is true if no teams to monitor
 const isMonitoredTeam = (team) => {
   return monitoredTeams.length && !monitoredTeams.includes(team) ? false : true;
 }
@@ -266,16 +267,16 @@ function formatForSlack(statusRecord) {
   let monitoredTeamsTotal = 0;
   Object.keys(teamConvoCounts).map((objectKey) => {
     const addAttachment = () => {
-      monitoredTeamsTotal += teamConvoCounts[objectKey]
+      monitoredTeamsTotal += teamConvoCounts[objectKey];
       attachments.push({
         fallback: `${objectKey}: ${teamConvoCounts[objectKey]}`,
-        color: teamConvoCounts[objectKey] < 10 ? '#7fbd5a' : '#e76c35' ,
+        color: teamConvoCounts[objectKey] < 10 ? '#7fbd5a' : '#e76c35',
         title: `${objectKey}: ${teamConvoCounts[objectKey]}`,
       });
     };
     // Add the team stats to message only if actively monitoring
     if (isMonitoredTeam(objectKey)) {
-      addAttachment()
+      addAttachment();
     }
   });
   const message = {
@@ -354,7 +355,6 @@ app.get('/dashboard', (req, res) => {
 
 // endpoint to get all status records in database
 app.get('/getStatus', (req, res) => {
-  console.log('server hit')
   // First, finding all teams in database
   db.find({ type: 'status' }, { $not: { team: 'convo' } }).sort({ timestamp: -1 }).limit(70).exec((findErr, docsFound) => {
     if (findErr) console.log('There\'s a problem with the database: ', findErr);

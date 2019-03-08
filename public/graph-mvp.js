@@ -5,13 +5,14 @@
 // var dataSet = [80, 100, 56, 120, 180, 30, 40, 120, 160];
 
 // Callback from client.js
+// eslint-disable-next-line no-unused-vars
 const makeGraph = (dataSet) => {
         const colorLegend = (selection, props) => {
             const {
                 colorScale,
                 circleRadius,
                 spacing,
-                textOffset
+                textOffset,
             } = props;
 
             const groups = selection.selectAll('g')
@@ -21,9 +22,7 @@ const makeGraph = (dataSet) => {
                 .attr('class', 'tick');
             groupsEnter
             .merge(groups)
-                .attr('transform', (d, i) =>
-                `translate(0, ${i * spacing})`
-                );
+                .attr('transform', (d, i) => `translate(0, ${i * spacing})`);
             groups.exit().remove();
 
             groupsEnter.append('circle')
@@ -44,13 +43,12 @@ const makeGraph = (dataSet) => {
 
             const render = (data) => {
                 // data.columns = ["count", "team", "timestamp", "type"]
-                const title = 'Team Counts over time';
+                const title = 'Open Convos';
 
                 const xValue = d => d.timestamp;
                 const xAxisLabel = 'Time';
 
                 const yValue = d => d.count;
-                const circleRadius = 6;
                 const yAxisLabel = 'Count';
 
                 const colorValue = d => d.team;
@@ -137,12 +135,12 @@ const makeGraph = (dataSet) => {
                     .text(title);
 
                 svg.append('g')
-                    .attr('transform', `translate(790,121)`)
+                    .attr('transform', 'translate(790,121)')
                     .call(colorLegend, {
                       colorScale,
                       circleRadius: 13,
                       spacing: 30,
-                      textOffset: 15
+                      textOffset: 15,
                     });
             };
 
@@ -169,9 +167,10 @@ const makeGraph = (dataSet) => {
         let data = explodeByTeam(dataSet);
         data = data.flat();
 
-        data.forEach((d) => {
-            d.count = +d.count;
-            d.timestamp = new Date(d.timestamp);
+        const newData = data.forEach((d) => {
+            const newD = d;
+            newD.count = +d.count;
+            newD.timestamp = new Date(d.timestamp);
         });
-        render(data);
+        render(newData);
     };
